@@ -7,11 +7,13 @@ import { NavigationHeader } from '../../components/NavigationHeader';
 import { QueenNhiMamiAvatar } from '../character/QueenNhiMamiAvatar';
 import { RonieAvatar } from '../character/RonieAvatar';
 import { soundManager } from '../../services/audio/AudioManager';
+import { ALL_MISSIONS_LIST, type IMissionConfig } from '../../mission-engine';
 
 interface RoyalCastleProps {
   onBack: () => void;
   onHome: () => void;
   onSelectMission: (zoneId: number, stageId: number) => void;
+  onSelectMissionConfig?: (config: IMissionConfig) => void;
   onOpenToyRoom: () => void;
   totalStars?: number;
 }
@@ -20,6 +22,7 @@ export const RoyalCastle: React.FC<RoyalCastleProps> = ({
   onBack,
   onHome,
   onSelectMission,
+  onSelectMissionConfig,
   onOpenToyRoom,
   totalStars = 12,
 }) => {
@@ -139,98 +142,70 @@ export const RoyalCastle: React.FC<RoyalCastleProps> = ({
               </button>
             </div>
 
-            {/* TAB 1: KHU VỰC GIAO NHIỆM VỤ */}
+            {/* TAB 1: KHU VỰC GIAO NHIỆM VỤ - 6 NHIỆM VỤ CỐT LÕI PHASE 4 */}
             {activeTab === 'quests' && (
-              <div className="space-y-3">
-                {/* NHIỆM VỤ NỔI BẬT 1: RỪNG SỐ KỲ DIỆU */}
-                <div className="bg-white/95 rounded-3xl p-4 md:p-5 border-3 border-emerald-300 shadow-md flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-3xl flex items-center justify-center flex-shrink-0">
-                      🌲
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full uppercase">
-                        Vùng 1 • Số Học 0-10
-                      </span>
-                      <h4 className="text-base md:text-lg font-comic font-black text-slate-800">
-                        Thu Thập Quả Mọng Cùng Thỏ Trắng
-                      </h4>
-                      <p className="text-xs text-slate-500">Đếm số lượng 1 đến 5 để giúp thỏ con qua sông</p>
-                    </div>
-                  </div>
+              <div className="space-y-3 max-h-[460px] overflow-y-auto pr-1">
+                {ALL_MISSIONS_LIST.map((m, idx) => {
+                  const iconMap: Record<string, string> = {
+                    RESCUE_ROPE: '🧗',
+                    PUSH_BACK_MONSTER: '🍪',
+                    BRIDGE_CROSSING: '🌈',
+                    TREASURE_CHEST: '🗝️',
+                    SHUTDOWN_MACHINE: '⚙️',
+                    MATH_RACING: '🏎️',
+                  };
+                  const badgeMap: Record<string, string> = {
+                    RESCUE_ROPE: 'Kéo Tơ Cứu Hộ',
+                    PUSH_BACK_MONSTER: 'Đẩy Lùi Quái Vật',
+                    BRIDGE_CROSSING: 'Vượt Cầu Đá',
+                    TREASURE_CHEST: 'Mở Rương Kho Báu',
+                    SHUTDOWN_MACHINE: 'Tắt Cỗ Máy Kẹo',
+                    MATH_RACING: 'Đua Xe Tốc Độ',
+                  };
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundManager.playTap();
-                      onSelectMission(1, 1);
-                    }}
-                    className="px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 text-white font-comic font-black text-xs md:text-sm rounded-2xl shadow-md flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95 transition-all"
-                  >
-                    <span>Làm Ngay</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
+                  return (
+                    <div
+                      key={m.id}
+                      className="bg-white/95 rounded-3xl p-4 md:p-5 border-3 border-purple-200 hover:border-purple-400 shadow-md flex items-center justify-between gap-3 transition-all"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-14 h-14 rounded-2xl bg-purple-100 border border-purple-300 text-3xl flex items-center justify-center flex-shrink-0 shadow-inner">
+                          {iconMap[m.gameplayType] || '⭐'}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[10px] font-black text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full uppercase">
+                              {m.region}
+                            </span>
+                            <span className="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                              ⚡ {badgeMap[m.gameplayType]}
+                            </span>
+                          </div>
+                          <h4 className="text-sm md:text-base font-comic font-black text-slate-800 mt-0.5">
+                            {idx + 1}. {m.title}
+                          </h4>
+                          <p className="text-xs text-slate-500 line-clamp-1">{m.description}</p>
+                        </div>
+                      </div>
 
-                {/* NHIỆM VỤ NỔI BẬT 2: THUNG LŨNG CỘNG TRỪ */}
-                <div className="bg-white/95 rounded-3xl p-4 md:p-5 border-3 border-amber-300 shadow-md flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-2xl bg-amber-100 text-3xl flex items-center justify-center flex-shrink-0">
-                      🚂
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundManager.playTap();
+                          if (onSelectMissionConfig) {
+                            onSelectMissionConfig(m);
+                          } else {
+                            onSelectMission(idx + 1, 1);
+                          }
+                        }}
+                        className="px-4 py-3 bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 hover:brightness-110 active:scale-95 text-white font-comic font-black text-xs md:text-sm rounded-2xl shadow-md flex items-center gap-1.5 flex-shrink-0 cursor-pointer transition-all"
+                      >
+                        <span>Làm Ngay</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
                     </div>
-                    <div>
-                      <span className="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full uppercase">
-                        Vùng 2 • Phép Cộng
-                      </span>
-                      <h4 className="text-base md:text-lg font-comic font-black text-slate-800">
-                        Đoàn Tàu Hoa Quả Sum Suê
-                      </h4>
-                      <p className="text-xs text-slate-500">Gộp số lượng táo để xe lửa khởi hành an toàn</p>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundManager.playTap();
-                      onSelectMission(2, 1);
-                    }}
-                    className="px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:brightness-110 text-white font-comic font-black text-xs md:text-sm rounded-2xl shadow-md flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95 transition-all"
-                  >
-                    <span>Làm Ngay</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* NHIỆM VỤ NỔI BẬT 3: CẦU VỒNG HÌNH HỌC */}
-                <div className="bg-white/95 rounded-3xl p-4 md:p-5 border-3 border-pink-300 shadow-md flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-2xl bg-pink-100 text-3xl flex items-center justify-center flex-shrink-0">
-                      🌈
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-black text-pink-700 bg-pink-100 px-2 py-0.5 rounded-full uppercase">
-                        Vùng 3 • Hình Khối
-                      </span>
-                      <h4 className="text-base md:text-lg font-comic font-black text-slate-800">
-                        Lắp Ráp Cổng Cầu Vồng
-                      </h4>
-                      <p className="text-xs text-slate-500">Nhận diện hình vuông, hình tròn, hình tam giác</p>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundManager.playTap();
-                      onSelectMission(3, 1);
-                    }}
-                    className="px-4 py-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:brightness-110 text-white font-comic font-black text-xs md:text-sm rounded-2xl shadow-md flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95 transition-all"
-                  >
-                    <span>Làm Ngay</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
+                  );
+                })}
               </div>
             )}
 

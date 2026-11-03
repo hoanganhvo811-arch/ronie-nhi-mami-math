@@ -11,6 +11,8 @@ import { ToyRoom } from '../features/toy-room/ToyRoom';
 import { ProfileScreen } from '../features/profile/ProfileScreen';
 import { PhaserGameContainer } from '../game/PhaserGameContainer';
 import { VisualMathQuiz } from '../features/math-engine/VisualMathQuiz';
+import { MissionArena } from '../features/mission-gameplay/MissionArena';
+import type { IMissionConfig } from '../mission-engine';
 import { RewardModal } from '../features/rewards/RewardModal';
 import { ParentDashboardModal } from '../features/parent-dashboard/ParentDashboardModal';
 import { CharacterShowcaseModal } from '../features/character/CharacterShowcaseModal';
@@ -41,6 +43,7 @@ export const AppShell: React.FC = () => {
   const [activeZoneId, setActiveZoneId] = useState<number>(1);
   const [activeStageId, setActiveStageId] = useState<number>(1);
   const [currentQuestion, setCurrentQuestion] = useState<IMathQuestion | null>(null);
+  const [activeMissionConfig, setActiveMissionConfig] = useState<IMissionConfig | null>(null);
 
   // Khởi tạo cơ sở dữ liệu Dexie khi ứng dụng khởi chạy
   useEffect(() => {
@@ -96,6 +99,8 @@ export const AppShell: React.FC = () => {
       navigateTo('WORLD_MAP');
     } else if (screen === 'MATH_ARENA') {
       navigateTo('MISSION_SELECTION');
+    } else if (screen === 'MISSION_ARENA') {
+      navigateTo('ROYAL_CASTLE');
     } else if (screen === 'ROYAL_CASTLE' || screen === 'TOY_ROOM' || screen === 'PROFILE' || screen === 'WORLD_MAP') {
       navigateTo('MAIN_MENU');
     } else {
@@ -105,6 +110,12 @@ export const AppShell: React.FC = () => {
 
   const handleHome = () => {
     navigateTo('MAIN_MENU');
+  };
+
+  // Khởi động nhiệm vụ Gameplay Cốt Lõi (Phase 4)
+  const handleStartMissionConfig = (config: IMissionConfig) => {
+    setActiveMissionConfig(config);
+    navigateTo('MISSION_ARENA', true);
   };
 
   // Khởi động nhiệm vụ từ Mission Selection hoặc Royal Castle
@@ -199,6 +210,7 @@ export const AppShell: React.FC = () => {
           onBack={handleBack}
           onHome={handleHome}
           onSelectMission={handleSelectMissionDirect}
+          onSelectMissionConfig={handleStartMissionConfig}
           onOpenToyRoom={() => navigateTo('TOY_ROOM')}
           totalStars={totalStars}
         />
@@ -231,6 +243,7 @@ export const AppShell: React.FC = () => {
           onBack={() => navigateTo('WORLD_MAP')}
           onHome={handleHome}
           onStartMission={handleStartMission}
+          onStartMissionConfig={handleStartMissionConfig}
           totalStars={totalStars}
         />
       )}
@@ -271,6 +284,15 @@ export const AppShell: React.FC = () => {
             onClose={handleReturnToMissions}
           />
         </div>
+      )}
+
+      {/* 9. ĐẤU TRƯỜNG NHIỆM VỤ GAMEPLAY TƯƠNG TÁC (MISSION ARENA - PHASE 4) */}
+      {screen === 'MISSION_ARENA' && activeMissionConfig && (
+        <MissionArena
+          config={activeMissionConfig}
+          onReturnToCastle={() => navigateTo('ROYAL_CASTLE')}
+          onReturnToMissions={() => navigateTo('MISSION_SELECTION')}
+        />
       )}
 
       {/* MODAL TRAO THƯỞNG 3 SAO */}

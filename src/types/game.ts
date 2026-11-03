@@ -15,6 +15,7 @@ export type GameScreen =
   | 'TOY_ROOM'
   | 'PROFILE'
   | 'MATH_ARENA'
+  | 'MISSION_ARENA'
   | 'PARENT_DASHBOARD';
 
 export type RonieAnimationState =

@@ -2,17 +2,19 @@
 // Màn hình chọn nhiệm vụ (Mission Selection) với các Thẻ Nhiệm Vụ Lớn cho trẻ 6-7 tuổi
 
 import React from 'react';
-import { Play, Star, CheckCircle2, Clock, Sparkles } from 'lucide-react';
+import { Play, Star, CheckCircle2, Clock, Sparkles, Swords, Zap } from 'lucide-react';
 import { NavigationHeader } from '../../components/NavigationHeader';
 import { ZONES_CONFIG, MISSIONS_DATA } from '../quests/questData';
 import { soundManager } from '../../services/audio/AudioManager';
 import type { IMission } from '../../types/game';
+import { ALL_MISSIONS_LIST, type IMissionConfig } from '../../mission-engine';
 
 interface MissionSelectionProps {
   zoneId: number;
   onBack: () => void;
   onHome: () => void;
   onStartMission: (mission: IMission) => void;
+  onStartMissionConfig?: (config: IMissionConfig) => void;
   totalStars?: number;
 }
 
@@ -21,10 +23,14 @@ export const MissionSelection: React.FC<MissionSelectionProps> = ({
   onBack,
   onHome,
   onStartMission,
+  onStartMissionConfig,
   totalStars = 12,
 }) => {
   const currentZone = ZONES_CONFIG.find((z) => z.id === zoneId) || ZONES_CONFIG[0];
   const missions = MISSIONS_DATA[zoneId] || [];
+
+  // Tìm nhiệm vụ Gameplay tương ứng với vùng hiện tại
+  const matchingCoreMission = ALL_MISSIONS_LIST[(zoneId - 1) % ALL_MISSIONS_LIST.length] || ALL_MISSIONS_LIST[0];
 
   const getDifficultyBadge = (difficulty: 'easy' | 'medium' | 'hard') => {
     switch (difficulty) {
@@ -95,6 +101,40 @@ export const MissionSelection: React.FC<MissionSelectionProps> = ({
           </div>
           <p className="text-xs md:text-sm font-bold text-slate-600">{currentZone.description}</p>
         </div>
+
+        {/* BANNER NHIỆM VỤ GAMEPLAY TƯƠNG TÁC (PHASE 4) */}
+        {onStartMissionConfig && (
+          <div className="mb-5 bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 rounded-3xl p-4 sm:p-5 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 border-2 border-white/60">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl shrink-0">
+                ⚡
+              </div>
+              <div>
+                <span className="text-[10px] font-comic font-black bg-amber-300 text-amber-950 px-2.5 py-0.5 rounded-full uppercase">
+                  Nhiệm Vụ Gameplay Cốt Lõi • {matchingCoreMission.gameplayType}
+                </span>
+                <h3 className="text-base sm:text-lg font-comic font-black mt-0.5">
+                  {matchingCoreMission.title}
+                </h3>
+                <p className="text-xs text-white/90 line-clamp-1">
+                  {matchingCoreMission.description}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playTap();
+                onStartMissionConfig(matchingCoreMission);
+              }}
+              className="px-5 py-3 bg-white text-rose-600 hover:bg-amber-100 font-comic font-black text-xs sm:text-sm rounded-2xl shadow-lg flex items-center gap-2 cursor-pointer shrink-0 active:scale-95 transition-all"
+            >
+              <Zap className="w-4 h-4 fill-current text-amber-500" />
+              <span>CHƠI GAMEPLAY NGAY</span>
+            </button>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
           {missions.map((mission, idx) => (
