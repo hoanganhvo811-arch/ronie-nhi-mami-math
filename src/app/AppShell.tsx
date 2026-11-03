@@ -16,6 +16,7 @@ import type { IMissionConfig } from '../mission-engine';
 import { RewardModal } from '../features/rewards/RewardModal';
 import { DefeatEncouragementModal } from '../features/rewards/DefeatEncouragementModal';
 import { ParentDashboardModal } from '../features/parent-dashboard/ParentDashboardModal';
+import { GentleTimeNoticeModal } from '../features/parent-dashboard/GentleTimeNoticeModal';
 import { CharacterShowcaseModal } from '../features/character/CharacterShowcaseModal';
 import { NavigationHeader } from '../components/NavigationHeader';
 import { LoadingScreen } from '../components/LoadingScreen';
@@ -23,6 +24,7 @@ import { gameBridge } from '../game/bridge/GameBridgeService';
 import { generateQuestionForZone } from '../features/math-engine/mathGenerator';
 import { ZONES_CONFIG } from '../features/quests/questData';
 import { soundManager } from '../services/audio/AudioManager';
+import { screenTimeTracker } from '../services/time/ScreenTimeTracker';
 import { initializeDefaultProfile, saveStageProgress, recordMathSession, DEFAULT_PROFILE_ID } from '../services/storage/db';
 
 export const AppShell: React.FC = () => {
@@ -47,6 +49,7 @@ export const AppShell: React.FC = () => {
   const [activeMissionConfig, setActiveMissionConfig] = useState<IMissionConfig | null>(null);
   const [pendingRewardMission, setPendingRewardMission] = useState<IMissionConfig | null>(null);
   const [showDefeatComfort, setShowDefeatComfort] = useState<boolean>(false);
+  const [showTimeNotice, setShowTimeNotice] = useState<boolean>(false);
 
   // Khởi tạo cơ sở dữ liệu Dexie khi ứng dụng khởi chạy
   useEffect(() => {
@@ -107,6 +110,13 @@ export const AppShell: React.FC = () => {
         break;
     }
 
+    // Kiểm tra giới hạn thời gian chơi khi trở về Menu hoặc Lâu đài (Phase 7: không ngắt đột ngột giữa trận)
+    if (screen === 'ROYAL_CASTLE' || screen === 'MAIN_MENU') {
+      if (screenTimeTracker.isLimitReached() && !screenTimeTracker.isNotified()) {
+        setShowTimeNotice(true);
+      }
+    }
+
     return () => {
       // Dừng giọng nói khi chuyển màn hình để tránh chồng âm
       soundManager.stopDialogueVoice();
@@ -117,6 +127,7 @@ export const AppShell: React.FC = () => {
   useEffect(() => {
     return () => {
       soundManager.cleanup();
+      screenTimeTracker.commitCurrentSession();
     };
   }, []);
 
@@ -376,10 +387,23 @@ export const AppShell: React.FC = () => {
         <CharacterShowcaseModal onClose={() => setShowCharacterShowcase(false)} />
       )}
 
-      {/* MODAL PHỤ HUYNH / CÀI ĐẶT */}
+      {/* MODAL PHỤ HUYNH / CÀI ĐẶT & THỐNG KÊ (PHASE 7) */}
       {showParentDashboard && (
         <ParentDashboardModal onClose={() => setShowParentDashboard(false)} />
       )}
+
+      {/* MODAL NHẮC NHỞ NGHỈ NGƠI DỊU DÀNG KHI HẾT THỜI GIAN (PHASE 7) */}
+      <GentleTimeNoticeModal
+        isOpen={showTimeNotice}
+        onRestNow={() => {
+          setShowTimeNotice(false);
+          screenTimeTracker.setNotified(true);
+          navigateTo('ROYAL_CASTLE');
+        }}
+        onGrantExtraTime={() => {
+          setShowTimeNotice(false);
+        }}
+      />
     </div>
   );
 };

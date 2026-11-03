@@ -110,6 +110,15 @@ export interface IQuestRecord {
   updatedAt: number;
 }
 
+export type ParentDifficulty = 'easy' | 'standard' | 'challenge';
+
+export interface IParentContentConfig {
+  enabledTopics: MathTopicKey[];
+  questionsPerMission: number;
+  difficulty: ParentDifficulty;
+  maxMistakesAllowed: number;
+}
+
 export interface IParentSettings {
   profileId: string;
   pinCode: string;
@@ -117,4 +126,8 @@ export interface IParentSettings {
   soundEffects: boolean;
   musicEnabled: boolean;
   difficultyBias: 'auto' | 'gentle' | 'challenge';
+  // Bổ sung Phase 7:
+  isTimeLimitEnabled?: boolean;
+  breakReminderMinutes?: number;
+  contentConfig?: IParentContentConfig;
 }
