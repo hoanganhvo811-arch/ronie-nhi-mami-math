@@ -69,12 +69,12 @@ export const RoyalCastle: React.FC<RoyalCastleProps> = ({
 
               {/* Nữ hoàng Nhi Mami ngồi / đứng uy nghiêm dịu dàng */}
               <div className="relative z-10">
-                <QueenNhiMamiAvatar size="xl" speaking={true} />
+                <QueenNhiMamiAvatar size="xl" speaking={true} variant="photo" />
               </div>
 
               {/* Ronie đứng chắp tay hào hứng bên cạnh ngai */}
               <div className="absolute -bottom-2 -right-4 z-20">
-                <RonieAvatar size="md" state="celebrating" />
+                <RonieAvatar size="md" state="celebrating" variant="photo" />
               </div>
             </div>
 

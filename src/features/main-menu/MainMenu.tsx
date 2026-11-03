@@ -147,7 +147,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
           {/* NHÂN VẬT RONIE NỔI BẬT ĐỨNG TRƯỚC LÂU ĐÀI */}
           <div className="relative -mt-16 flex flex-col items-center">
-            <RonieAvatar size="xl" state="celebrating" />
+            <RonieAvatar size="xl" state="celebrating" variant="photo" />
             <div className="bg-white/95 px-4 py-1.5 rounded-full border-2 border-rose-400 shadow-md font-comic font-black text-xs md:text-sm text-rose-600 mt-1">
               🕷️ Bé Ronie sẵn sàng!
             </div>

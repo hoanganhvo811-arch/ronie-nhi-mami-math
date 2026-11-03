@@ -9,6 +9,7 @@ interface RonieAvatarProps {
   state?: RonieAnimationState;
   className?: string;
   showLabel?: boolean;
+  variant?: 'vector' | 'photo';
 }
 
 export const RonieAvatar: React.FC<RonieAvatarProps> = ({
@@ -16,6 +17,7 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
   state = 'idle',
   className = '',
   showLabel = false,
+  variant = 'vector',
 }) => {
   // Chuẩn hóa trạng thái tương thích ngược
   const normalizedState: RonieAnimationState =
@@ -75,13 +77,62 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
         }`}
       />
 
-      {/* SVG VECTOR ĐỘC QUYỀN CHIBI NGUYÊN BẢN CỦA RONIE */}
-      <svg
-        viewBox="0 0 100 100"
-        className="w-full h-full drop-shadow-lg"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+      {/* HIỆN THỊ ẢNH 3D CHÍNH THỨC HOẶC VECTOR ĐỘC QUYỀN */}
+      {variant === 'photo' ? (
+        <div className="relative w-full h-full flex items-center justify-center">
+          <img
+            src="/assets/ronie-official.png"
+            alt="Bé Ronie"
+            className="w-full h-full object-contain filter drop-shadow-xl"
+            loading="lazy"
+          />
+
+          {/* SỢI TƠ BẮN RA (CHỈ Ở WEB_SHOOT HOẶC PULL) */}
+          {(normalizedState === 'web_shoot' || normalizedState === 'pull') && (
+            <div className="absolute right-0 top-1/4 animate-pulse pointer-events-none">
+              <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
+                <path d="M 0 15 Q 30 0 60 15" stroke="#FDE047" strokeWidth="4" strokeDasharray="5 3" />
+                <circle cx="58" cy="15" r="3" fill="#F59E0B" />
+              </svg>
+            </div>
+          )}
+
+          {/* TIA SÁNG CHIẾN THẮNG / NGÔI SAO TRÊN ĐẦU */}
+          {(normalizedState === 'celebrate' || normalizedState === 'victory') && (
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-2xl animate-spin pointer-events-none">
+              ⭐
+            </div>
+          )}
+
+          {/* DẤU BỐI RỐI KHI SAD / DEFEAT */}
+          {(normalizedState === 'sad' || normalizedState === 'defeat') && (
+            <div className="absolute -top-2 right-1 text-xl animate-bounce pointer-events-none">
+              💧
+            </div>
+          )}
+
+          {/* DẤU CHẤM THAN KHI SURPRISED */}
+          {normalizedState === 'surprised' && (
+            <div className="absolute -top-3 right-1 text-2xl font-black text-amber-500 animate-bounce pointer-events-none">
+              ❗
+            </div>
+          )}
+
+          {/* TIA ĐẤM TƠ SAO KHI ATTACK */}
+          {normalizedState === 'attack' && (
+            <div className="absolute -top-1 -right-2 text-xl animate-ping pointer-events-none">
+              💥
+            </div>
+          )}
+        </div>
+      ) : (
+        /* SVG VECTOR ĐỘC QUYỀN CHIBI NGUYÊN BẢN CỦA RONIE */
+        <svg
+          viewBox="0 0 100 100"
+          className="w-full h-full drop-shadow-lg"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
         {/* SỢI TƠ BẮN RA (CHỈ Ở WEB_SHOOT HOẶC PULL) */}
         {(normalizedState === 'web_shoot' || normalizedState === 'pull') && (
           <path
@@ -202,6 +253,7 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
         <path d="M 55 81 Q 60 79 62 82" stroke="#1E3A8A" strokeWidth="2" strokeLinecap="round" />
         <path d="M 55 84 Q 61 86 62 90" stroke="#1E3A8A" strokeWidth="2" strokeLinecap="round" />
       </svg>
+      )}
 
       {/* NHÃN TRẠNG THÁI (OPTIONAL) */}
       {showLabel && (

@@ -10,6 +10,7 @@ interface QueenNhiMamiAvatarProps {
   speaking?: boolean; // Tương thích ngược
   className?: string;
   showLabel?: boolean;
+  variant?: 'vector' | 'photo';
 }
 
 export const QueenNhiMamiAvatar: React.FC<QueenNhiMamiAvatarProps> = ({
@@ -18,6 +19,7 @@ export const QueenNhiMamiAvatar: React.FC<QueenNhiMamiAvatarProps> = ({
   speaking = false,
   className = '',
   showLabel = false,
+  variant = 'vector',
 }) => {
   // Chuẩn hóa trạng thái nếu truyền speaking cũ
   const currentState: QueenAnimationState = speaking && state === 'idle' ? 'talking' : state;
@@ -57,13 +59,52 @@ export const QueenNhiMamiAvatar: React.FC<QueenNhiMamiAvatarProps> = ({
         }`}
       />
 
-      {/* SVG VECTOR ĐỘC QUYỀN NỮ HOÀNG NHI MAMI (VÁY HỒNG PASTEL & VƯƠNG MIỆN VÀNG) */}
-      <svg
-        viewBox="0 0 100 100"
-        className="w-full h-full drop-shadow-xl"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+      {/* HIỂN THỊ ẢNH 3D CHÍNH THỨC HOẶC VECTOR ĐỘC QUYỀN */}
+      {variant === 'photo' ? (
+        <div className="relative w-full h-full flex items-center justify-center">
+          <img
+            src="/assets/queen-nhi-mami-official.png"
+            alt="Nữ Hoàng Nhi Mami"
+            className="w-full h-full object-contain filter drop-shadow-xl rounded-2xl"
+            loading="lazy"
+          />
+
+          {/* QUYỀN TRƯỢNG & VƯƠNG MIỆN KHI REWARDING HOẶC GREETING */}
+          {(currentState === 'rewarding' || currentState === 'greeting') && (
+            <div className="absolute -top-3 -right-2 text-2xl animate-bounce pointer-events-none">
+              👑
+            </div>
+          )}
+
+          {/* TRÁI TIM YÊU THƯƠNG KHI KHÍCH LỆ (ENCOURAGING) HOẶC LAUGHING */}
+          {(currentState === 'encouraging' || currentState === 'laughing') && (
+            <div className="absolute -top-3 left-0 text-2xl animate-pulse pointer-events-none">
+              💖
+            </div>
+          )}
+
+          {/* HÀO QUANG KHI VỖ TAY HOẶC THÁN PHỤC */}
+          {(currentState === 'clapping' || currentState === 'surprised') && (
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-xl animate-spin pointer-events-none">
+              ✨
+            </div>
+          )}
+
+          {/* HIỆU ỨNG NÓI CHUYỆN */}
+          {currentState === 'talking' && (
+            <div className="absolute -bottom-2 right-0 text-lg animate-pulse pointer-events-none">
+              💬
+            </div>
+          )}
+        </div>
+      ) : (
+        /* SVG VECTOR ĐỘC QUYỀN NỮ HOÀNG NHI MAMI (VÁY HỒNG PASTEL & VƯƠNG MIỆN VÀNG) */
+        <svg
+          viewBox="0 0 100 100"
+          className="w-full h-full drop-shadow-xl"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
         {/* QUYỀN TRƯỢNG TRI THỨC KHI REWARDING HOẶC GREETING */}
         {(currentState === 'rewarding' || currentState === 'greeting') && (
           <g>
@@ -151,6 +192,7 @@ export const QueenNhiMamiAvatar: React.FC<QueenNhiMamiAvatarProps> = ({
         {/* Nơ ngọc vàng ở eo */}
         <circle cx="50" cy="78" r="4" fill="#FBBF24" stroke="#D97706" strokeWidth="1.5" />
       </svg>
+      )}
 
       {/* NHÃN TRẠNG THÁI (OPTIONAL) */}
       {showLabel && (

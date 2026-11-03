@@ -99,6 +99,7 @@ export const DialoguePlayer: React.FC<DialoguePlayerProps> = ({
         <RonieAvatar
           size="xl"
           state={(currentNode.animation as RonieAnimationState) || 'celebrate'}
+          variant="photo"
         />
       );
     }
@@ -107,6 +108,7 @@ export const DialoguePlayer: React.FC<DialoguePlayerProps> = ({
         <QueenNhiMamiAvatar
           size="xl"
           state={(currentNode.animation as QueenAnimationState) || 'talking'}
+          variant="photo"
         />
       );
     }

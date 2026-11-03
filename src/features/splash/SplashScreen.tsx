@@ -94,7 +94,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
             }`}
           >
             <div className="relative">
-              <RonieAvatar size="xl" state={isSwungIn ? 'celebrating' : 'jumping'} />
+              <RonieAvatar size="xl" state={isSwungIn ? 'celebrating' : 'jumping'} variant="photo" />
               <div className="text-2xl absolute -top-3 -right-2 animate-bounce">🕸️</div>
             </div>
             <span className="mt-2 px-3 py-1 bg-rose-500 text-white font-black text-xs rounded-full shadow-md">
@@ -108,7 +108,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
               showQueenGreeting ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-8'
             }`}
           >
-            <QueenNhiMamiAvatar size="xl" speaking={showQueenGreeting} />
+            <QueenNhiMamiAvatar size="xl" speaking={showQueenGreeting} variant="photo" />
             <span className="mt-2 px-3 py-1 bg-purple-600 text-white font-black text-xs rounded-full shadow-md">
               Nữ Hoàng Nhi Mami
             </span>

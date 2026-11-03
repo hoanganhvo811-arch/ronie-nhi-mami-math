@@ -18,6 +18,7 @@ interface CharacterShowcaseModalProps {
 
 export const CharacterShowcaseModal: React.FC<CharacterShowcaseModalProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<'ronie' | 'queen' | 'npcs' | 'dialogues'>('ronie');
+  const [artVariant, setArtVariant] = useState<'photo' | 'vector'>('photo');
 
   // Trạng thái biểu cảm đang chọn
   const [ronieState, setRonieState] = useState<RonieAnimationState>('idle');
@@ -88,7 +89,7 @@ export const CharacterShowcaseModal: React.FC<CharacterShowcaseModalProps> = ({ 
 
       <div className="relative w-full max-w-4xl bg-gradient-to-b from-white via-amber-50 to-pink-50 rounded-3xl border-4 border-amber-300 shadow-2xl p-5 md:p-7 flex flex-col max-h-[92vh] overflow-hidden">
         {/* HEADER */}
-        <div className="flex items-center justify-between pb-3 border-b border-amber-200">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-amber-200">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-amber-400 border border-amber-500 flex items-center justify-center text-slate-950 text-2xl shadow-md">
               🎭
@@ -103,14 +104,50 @@ export const CharacterShowcaseModal: React.FC<CharacterShowcaseModalProps> = ({ 
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-2xl transition-all cursor-pointer"
-            title="Đóng sân khấu"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* NÚT CHUYỂN ĐỔI PHONG CÁCH HÌNH ẢNH 3D / VECTOR */}
+            <div className="flex items-center p-1 bg-white/90 rounded-2xl border-2 border-amber-300 shadow-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playTap();
+                  setArtVariant('photo');
+                }}
+                className={`px-3 py-1.5 rounded-xl font-comic font-black text-xs transition-all cursor-pointer ${
+                  artVariant === 'photo'
+                    ? 'bg-gradient-to-r from-amber-400 to-rose-400 text-slate-950 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="Sử dụng hình ảnh 3D nhân vật chính thức"
+              >
+                ⭐ Ảnh 3D Gốc
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playTap();
+                  setArtVariant('vector');
+                }}
+                className={`px-3 py-1.5 rounded-xl font-comic font-black text-xs transition-all cursor-pointer ${
+                  artVariant === 'vector'
+                    ? 'bg-purple-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="Sử dụng vector chibi"
+              >
+                🎨 Chibi Vector
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-2xl transition-all cursor-pointer"
+              title="Đóng sân khấu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* 4 TABS CHUYỂN ĐỔI */}
@@ -184,7 +221,7 @@ export const CharacterShowcaseModal: React.FC<CharacterShowcaseModalProps> = ({ 
               {/* KHU VỰC PREVIEW LỚN */}
               <div className="md:col-span-5 flex flex-col items-center bg-white/90 p-5 rounded-3xl border-3 border-rose-300 shadow-md text-center">
                 <div className="relative w-44 h-44 bg-gradient-to-tr from-rose-100 to-amber-100 rounded-full border-4 border-rose-400 flex items-center justify-center shadow-inner my-2">
-                  <RonieAvatar size="2xl" state={ronieState} />
+                  <RonieAvatar size="2xl" state={ronieState} variant={artVariant} />
                 </div>
                 <h3 className="font-comic font-black text-xl text-rose-600 capitalize mt-2">
                   {ronieState}
@@ -221,7 +258,7 @@ export const CharacterShowcaseModal: React.FC<CharacterShowcaseModalProps> = ({ 
               {/* KHU VỰC PREVIEW LỚN */}
               <div className="md:col-span-5 flex flex-col items-center bg-white/90 p-5 rounded-3xl border-3 border-purple-300 shadow-md text-center">
                 <div className="relative w-44 h-44 bg-gradient-to-tr from-purple-100 to-pink-100 rounded-full border-4 border-purple-400 flex items-center justify-center shadow-inner my-2">
-                  <QueenNhiMamiAvatar size="2xl" state={queenState} />
+                  <QueenNhiMamiAvatar size="2xl" state={queenState} variant={artVariant} />
                 </div>
                 <h3 className="font-comic font-black text-xl text-purple-700 capitalize mt-2">
                   {queenState}
