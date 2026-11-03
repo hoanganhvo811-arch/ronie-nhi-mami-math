@@ -13,6 +13,7 @@ interface MainMenuProps {
   onOpenProfile: () => void;
   onOpenMathCorner: () => void;
   onOpenSettings: () => void;
+  onOpenShowcase?: () => void;
   totalStars?: number;
 }
 
@@ -23,6 +24,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenProfile,
   onOpenMathCorner,
   onOpenSettings,
+  onOpenShowcase,
   totalStars = 12,
 }) => {
   const [isMuted, setIsMuted] = React.useState<boolean>(soundManager.getMuted());
@@ -62,8 +64,23 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           </div>
         </button>
 
-        {/* NÚT LÂU ĐÀI & ÂM THANH & CÀI ĐẶT */}
+        {/* NÚT LÂU ĐÀI & SÂN KHẤU & ÂM THANH & CÀI ĐẶT */}
         <div className="flex items-center gap-2">
+          {onOpenShowcase && (
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playTap();
+                onOpenShowcase();
+              }}
+              className="px-3 py-2.5 bg-gradient-to-r from-amber-400 to-rose-400 hover:brightness-110 text-slate-950 rounded-2xl shadow-md font-comic font-black text-xs md:text-sm flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+              title="Mở Sân Khấu Nhân Vật & Hội Thoại"
+            >
+              <Sparkles className="w-4 h-4 text-amber-950" />
+              <span className="hidden md:inline">Sân Khấu Nhân Vật</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => {

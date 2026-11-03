@@ -1,6 +1,6 @@
 # DANH MỤC TÀI NGUYÊN (ASSET CATALOG)
 ## RONIE & NHI MAMI: VƯƠNG QUỐC TOÁN HỌC
-*(Cập nhật hoàn thiện Phase 1: Visual World & User Interface)*
+*(Cập nhật hoàn thiện Phase 2: Character, Animation & Dialogue System)*
 
 ---
 
@@ -85,3 +85,109 @@
 - **`playWebShoot()`:** Tiếng tơ nhện bay vút êm tai khi Ronie đu dây hoặc di chuyển.
 - **`playCelebration()`:** Khúc nhạc kèn đồng mừng chiến thắng (Fanfare) C5-E5-G5-C6-E6 khi nhận thưởng.
 - **`speakVietnamese(text)`:** Tích hợp bộ đọc giọng nói tiếng Việt chuẩn, tốc độ 0.9 phù hợp với trẻ lớp 1.
+
+---
+
+### 8. NHÂN VẬT GỐC RONIE & 12 TRẠNG THÁI BIỂU CẢM (ORIGINAL CHIBI SPIDER-KID)
+
+- **Đặc trưng thiết kế IP nguyên bản (Original IP):**
+  - Tỉ lệ chibi đáng yêu (đầu to, thân nhỏ, mắt to biểu cảm).
+  - Gam màu chủ đạo: Đỏ Ruby (`#E11D48`) và Xanh Navy Hoàng Gia (`#1E3A8A`).
+  - Biểu tượng ngực áo độc quyền: Ngôi sao tơ nhện cách điệu 6 cánh màu vàng kim (`#F59E0B`), tuyệt đối không mô phỏng mạng nhện hoặc logo Spider-Man Marvel.
+  - Phụ kiện: Găng tay và ủng tơ sao công nghệ nhí.
+
+| STT | Trạng Thái (`RonieAnimationState`) | Tên Gọi & Diễn Hoạt | Chi Tiết Biểu Cảm & Hiệu Ứng Trực Quan | Tình Huống Kích Hoạt |
+| :---: | :--- | :--- | :--- | :--- |
+| **1** | `idle` | Đứng nghỉ / Nhún nhảy | Mắt chớp nhẹ, người nhún nhẩy mềm mại theo nhịp thở. | Đang chờ trên menu, bản đồ hoặc câu hỏi. |
+| **2** | `walk` | Đi bộ thong thả | Nghiêng người qua lại nhẹ nhàng, chân bước đều. | Di chuyển thong thả giữa các cứ điểm. |
+| **3** | `run` | Chạy nhanh năng động | Người hơi chúi về phía trước, bước chân gấp gáp. | Chạy nhanh tới vùng đất mới hoặc đuổi bắt. |
+| **4** | `jump` | Nhảy vọt lên cao | Bật cao lên không trung, tơ sao lấp lánh nâng đỡ. | Nhảy qua chướng ngại vật, vào màn chơi. |
+| **5** | `celebrate` | Nhảy múa vui mừng | Hai tay giơ cao, ngôi sao nhấp nháy, nụ cười rạng rỡ. | Khi trả lời đúng bài toán hoặc hoàn thành chặng. |
+| **6** | `sad` | Buồn bã / Bối rối | Đôi mắt to tròn rưng rưng, vai rũ xuống nhẹ nhàng. | Khi chọn nhầm đáp án (thể hiện sự tiếc nuối dễ thương). |
+| **7** | `surprised` | Ngạc nhiên / Thích thú | Mắt mở to tròn xoe, miệng chữ O, dấu chấm than `!` trên đầu. | Khi phát hiện rương kho báu hoặc câu đố bất ngờ. |
+| **8** | `attack` | Đấm tơ sao năng lượng | Tung nắm đấm tơ sao lấp lánh về phía trước. | Giải phóng tảng đá chắn đường, tương tác chướng ngại vật. |
+| **9** | `web_shoot` | Bắn sợi tơ sao | Tay phóng sợi tơ sao phát sáng kết nối với mục tiêu. | Đu dây qua vực, kéo vật phẩm về phía mình. |
+| **10** | `pull` | Kéo tơ gồng sức | Chân bám trụ chắc chắn, hai tay kéo căng sợi tơ sao. | Kéo rương kho báu, kéo cần gạt cây cầu toán học. |
+| **11** | `victory` | Chiến thắng rạng rỡ | Đứng trên bục vinh quang, vung tay hân hoan, pháo hoa nổ tung. | Vượt qua toàn bộ nhiệm vụ hoặc nhận cúp vàng. |
+| **12** | `defeat` | Thất bại tạm thời / Cố gắng | Ngồi bệt gãi đầu cười trừ, bóng đèn ý tưởng lóe sáng để thử lại. | Hết lượt giải mà chưa đúng, chuẩn bị thử lại lần sau. |
+
+---
+
+### 9. NỮ HOÀNG NHI MAMI & 8 TRẠNG THÁI HOÀNG GIA (QUEEN NHI MAMI)
+
+- **Đặc trưng thiết kế IP nguyên bản (Original IP):**
+  - Phong cách công chúa / nữ hoàng hoạt hình Disney-like ấm áp, dịu dàng, thông thái.
+  - Trang phục: Váy dạ hội hồng pastel (`#F472B6`, `#FBCFE8`) xếp tầng bồng bềnh lấp lánh sao.
+  - Phụ kiện: Vương miện ngọc hoàng gia vàng rực (`#FBBF24`), quyền trượng ngôi sao trí tuệ.
+  - Giọng điệu ấm áp, khích lệ như một người mẹ yêu quý luôn đồng hành cùng con trẻ.
+
+| STT | Trạng Thái (`QueenAnimationState`) | Tên Gọi & Diễn Hoạt | Chi Tiết Biểu Cảm & Hiệu Ứng Trực Quan | Tình Huống Kích Hoạt |
+| :---: | :--- | :--- | :--- | :--- |
+| **1** | `idle` | Hoàng gia thanh lịch | Đứng nghiêng nhẹ, nụ cười hiền hậu, vạt váy đung đưa. | Đứng trên ngai vàng lâu đài hoàng gia. |
+| **2** | `greeting` | Chào đón nồng nhiệt | Cầm quyền trượng vẫy tay chào bé, ánh sáng lấp lánh nở rộ. | Khi bé bước vào Lâu Đài hoặc mở game mỗi ngày. |
+| **3** | `talking` | Đang ân cần chỉ bảo | Miệng cử động nhịp nhàng, tay ra dấu giải thích nhẹ nhàng. | Khi đọc hướng dẫn hoặc giao câu hỏi nhiệm vụ. |
+| **4** | `laughing` | Cười tươi rạng rỡ | Mắt híp cười duyên dáng, cánh hoa và tim hồng bay xung quanh. | Khi Ronie trả lời câu hỏi hóm hỉnh, vui vẻ. |
+| **5** | `surprised` | Trầm trồ kinh ngạc | Hai tay ôm ngực kinh ngạc trước tài năng của Ronie. | Khi bé giải đúng bài toán hóc búa với chuỗi liên tiếp. |
+| **6** | `clapping` | Vỗ tay tán thưởng | Hai bàn tay vỗ nhẹ nhịp nhàng, biểu dương hiệp sĩ nhí. | Khi hoàn thành bài học toán xuất sắc. |
+| **7** | `rewarding` | Trao thưởng vinh quang | Hai tay nâng cúp vàng hoặc rương báu trao tặng cho bé. | Màn hình nhận thưởng tại Lâu Đài Hoàng Gia. |
+| **8** | `encouraging` | Động viên yêu thương | Cúi người ân cần, biểu tượng trái tim ấm áp bay quanh. | Khi bé làm bài sai hoặc cần gợi ý để tự tin làm lại. |
+
+---
+
+### 10. KIẾN TRÚC NHÂN VẬT PHỤ & ĐỐI THỦ HÀI HƯỚC (NPC SYSTEM)
+
+Hệ thống quản lý nhân vật phụ (`npcRegistry.ts`) được xây dựng theo mẫu thiết kế **Registry Pattern**, cho phép mở rộng không giới hạn nhân vật mới trong tương lai. Tất cả nhân vật phản diện đều mang phong cách hoạt hình hài hước, vụng về, không có yếu tố hù dọa hoặc đáng sợ.
+
+| Mã Định Danh (`NPCId`) | Tên Nhân Vật | Vai Trò & Tính Cách | Tông Giọng (`Pitch`) | Ngoại Hình Vector & Màu Sắc | Câu Cửa Miệng Đặc Trưng |
+| :--- | :--- | :--- | :---: | :--- | :--- |
+| `rabbit` | **Thỏ Trắng Tinh Nghịch** | Bạn đồng hành nhanh nhẹn, hướng dẫn viên Rừng Số | 1.30 (Vang, nhí nhảnh) | Thỏ hồng tai dài, ôm củ cà rốt cam | *"Cà rốt cà rốt! Cùng mình nhảy qua các con số nào!"* |
+| `bear` | **Gấu Con Đáng Yêu** | Bạn học hiền lành, yêu thích xếp hình và chia bánh | 0.90 (Trầm ấm, chậm rãi) | Gấu nâu tròn xoe, đội mũ vàng pastel | *"Gấu thích ăn mật ong và chia bánh đều cho các bạn!"* |
+| `rescued_girl` | **Cô Bé Nơ Hồng** | Cư dân cần được giải cứu trong nhiệm vụ phiêu lưu | 1.25 (Trong trẻo, dễ thương) | Váy xanh ngọc, kẹp nơ hồng to bản | *"Cứu mình với bé Ronie ơi, hãy giải đúng câu đố nhé!"* |
+| `dragon` | **Rồng Con Hạt Dẻ** | Linh thú thổi lửa sưởi ấm, bảo vệ Hang Kho Báu | 1.05 (Hăng hái, ngộ nghĩnh) | Rồng xanh lá tí hon, cánh nhỏ màu cam | *"Khè khè! Rồng con thổi ra bong bóng toán học đây!"* |
+| `robot` | **Robot Bíp Bíp** | Chú robot tính toán siêu tốc ở Thành Phố Thời Gian | 1.15 (Điện tử nhịp nhàng) | Robot xanh dương khối hộp, ăng-ten đèn vàng | *"Bíp bíp! Đã nạp dữ liệu! Phép tính này thật tuyệt vời!"* |
+| `cookie_monster` | **Quái Vật Bánh Quy** | "Đối thủ" tham ăn dễ thương, chuyên giấu bánh đố số | 0.85 (Hóm hỉnh, vụng về) | Quái vật lông tím tròn lẳn, miệng dính vụn bánh socola | *"Rôm rốp rôm rốp! Trả lời đúng mới được ăn bánh nhé!"* |
+| `candy_witch` | **Phù Thủy Kẹo Ngọt** | Nữ phù thủy tí hon chuyên tạo ra câu đố phép thuật | 1.20 (Tinh quái, vui nhộn) | Mũ chóp tím lấp lánh, đũa phép hình kẹo mút cầu vồng | *"Úm ba la kẹo ngọt! Hãy đoán xem phép tính này ra số mấy?"* |
+
+---
+
+### 11. HỆ THỐNG KỊCH BẢN HỘI THOẠI (DIALOGUE ENGINE & SCRIPT LIBRARY)
+
+Cấu trúc kịch bản hội thoại (`IDialogueConversation` & `IDialogueNode`) hỗ trợ phân nhánh lựa chọn, đính kèm hoạt ảnh tương ứng của nhân vật, giọng đọc offline bằng Web Speech API và thời gian ngắt nghỉ tự nhiên.
+Tất cả 11 tình huống sư phạm đều có kho dữ liệu câu ngẫu nhiên (`RANDOM_PHRASES`) tối thiểu 4 câu biến thể để tránh sự nhàm chán lặp lại cho trẻ nhỏ:
+
+| STT | Tình Huống Kịch Bản (`DialogueCategory`) | Nhân Vật Tham Gia | Mục Tiêu Sư Phạm & Trải Nghiệm Cảm Xúc | Số Lượng Câu Biến Thể |
+| :---: | :--- | :--- | :--- | :---: |
+| **1** | `greeting` | Nữ hoàng & Ronie | Tạo cảm giác được chào đón yêu thương khi mở game. | 4 câu thoại |
+| **2** | `quest_assign` | Nữ hoàng & Ronie | Giao mục tiêu rõ ràng, khơi gợi tinh thần phiêu lưu dũng cảm. | 4 câu thoại |
+| **3** | `quest_start` | Ronie & NPC | Sẵn sàng xuất phát, khơi dậy sự tự tin và quyết tâm. | 4 câu thoại |
+| **4** | `correct` | Nữ hoàng & Bạn đồng hành | Khen ngợi cụ thể, kích thích dopamine học tập tích cực. | 4 câu thoại |
+| **5** | `incorrect` | Nữ hoàng & Ronie | Vỗ về nhẹ nhàng, không phán xét, nhấn mạnh việc thử lại. | 4 câu thoại |
+| **6** | `hint` | Nữ hoàng & Thỏ Trắng | Đưa manh mối trực quan (que tính, quả táo) giúp tự tư duy. | 4 câu thoại |
+| **7** | `victory` | Nữ hoàng & Toàn thể NPC | Vinh danh thành quả sau khi hoàn thành chuỗi thử thách. | 4 câu thoại |
+| **8** | `defeat` | Nữ hoàng & Ronie | Động viên sau lần vấp ngã: "Thất bại là mẹ thành công". | 4 câu thoại |
+| **9** | `reward` | Nữ hoàng & Ronie | Trao tặng huy chương, cúp sao, khơi dậy niềm tự hào. | 4 câu thoại |
+| **10** | `encouragement` | Nữ hoàng & Thú cưng | Đồng hành thường nhật, nhắc nhở bé uống nước và giữ sức khỏe. | 4 câu thoại |
+| **11** | `zone_unlock` | Nữ hoàng & Ronie | Hào hứng khám phá vùng đất mới trên Bản Đồ Thế Giới. | 4 câu thoại |
+
+- **Tính năng Trợ Năng Trẻ Em:**
+  - Nút **"Bỏ qua" (Skip):** Cho phép các bé đã đọc tốt hoặc đã trải nghiệm qua có thể tua nhanh hội thoại bất kỳ lúc nào.
+  - Nút **"Nghe lại" (Replay Voice):** Cho phép bé chạm để máy phát âm lại câu thoại với giọng đọc ấm áp, giúp bé lớp 1 đang tập đọc dễ dàng tiếp thu bài học mà không phụ thuộc vào phụ huynh.
+
+---
+
+### 12. BỘ QUẢN LÝ ÂM THANH ĐA KÊNH CHỐNG CHỒNG ÂM (MULTI-CHANNEL AUDIO ENGINE)
+
+Được thiết kế đáp ứng đặc tính hành vi của trẻ nhỏ (thường bấm nút liên tục hoặc chạm màn hình nhiều lần):
+
+- **7 Kênh Âm Thanh Độc Lập:**
+  1. `dialogue`: Kênh giọng đọc đối thoại (ưu tiên cao nhất, luôn được làm sạch trước khi phát câu mới).
+  2. `bgm`: Kênh nhạc nền êm dịu, âm lượng vừa phải (50%) để không lấn át lời dạy.
+  3. `sfx_success`: Kênh hiệu ứng khi làm đúng (tiếng chuông lấp lánh C5-E5-G5-C6).
+  4. `sfx_failure`: Kênh hiệu ứng động viên làm lại (âm rung trầm êm ả không gây ức chế).
+  5. `sfx_button`: Kênh phản hồi xúc giác khi chạm nút (âm *Bloop* 80ms).
+  6. `sfx_reward`: Kênh âm hưởng vinh danh Fanfare hoàng gia.
+  7. `sfx_game_effect`: Kênh hiệu ứng kỹ năng của Ronie (bắn tơ, kéo tơ, tung nắm đấm tơ).
+- **Bộ Kiểm Soát Chống Chồng Lấn Âm Thanh (Concurrency & Spam Limiter):**
+  - Giới hạn tối đa `MAX_CONCURRENT_SFX = 3` âm thanh hiệu ứng tại một thời điểm.
+  - Bộ đệm điều tiết tần số bấm phím: Ngăn chặn các âm chạm nút cách nhau dưới 40ms, tránh gây rè màng loa hoặc âm thanh quá tải trên thiết bị di động/tablet của trẻ.
+  - 100% Thuần Web Audio API & Web Speech API: Chạy offline hoàn toàn, không phụ thuộc vào kết nối mạng Internet.

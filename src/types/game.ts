@@ -2,6 +2,8 @@
 // Các cấu trúc trạng thái và sự kiện kết nối React và Phaser (Phase 1)
 
 import type { MathTopicKey } from './database';
+export * from './character';
+export * from './dialogue';
 
 export type GameScreen =
   | 'SPLASH'

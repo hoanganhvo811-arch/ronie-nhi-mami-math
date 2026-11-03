@@ -13,6 +13,7 @@ import { PhaserGameContainer } from '../game/PhaserGameContainer';
 import { VisualMathQuiz } from '../features/math-engine/VisualMathQuiz';
 import { RewardModal } from '../features/rewards/RewardModal';
 import { ParentDashboardModal } from '../features/parent-dashboard/ParentDashboardModal';
+import { CharacterShowcaseModal } from '../features/character/CharacterShowcaseModal';
 import { NavigationHeader } from '../components/NavigationHeader';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { gameBridge } from '../game/bridge/GameBridgeService';
@@ -30,6 +31,7 @@ export const AppShell: React.FC = () => {
   // Modals phụ
   const [showParentDashboard, setShowParentDashboard] = useState<boolean>(false);
   const [showRewardModal, setShowRewardModal] = useState<boolean>(false);
+  const [showCharacterShowcase, setShowCharacterShowcase] = useState<boolean>(false);
 
   // Điểm số & tiến trình
   const [totalStars, setTotalStars] = useState<number>(12);
@@ -186,6 +188,7 @@ export const AppShell: React.FC = () => {
             navigateTo('MISSION_SELECTION');
           }}
           onOpenSettings={() => setShowParentDashboard(true)}
+          onOpenShowcase={() => setShowCharacterShowcase(true)}
           totalStars={totalStars}
         />
       )}
@@ -279,6 +282,11 @@ export const AppShell: React.FC = () => {
           onNextStage={handleNextStage}
           onReturnToMap={handleReturnToMissions}
         />
+      )}
+
+      {/* MODAL SÂN KHẤU NHÂN VẬT & HỘI THOẠI (PHASE 2) */}
+      {showCharacterShowcase && (
+        <CharacterShowcaseModal onClose={() => setShowCharacterShowcase(false)} />
       )}
 
       {/* MODAL PHỤ HUYNH / CÀI ĐẶT */}
