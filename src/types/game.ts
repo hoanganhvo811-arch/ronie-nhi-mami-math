@@ -4,6 +4,7 @@
 import type { MathTopicKey } from './database';
 export * from './character';
 export * from './dialogue';
+export * from '../math-engine/types';
 
 export type GameScreen =
   | 'SPLASH'

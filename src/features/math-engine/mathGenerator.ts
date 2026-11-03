@@ -1,7 +1,12 @@
 // src/features/math-engine/mathGenerator.ts
 // Bộ sinh câu hỏi Toán Lớp 1 chuẩn Chương trình GDPT 2018 (Bộ GD&ĐT Việt Nam)
+// Tích hợp hoàn toàn với Standalone Math Engine & Question Bank 205 câu (Phase 3)
 
 import type { IMathQuestion } from '../../types/game';
+import type { IGrade1Question } from '../../math-engine/types';
+
+// Xuất các module của Math Engine để sử dụng thuận tiện
+export * from '../../math-engine';
 
 const FRUITS = [
   { emoji: '🍎', name: 'quả táo đỏ' },
@@ -10,6 +15,46 @@ const FRUITS = [
   { emoji: '🥕', name: 'củ cà rốt' },
   { emoji: '⭐', name: 'ngôi sao may mắn' },
 ];
+
+/**
+ * Chuyển đổi định dạng IGrade1Question sang IMathQuestion
+ */
+export function convertGrade1ToMathQuestion(q: IGrade1Question, zoneId: number = 1): IMathQuestion {
+  return {
+    id: q.id,
+    zoneId,
+    topicKey: (q.topic as any) || 'counting_to_10',
+    questionText: q.questionText,
+    visualType: (q.visualData?.visualType as any) || 'COUNTING',
+    visualData: {
+      countItems: q.visualData?.items?.[0]
+        ? {
+            emoji: q.visualData.items[0].emoji,
+            count: q.visualData.items[0].count,
+            name: q.visualData.items[0].name,
+          }
+        : undefined,
+      groupA: q.visualData?.groupA,
+      groupB: q.visualData?.groupB,
+      comparisonValues: q.visualData?.comparisonValues,
+      shapes: q.visualData?.shapes?.map((s) => ({
+        name: s.label || s.type,
+        type: s.type,
+        color: s.color,
+      })),
+      measurement: q.visualData?.rulerCm
+        ? {
+            objectName: q.visualData.rulerCm.objectName,
+            lengthCm: q.visualData.rulerCm.length,
+          }
+        : undefined,
+      clockTime: q.visualData?.clockTime,
+    },
+    options: q.options,
+    correctAnswer: q.correctAnswer as string | number,
+    hint: q.hint.text,
+  };
+}
 
 /**
  * Sinh câu hỏi tương tác theo Vùng Đất và Cấp độ
@@ -42,7 +87,12 @@ export function generateQuestionForZone(zoneId: number, questionIndex: number = 
           },
           options: ['>', '<', '='],
           correctAnswer: correct,
-          hint: left > right ? `Số ${left} nhiều hơn số ${right} đó bé ơi!` : (left < right ? `Số ${left} ít hơn số ${right} nhé!` : `Hai số này bằng nhau nè!`),
+          hint:
+            left > right
+              ? `Số ${left} nhiều hơn số ${right} đó bé ơi!`
+              : left < right
+              ? `Số ${left} ít hơn số ${right} nhé!`
+              : `Hai số này bằng nhau nè!`,
         };
       } else {
         const fruit = FRUITS[Math.floor(Math.random() * FRUITS.length)];
@@ -51,7 +101,9 @@ export function generateQuestionForZone(zoneId: number, questionIndex: number = 
         const wrong2 = count + 1;
         const wrong3 = count > 3 ? count - 2 : count + 3;
 
-        const options = Array.from(new Set([count, wrong1, wrong2, wrong3])).sort(() => Math.random() - 0.5);
+        const options = Array.from(new Set([count, wrong1, wrong2, wrong3])).sort(
+          () => Math.random() - 0.5
+        );
 
         return {
           id: qId,
@@ -77,7 +129,9 @@ export function generateQuestionForZone(zoneId: number, questionIndex: number = 
       const fruitA = FRUITS[0];
       const fruitB = FRUITS[2];
 
-      const options = Array.from(new Set([sum, sum + 1, sum - 1 > 0 ? sum - 1 : sum + 2, sum + 2])).sort(() => Math.random() - 0.5);
+      const options = Array.from(
+        new Set([sum, sum + 1, sum - 1 > 0 ? sum - 1 : sum + 2, sum + 2])
+      ).sort(() => Math.random() - 0.5);
 
       return {
         id: qId,
@@ -102,7 +156,9 @@ export function generateQuestionForZone(zoneId: number, questionIndex: number = 
       const remain = total - sub;
       const fruit = FRUITS[1];
 
-      const options = Array.from(new Set([remain, remain + 1, remain - 1 >= 0 ? remain - 1 : remain + 2, remain + 2])).sort(() => Math.random() - 0.5);
+      const options = Array.from(
+        new Set([remain, remain + 1, remain - 1 >= 0 ? remain - 1 : remain + 2, remain + 2])
+      ).sort(() => Math.random() - 0.5);
 
       return {
         id: qId,
@@ -150,7 +206,9 @@ export function generateQuestionForZone(zoneId: number, questionIndex: number = 
       } else if (randMode < 0.7) {
         // Thước đo cm
         const length = Math.floor(Math.random() * 6) + 4; // 4..9 cm
-        const options = Array.from(new Set([`${length} cm`, `${length + 1} cm`, `${length - 1} cm`, `${length + 2} cm`])).sort(() => Math.random() - 0.5);
+        const options = Array.from(
+          new Set([`${length} cm`, `${length + 1} cm`, `${length - 1} cm`, `${length + 2} cm`])
+        ).sort(() => Math.random() - 0.5);
 
         return {
           id: qId,
@@ -168,7 +226,14 @@ export function generateQuestionForZone(zoneId: number, questionIndex: number = 
       } else {
         // Đồng hồ đúng giờ
         const hour = Math.floor(Math.random() * 10) + 1; // 1..10 giờ
-        const options = Array.from(new Set([`${hour} giờ`, `${(hour % 12) + 1} giờ`, `${hour > 1 ? hour - 1 : 12} giờ`, `${(hour + 2) % 12 || 12} giờ`])).sort(() => Math.random() - 0.5);
+        const options = Array.from(
+          new Set([
+            `${hour} giờ`,
+            `${(hour % 12) + 1} giờ`,
+            `${hour > 1 ? hour - 1 : 12} giờ`,
+            `${(hour + 2) % 12 || 12} giờ`,
+          ])
+        ).sort(() => Math.random() - 0.5);
 
         return {
           id: qId,
@@ -197,7 +262,14 @@ export function generateQuestionForZone(zoneId: number, questionIndex: number = 
       const answer = isAdd ? res : tensA - minus;
       const expr = isAdd ? `${tensA} + ${tensB}` : `${tensA} - ${minus}`;
 
-      const options = Array.from(new Set([answer, answer + 10, answer - 10 > 0 ? answer - 10 : answer + 20, answer + 20])).sort(() => Math.random() - 0.5);
+      const options = Array.from(
+        new Set([
+          answer,
+          answer + 10,
+          answer - 10 > 0 ? answer - 10 : answer + 20,
+          answer + 20,
+        ])
+      ).sort(() => Math.random() - 0.5);
 
       return {
         id: qId,
@@ -211,7 +283,9 @@ export function generateQuestionForZone(zoneId: number, questionIndex: number = 
         },
         options,
         correctAnswer: answer,
-        hint: `Mỗi thùng hàng là 1 chục (10). ${tensA / 10} chục ${isAdd ? 'cộng' : 'trừ'} ${(isAdd ? tensB : minus) / 10} chục bằng mấy chục?`,
+        hint: `Mỗi thùng hàng là 1 chục (10). ${tensA / 10} chục ${
+          isAdd ? 'cộng' : 'trừ'
+        } ${(isAdd ? tensB : minus) / 10} chục bằng mấy chục?`,
       };
     }
   }
