@@ -22,12 +22,13 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
     xl: 'w-48 h-48',
   };
 
-  const animMap = {
+  const animMap: Record<RonieAnimationState, string> = {
     idle: 'animate-pulse',
     walking: 'animate-bounce',
     celebrating: 'animate-bounce scale-110',
     thinking: '',
     jumping: '-translate-y-4 transition-transform',
+    swinging: 'animate-bounce -translate-y-2',
   };
 
   return (

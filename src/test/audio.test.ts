@@ -18,6 +18,7 @@ describe('AudioManager', () => {
       soundManager.playCorrect();
       soundManager.playTryAgain();
       soundManager.playWebShoot();
+      soundManager.playCelebration();
       soundManager.speakVietnamese('Xin chào bé Ronie!');
     }).not.toThrow();
   });

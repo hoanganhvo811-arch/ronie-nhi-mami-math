@@ -1,23 +1,47 @@
 // src/types/game.ts
-// Các cấu trúc trạng thái và sự kiện kết nối React và Phaser
+// Các cấu trúc trạng thái và sự kiện kết nối React và Phaser (Phase 1)
 
 import type { MathTopicKey } from './database';
 
 export type GameScreen =
   | 'SPLASH'
   | 'MAIN_MENU'
+  | 'ROYAL_CASTLE'
   | 'WORLD_MAP'
+  | 'MISSION_SELECTION'
+  | 'TOY_ROOM'
+  | 'PROFILE'
   | 'MATH_ARENA'
-  | 'INVENTORY'
-  | 'PARENT_DASHBOARD'
-  | 'PROFILE_SELECT';
+  | 'PARENT_DASHBOARD';
 
 export type RonieAnimationState =
   | 'idle'
   | 'walking'
   | 'celebrating'
   | 'thinking'
-  | 'jumping';
+  | 'jumping'
+  | 'swinging';
+
+export type ZoneStatus = 'locked' | 'unlocked' | 'in_progress' | 'completed';
+export type MissionDifficulty = 'easy' | 'medium' | 'hard';
+export type MissionStatus = 'not_started' | 'in_progress' | 'completed';
+
+export interface IMission {
+  id: string;
+  zoneId: number;
+  stageId: number;
+  title: string;
+  subtitle: string;
+  mathTopic: string;
+  difficulty: MissionDifficulty;
+  status: MissionStatus;
+  starsEarned: number;
+  maxStars: number;
+  icon: string;
+  illustration: string;
+  description: string;
+  rewardExp: number;
+}
 
 export interface IZoneInfo {
   id: number;
@@ -25,10 +49,16 @@ export interface IZoneInfo {
   subtitle: string;
   topicKey: MathTopicKey;
   color: string;
+  pastelColor: string;
+  accentColor: string;
   bgGradient: string;
   icon: string;
   requiredStars: number;
   description: string;
+  status: ZoneStatus;
+  missionsCount: number;
+  completedMissionsCount: number;
+  missions?: IMission[];
 }
 
 export interface IMathQuestion {
