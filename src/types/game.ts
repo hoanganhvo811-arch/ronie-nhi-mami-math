@@ -11,6 +11,7 @@ export type GameScreen =
   | 'MAIN_MENU'
   | 'ROYAL_CASTLE'
   | 'WORLD_MAP'
+  | 'ADVENTURE_MAP'
   | 'MISSION_SELECTION'
   | 'TOY_ROOM'
   | 'PROFILE'

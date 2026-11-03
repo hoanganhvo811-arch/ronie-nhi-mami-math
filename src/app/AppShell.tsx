@@ -12,6 +12,7 @@ import { ProfileScreen } from '../features/profile/ProfileScreen';
 import { PhaserGameContainer } from '../game/PhaserGameContainer';
 import { VisualMathQuiz } from '../features/math-engine/VisualMathQuiz';
 import { MissionArena } from '../features/mission-gameplay/MissionArena';
+import { AdventureWorldMap } from '../features/adventure/AdventureWorldMap';
 import type { IMissionConfig } from '../mission-engine';
 import { RewardModal } from '../features/rewards/RewardModal';
 import { DefeatEncouragementModal } from '../features/rewards/DefeatEncouragementModal';
@@ -94,6 +95,7 @@ export const AppShell: React.FC = () => {
         soundManager.playBgm('castle');
         break;
       case 'WORLD_MAP':
+      case 'ADVENTURE_MAP':
       case 'MISSION_SELECTION':
       case 'MATH_ARENA':
         soundManager.playBgm('adventure');
@@ -147,6 +149,8 @@ export const AppShell: React.FC = () => {
 
   const handleBack = () => {
     if (screen === 'MISSION_SELECTION') {
+      navigateTo('WORLD_MAP');
+    } else if (screen === 'ADVENTURE_MAP') {
       navigateTo('WORLD_MAP');
     } else if (screen === 'MATH_ARENA') {
       navigateTo('MISSION_SELECTION');
@@ -280,6 +284,19 @@ export const AppShell: React.FC = () => {
             onHome={handleHome}
             onOpenSettings={() => setShowParentDashboard(true)}
             totalStars={totalStars}
+            rightAddon={
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playTap();
+                  navigateTo('ADVENTURE_MAP');
+                }}
+                className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:brightness-110 active:scale-95 text-white font-comic font-black text-xs rounded-xl shadow cursor-pointer transition-all flex items-center gap-1.5"
+                title="Khám phá 6 Vùng Đất & 6 Chương Cốt Truyện"
+              >
+                <span>📖 6 Vùng & Cốt Truyện</span>
+              </button>
+            }
           />
 
           {/* PHASER 3 GAME CANVAS CONTAINER */}
@@ -287,6 +304,24 @@ export const AppShell: React.FC = () => {
             <PhaserGameContainer />
           </div>
         </div>
+      )}
+
+      {/* 4.2 BẢN ĐỒ PHIÊU LƯU 6 VÙNG ĐẤT & CỐT TRUYỆN 6 CHƯƠNG (PHASE 8) */}
+      {screen === 'ADVENTURE_MAP' && (
+        <AdventureWorldMap
+          onBack={() => navigateTo('WORLD_MAP')}
+          onHome={handleHome}
+          totalStars={totalStars}
+          onOpenParentDashboard={() => setShowParentDashboard(true)}
+          onSelectRegion={(reg) => {
+            if (reg.id === 'castle') {
+              navigateTo('ROYAL_CASTLE');
+            } else {
+              setActiveZoneId(Math.min(5, Math.max(1, reg.numericId - 1 || 1)));
+              navigateTo('MISSION_SELECTION');
+            }
+          }}
+        />
       )}
 
       {/* 5. MÀN HÌNH CHỌN NHIỆM VỤ (MISSION SELECTION) */}
