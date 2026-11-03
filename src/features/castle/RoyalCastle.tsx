@@ -1,13 +1,16 @@
 // src/features/castle/RoyalCastle.tsx
 // Lâu Đài Hoàng Gia (Royal Castle) - Ngai vàng, Nữ hoàng Nhi Mami, Khu giao nhiệm vụ & Trao thưởng
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Crown, Sparkles, Award, ArrowRight, Volume2, Gift, CheckCircle } from 'lucide-react';
 import { NavigationHeader } from '../../components/NavigationHeader';
 import { QueenNhiMamiAvatar } from '../character/QueenNhiMamiAvatar';
 import { RonieAvatar } from '../character/RonieAvatar';
 import { soundManager } from '../../services/audio/AudioManager';
 import { ALL_MISSIONS_LIST, type IMissionConfig } from '../../mission-engine';
+import { RoyalRewardModal } from '../rewards/RoyalRewardModal';
+import { RewardEngine } from '../rewards/RewardEngine';
+import { REWARD_ITEMS_CATALOG } from '../rewards/rewardCatalog';
 
 interface RoyalCastleProps {
   onBack: () => void;
@@ -16,6 +19,8 @@ interface RoyalCastleProps {
   onSelectMissionConfig?: (config: IMissionConfig) => void;
   onOpenToyRoom: () => void;
   totalStars?: number;
+  pendingRewardMission?: IMissionConfig | null;
+  onRewardClaimed?: () => void;
 }
 
 export const RoyalCastle: React.FC<RoyalCastleProps> = ({
@@ -25,9 +30,34 @@ export const RoyalCastle: React.FC<RoyalCastleProps> = ({
   onSelectMissionConfig,
   onOpenToyRoom,
   totalStars = 12,
+  pendingRewardMission,
+  onRewardClaimed,
 }) => {
-  const [activeTab, setActiveTab] = useState<'quests' | 'rewards'>('quests');
+  const [activeTab, setActiveTab] = useState<'quests' | 'rewards'>(
+    pendingRewardMission ? 'rewards' : 'quests'
+  );
   const [claimedReward, setClaimedReward] = useState<boolean>(false);
+  const [showRewardModal, setShowRewardModal] = useState<boolean>(false);
+  const [activeRewardItem, setActiveRewardItem] = useState(
+    pendingRewardMission
+      ? RewardEngine.resolveRewardForMission(pendingRewardMission.id)
+      : REWARD_ITEMS_CATALOG.costume_star_cloak
+  );
+
+  useEffect(() => {
+    if (pendingRewardMission) {
+      const item = RewardEngine.resolveRewardForMission(pendingRewardMission.id);
+      setActiveRewardItem(item);
+      setShowRewardModal(true);
+      RewardEngine.claimMissionReward(
+        pendingRewardMission.id,
+        pendingRewardMission.reward.exp,
+        4
+      ).then(() => {
+        if (onRewardClaimed) onRewardClaimed();
+      });
+    }
+  }, [pendingRewardMission]);
 
   const queenMessage =
     activeTab === 'quests'
@@ -39,9 +69,20 @@ export const RoyalCastle: React.FC<RoyalCastleProps> = ({
     soundManager.speakVietnamese(queenMessage);
   };
 
-  const handleClaimReward = () => {
+  const handleClaimReward = async () => {
     soundManager.playCelebration();
+    const item = pendingRewardMission
+      ? RewardEngine.resolveRewardForMission(pendingRewardMission.id)
+      : REWARD_ITEMS_CATALOG.costume_star_cloak;
+    setActiveRewardItem(item);
+    setShowRewardModal(true);
     setClaimedReward(true);
+    await RewardEngine.claimMissionReward(
+      pendingRewardMission?.id || 'castle_reward_special',
+      pendingRewardMission?.reward.exp || 150,
+      4
+    );
+    if (onRewardClaimed) onRewardClaimed();
   };
 
   return (
@@ -272,6 +313,21 @@ export const RoyalCastle: React.FC<RoyalCastleProps> = ({
           </div>
         </div>
       </main>
+
+      {/* MODAL TRAO THƯỞNG HOÀNG GIA (PHASE 5) */}
+      {showRewardModal && (
+        <RoyalRewardModal
+          rewardItem={activeRewardItem}
+          xpGained={pendingRewardMission?.reward.exp || 150}
+          didLevelUp={false}
+          newLevel={2}
+          onGoToToyRoom={() => {
+            setShowRewardModal(false);
+            onOpenToyRoom();
+          }}
+          onGoToCastle={() => setShowRewardModal(false)}
+        />
+      )}
     </div>
   );
 };

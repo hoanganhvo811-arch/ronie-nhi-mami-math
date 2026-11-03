@@ -14,6 +14,7 @@ import { VisualMathQuiz } from '../features/math-engine/VisualMathQuiz';
 import { MissionArena } from '../features/mission-gameplay/MissionArena';
 import type { IMissionConfig } from '../mission-engine';
 import { RewardModal } from '../features/rewards/RewardModal';
+import { DefeatEncouragementModal } from '../features/rewards/DefeatEncouragementModal';
 import { ParentDashboardModal } from '../features/parent-dashboard/ParentDashboardModal';
 import { CharacterShowcaseModal } from '../features/character/CharacterShowcaseModal';
 import { NavigationHeader } from '../components/NavigationHeader';
@@ -44,6 +45,8 @@ export const AppShell: React.FC = () => {
   const [activeStageId, setActiveStageId] = useState<number>(1);
   const [currentQuestion, setCurrentQuestion] = useState<IMathQuestion | null>(null);
   const [activeMissionConfig, setActiveMissionConfig] = useState<IMissionConfig | null>(null);
+  const [pendingRewardMission, setPendingRewardMission] = useState<IMissionConfig | null>(null);
+  const [showDefeatComfort, setShowDefeatComfort] = useState<boolean>(false);
 
   // Khởi tạo cơ sở dữ liệu Dexie khi ứng dụng khởi chạy
   useEffect(() => {
@@ -213,6 +216,8 @@ export const AppShell: React.FC = () => {
           onSelectMissionConfig={handleStartMissionConfig}
           onOpenToyRoom={() => navigateTo('TOY_ROOM')}
           totalStars={totalStars}
+          pendingRewardMission={pendingRewardMission}
+          onRewardClaimed={() => setPendingRewardMission(null)}
         />
       )}
 
@@ -290,7 +295,10 @@ export const AppShell: React.FC = () => {
       {screen === 'MISSION_ARENA' && activeMissionConfig && (
         <MissionArena
           config={activeMissionConfig}
-          onReturnToCastle={() => navigateTo('ROYAL_CASTLE')}
+          onReturnToCastle={() => {
+            setPendingRewardMission(activeMissionConfig);
+            navigateTo('ROYAL_CASTLE');
+          }}
           onReturnToMissions={() => navigateTo('MISSION_SELECTION')}
         />
       )}
@@ -303,6 +311,26 @@ export const AppShell: React.FC = () => {
           zoneTitle={activeZone.title}
           onNextStage={handleNextStage}
           onReturnToMap={handleReturnToMissions}
+        />
+      )}
+
+      {/* MODAL ĐỘNG VIÊN AN ỦI CỦA NỮ HOÀNG KHI THẤT BẠI (PHASE 5) */}
+      {showDefeatComfort && (
+        <DefeatEncouragementModal
+          onRetry={() => {
+            setShowDefeatComfort(false);
+            if (activeMissionConfig) {
+              navigateTo('MISSION_ARENA', true);
+            }
+          }}
+          onChooseEasier={() => {
+            setShowDefeatComfort(false);
+            navigateTo('MISSION_SELECTION');
+          }}
+          onGoToToyRoom={() => {
+            setShowDefeatComfort(false);
+            navigateTo('TOY_ROOM');
+          }}
         />
       )}
 

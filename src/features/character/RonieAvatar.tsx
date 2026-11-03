@@ -3,6 +3,7 @@
 
 import React from 'react';
 import type { RonieAnimationState } from '../../types/character';
+import type { IEquippedCostumes } from '../../types/rewards';
 
 interface RonieAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
@@ -10,6 +11,7 @@ interface RonieAvatarProps {
   className?: string;
   showLabel?: boolean;
   variant?: 'vector' | 'photo';
+  costumes?: IEquippedCostumes;
 }
 
 export const RonieAvatar: React.FC<RonieAvatarProps> = ({
@@ -18,6 +20,7 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
   className = '',
   showLabel = false,
   variant = 'vector',
+  costumes,
 }) => {
   // Chuẩn hóa trạng thái tương thích ngược
   const normalizedState: RonieAnimationState =
@@ -123,6 +126,31 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
             <div className="absolute -top-1 -right-2 text-xl animate-ping pointer-events-none">
               💥
             </div>
+          )}
+
+          {/* TRANG BỊ TRANG PHỤC THỜI TRANG ĐƯỢC MẶC (PHASE 5) */}
+          {costumes?.hat && (
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-2xl animate-bounce pointer-events-none z-30 drop-shadow-md">
+              👑
+            </div>
+          )}
+          {costumes?.cloak && (
+            <div className="absolute -top-1 -left-2 text-xl animate-pulse pointer-events-none z-30 drop-shadow-md">
+              🌟
+            </div>
+          )}
+          {costumes?.mask && (
+            <div className="absolute top-2 right-0 text-sm bg-rose-600/80 p-0.5 rounded-full text-white pointer-events-none z-30 shadow-sm">
+              🎭
+            </div>
+          )}
+          {costumes?.boots && (
+            <div className="absolute -bottom-2 right-0 text-base animate-bounce pointer-events-none z-30">
+              ⚡
+            </div>
+          )}
+          {costumes?.suit && (
+            <div className="absolute inset-0 border-3 border-amber-300 rounded-full animate-pulse pointer-events-none z-20 shadow-lg shadow-amber-400/40" />
           )}
         </div>
       ) : (

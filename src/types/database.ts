@@ -13,8 +13,43 @@ export type MathTopicKey =
   | 'clock_reading'         // Xem đồng hồ kim đúng giờ
   | 'numbers_to_100';       // Số tròn chục và phép tính tới 100 không nhớ
 
-export type ItemType = 'costume' | 'badge' | 'trophy';
+export type ItemType = 'toy' | 'candy' | 'badge' | 'costume' | 'trophy';
 export type QuestStatus = 'active' | 'completed' | 'claimed';
+export type CostumeSlot = 'cloak' | 'mask' | 'boots' | 'hat' | 'suit';
+
+export interface IEquippedCostumes {
+  cloak?: string;
+  mask?: string;
+  boots?: string;
+  hat?: string;
+  suit?: string;
+}
+
+export interface IClaimedRewardRecord {
+  id: string; // `${profileId}_${missionId}_${rewardItemId}`
+  profileId: string;
+  missionId: string;
+  rewardItemId: string;
+  claimedAt: number;
+}
+
+export interface IRoomDecorationRecord {
+  profileId: string;
+  shelfSlots: (string | null)[];
+  wallpaperColor: string;
+  carpetColor: string;
+  updatedAt: number;
+}
+
+export interface IProgressionRecord {
+  profileId: string;
+  xp: number;
+  level: number;
+  totalMissions: number;
+  totalCorrect: number;
+  achievements: string[];
+  updatedAt: number;
+}
 
 export interface IPlayerProfile {
   id: string;
