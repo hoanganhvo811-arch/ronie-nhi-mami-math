@@ -14,6 +14,7 @@ import {
 import type { IMissionConfig, IMissionRunState } from '../../mission-engine/types';
 import { MissionEngine } from '../../mission-engine/MissionEngine';
 import { soundManager } from '../../services/audio/AudioManager';
+import { VoiceSystem } from '../../services/audio/VoiceSystem';
 import { QueenNhiMamiAvatar } from '../character/QueenNhiMamiAvatar';
 import { RonieAvatar } from '../character/RonieAvatar';
 
@@ -56,11 +57,11 @@ export const MissionArena: React.FC<MissionArenaProps> = ({
     return () => unsubscribe();
   }, [engine]);
 
-  // Đọc đề bài bằng giọng tiếng Việt
+  // Đọc đề bài bằng giọng tiếng Việt (Phase 6: không spoil đáp án & chống spam)
   const handleSpeakQuestion = () => {
     if (runState.currentQuestion) {
       soundManager.playTap();
-      soundManager.speakVietnamese(runState.currentQuestion.questionText);
+      VoiceSystem.narrateQuestion(runState.currentQuestion.questionText);
     }
   };
 
@@ -69,7 +70,7 @@ export const MissionArena: React.FC<MissionArenaProps> = ({
     soundManager.playTap();
     setShowHint((prev) => !prev);
     if (!showHint && runState.currentQuestion?.hint) {
-      soundManager.speakVietnamese(runState.currentQuestion.hint.text);
+      VoiceSystem.speakCharacter('queen', runState.currentQuestion.hint.text);
     }
   };
 

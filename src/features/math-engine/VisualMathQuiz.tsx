@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Volume2, HelpCircle, CheckCircle2, Sparkles, RefreshCw } from 'lucide-react';
 import type { IMathQuestion } from '../../types/game';
 import { soundManager } from '../../services/audio/AudioManager';
+import { VoiceSystem } from '../../services/audio/VoiceSystem';
 import { RonieAvatar } from '../character/RonieAvatar';
 import { QueenNhiMamiAvatar } from '../character/QueenNhiMamiAvatar';
 import { getRandomPhrase } from '../dialogue/dialogueLibrary';
@@ -30,16 +31,14 @@ export const VisualMathQuiz: React.FC<VisualMathQuizProps> = ({ question, onAnsw
     setIsCorrect(correct);
 
     if (correct) {
-      soundManager.playCorrect();
       const cheer = getRandomPhrase('answer_correct');
-      soundManager.speakDialogue(cheer, 1.15, 0.95);
+      VoiceSystem.givePositiveFeedback(cheer);
       setTimeout(() => {
         onAnswer(true);
       }, 1200);
     } else {
-      soundManager.playTryAgain();
       const comfort = getRandomPhrase('answer_wrong');
-      soundManager.speakDialogue(comfort, 1.05, 0.9);
+      VoiceSystem.giveEncouragingFeedback(comfort);
       setTimeout(() => {
         setIsLocked(false);
         setIsCorrect(null);
@@ -51,14 +50,14 @@ export const VisualMathQuiz: React.FC<VisualMathQuizProps> = ({ question, onAnsw
 
   const handleSpeakQuestion = () => {
     soundManager.playTap();
-    soundManager.speakVietnamese(question.questionText);
+    VoiceSystem.narrateQuestion(question.questionText);
   };
 
   const handleToggleHint = () => {
     soundManager.playTap();
     setShowHint((prev) => !prev);
     if (!showHint) {
-      soundManager.speakVietnamese(question.hint);
+      VoiceSystem.speakCharacter('queen', question.hint);
     }
   };
 

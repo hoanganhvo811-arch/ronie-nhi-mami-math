@@ -83,6 +83,43 @@ export const AppShell: React.FC = () => {
     };
   }, [screen]);
 
+  // Quản lý BGM đa kênh tự động theo bối cảnh màn hình (Phase 6)
+  useEffect(() => {
+    switch (screen) {
+      case 'ROYAL_CASTLE':
+      case 'MAIN_MENU':
+        soundManager.playBgm('castle');
+        break;
+      case 'WORLD_MAP':
+      case 'MISSION_SELECTION':
+      case 'MATH_ARENA':
+        soundManager.playBgm('adventure');
+        break;
+      case 'MISSION_ARENA':
+        soundManager.playBgm('battle');
+        break;
+      case 'TOY_ROOM':
+        soundManager.playBgm('toy_room');
+        break;
+      case 'SPLASH':
+      default:
+        soundManager.stopBgm();
+        break;
+    }
+
+    return () => {
+      // Dừng giọng nói khi chuyển màn hình để tránh chồng âm
+      soundManager.stopDialogueVoice();
+    };
+  }, [screen]);
+
+  // Dọn dẹp tài nguyên âm thanh khi unmount
+  useEffect(() => {
+    return () => {
+      soundManager.cleanup();
+    };
+  }, []);
+
   // Hàm chuyển đổi màn hình có hiệu ứng chuyển cảnh
   const navigateTo = (targetScreen: GameScreen, withLoading: boolean = false) => {
     setPreviousScreen(screen);

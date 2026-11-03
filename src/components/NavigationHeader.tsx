@@ -2,9 +2,9 @@
 // Thanh điều hướng dùng chung chuẩn Responsive, Touch-friendly cho trẻ 6-7 tuổi
 
 import React from 'react';
-import { Home, ArrowLeft, Volume2, VolumeX, Shield, Star } from 'lucide-react';
+import { Home, ArrowLeft, Star, Shield } from 'lucide-react';
 import { soundManager } from '../services/audio/AudioManager';
-import { RonieAvatar } from '../features/character/RonieAvatar';
+import { AudioControlBar } from './AudioControlBar';
 
 interface NavigationHeaderProps {
   title: string;
@@ -25,12 +25,6 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
   totalStars = 12,
   rightAddon,
 }) => {
-  const [isMuted, setIsMuted] = React.useState<boolean>(soundManager.getMuted());
-
-  const handleToggleSound = () => {
-    const muted = soundManager.toggleMute();
-    setIsMuted(muted);
-  };
 
   return (
     <header className="w-full flex items-center justify-between p-3 md:p-4 bg-white/40 backdrop-blur-md border-b-2 border-white/60 shadow-sm z-30 select-none">
@@ -88,19 +82,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
 
         {rightAddon}
 
-        {/* NÚT ÂM THANH */}
-        <button
-          type="button"
-          onClick={handleToggleSound}
-          className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-700 border-2 border-slate-200 shadow-md flex items-center justify-center transition-all transform active:scale-90 cursor-pointer"
-          title="Bật/Tắt âm thanh"
-        >
-          {isMuted ? (
-            <VolumeX className="w-6 h-6 text-rose-500" />
-          ) : (
-            <Volume2 className="w-6 h-6 text-emerald-600" />
-          )}
-        </button>
+        {/* THANH ĐIỀU KHIỂN ÂM THANH ĐA TẦNG CHO BÉ & PHỤ HUYNH (PHASE 6) */}
+        <AudioControlBar />
 
         {/* NÚT PHỤ HUYNH */}
         {onOpenSettings && (

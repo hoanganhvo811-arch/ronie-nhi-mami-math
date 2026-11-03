@@ -2,9 +2,10 @@
 // Màn hình chính (Main Menu) Lâu đài trung tâm, Ronie nổi bật & 5 Nút Lớn cho trẻ 6-7 tuổi
 
 import React from 'react';
-import { Compass, Sparkles, Shirt, User, BookOpen, Settings, Crown, Volume2, VolumeX, Star } from 'lucide-react';
+import { Compass, Sparkles, Shirt, User, BookOpen, Settings, Crown, Star } from 'lucide-react';
 import { RonieAvatar } from '../character/RonieAvatar';
 import { soundManager } from '../../services/audio/AudioManager';
+import { AudioControlBar } from '../../components/AudioControlBar';
 
 interface MainMenuProps {
   onStartAdventure: () => void;
@@ -27,13 +28,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenShowcase,
   totalStars = 12,
 }) => {
-  const [isMuted, setIsMuted] = React.useState<boolean>(soundManager.getMuted());
-
-  const handleToggleSound = () => {
-    const muted = soundManager.toggleMute();
-    setIsMuted(muted);
-  };
-
   return (
     <div className="relative w-full h-full min-h-screen flex flex-col justify-between p-4 md:p-6 bg-gradient-to-b from-sky-200 via-pink-100 to-amber-50 overflow-y-auto select-none">
       {/* TRANG TRÍ ĐỒ HỌA MÂY & ÁNH NẮNG PASTEL */}
@@ -94,14 +88,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             <span className="hidden sm:inline">Lâu Đài Nữ Hoàng</span>
           </button>
 
-          <button
-            type="button"
-            onClick={handleToggleSound}
-            className="p-2.5 bg-white/80 hover:bg-white text-slate-700 rounded-2xl border-2 border-slate-200 shadow-md transition-all active:scale-90 cursor-pointer"
-            title="Bật/Tắt âm thanh"
-          >
-            {isMuted ? <VolumeX className="w-5 h-5 text-rose-500" /> : <Volume2 className="w-5 h-5 text-emerald-600" />}
-          </button>
+          <AudioControlBar />
 
           <button
             type="button"

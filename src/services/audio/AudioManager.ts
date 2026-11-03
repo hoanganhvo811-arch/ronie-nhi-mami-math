@@ -1,5 +1,5 @@
 // src/services/audio/AudioManager.ts
-// Bộ quản lý âm thanh đa tầng & đa kênh (Multi-Channel Audio Manager) với Web Audio Synthesis 100% Offline
+// Bộ quản lý âm thanh đa tầng & đa kênh (Multi-Channel Audio Manager) với Web Audio Synthesis 100% Offline (Phase 6)
 
 export type AudioChannel =
   | 'dialogue'
@@ -9,6 +9,8 @@ export type AudioChannel =
   | 'sfx_button'
   | 'sfx_reward'
   | 'sfx_game_effect';
+
+export type BgmTheme = 'castle' | 'adventure' | 'battle' | 'toy_room';
 
 interface ChannelConfig {
   volume: number; // 0.0 -> 1.0
@@ -23,7 +25,7 @@ class AudioManager {
   // Cấu hình âm lượng từng kênh riêng biệt
   private channels: Record<AudioChannel, ChannelConfig> = {
     dialogue: { volume: 1.0, muted: false },
-    bgm: { volume: 0.5, muted: false },
+    bgm: { volume: 0.35, muted: false },
     sfx_success: { volume: 0.85, muted: false },
     sfx_failure: { volume: 0.7, muted: false },
     sfx_button: { volume: 0.75, muted: false },
@@ -35,6 +37,11 @@ class AudioManager {
   private activeSoundCount: number = 0;
   private readonly MAX_CONCURRENT_SFX = 3;
   private lastSoundTimestamp: number = 0;
+
+  // Quản lý BGM Synthesizer Loop
+  private currentBgmTheme: BgmTheme | null = null;
+  private bgmLoopInterval: any = null;
+  private isBgmActiveState: boolean = false;
 
   private getAudioContext(): AudioContext | null {
     if (typeof window === 'undefined') return null;
@@ -56,6 +63,12 @@ class AudioManager {
 
   public setMasterMuted(muted: boolean): void {
     this.isMasterMuted = muted;
+    if (muted) {
+      this.stopBgm();
+      this.stopDialogueVoice();
+    } else if (this.currentBgmTheme) {
+      this.playBgm(this.currentBgmTheme);
+    }
   }
 
   public getMasterMuted(): boolean {
@@ -63,17 +76,24 @@ class AudioManager {
   }
 
   public toggleMute(): boolean {
-    this.isMasterMuted = !this.isMasterMuted;
+    this.setMasterMuted(!this.isMasterMuted);
     return this.isMasterMuted;
   }
 
-  // Tương thích ngược với Phase 0/1
   public setMuted(muted: boolean): void {
     this.setMasterMuted(muted);
   }
 
   public getMuted(): boolean {
     return this.getMasterMuted();
+  }
+
+  public setMasterVolume(vol: number): void {
+    this.masterVolume = Math.max(0, Math.min(1, vol));
+  }
+
+  public getMasterVolume(): number {
+    return this.masterVolume;
   }
 
   public setChannelVolume(channel: AudioChannel, volume: number): void {
@@ -86,16 +106,30 @@ class AudioManager {
     return this.channels[channel]?.volume ?? 1.0;
   }
 
+  public setChannelMuted(channel: AudioChannel, muted: boolean): void {
+    if (this.channels[channel]) {
+      this.channels[channel].muted = muted;
+      if (channel === 'bgm' && muted) {
+        this.stopBgm();
+      } else if (channel === 'bgm' && !muted && this.currentBgmTheme) {
+        this.playBgm(this.currentBgmTheme);
+      }
+    }
+  }
+
+  public isChannelMuted(channel: AudioChannel): boolean {
+    return this.channels[channel]?.muted ?? false;
+  }
+
   private canPlaySound(channel: AudioChannel): boolean {
     if (this.isMasterMuted) return false;
     if (this.channels[channel]?.muted) return false;
 
-    // Giới hạn tránh spam click hoặc âm thanh chồng lấn quá nhanh (< 40ms)
     const now = Date.now();
-    if (now - this.lastSoundTimestamp < 40 && channel !== 'dialogue') {
+    if (now - this.lastSoundTimestamp < 40 && channel !== 'dialogue' && channel !== 'bgm') {
       return false;
     }
-    if (this.activeSoundCount >= this.MAX_CONCURRENT_SFX && channel !== 'dialogue') {
+    if (this.activeSoundCount >= this.MAX_CONCURRENT_SFX && channel !== 'dialogue' && channel !== 'bgm') {
       return false;
     }
 
@@ -209,6 +243,39 @@ class AudioManager {
       }, 200);
     } catch {
       this.activeSoundCount = Math.max(0, this.activeSoundCount - 1);
+    }
+  }
+
+  /**
+   * Âm thanh an ủi thất bại nhẹ nhàng (Defeat Comfort Sound)
+   */
+  public playDefeatComfort(): void {
+    if (!this.canPlaySound('sfx_failure')) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+
+    try {
+      const softNotes = [392.0, 349.23, 329.63, 261.63]; // G4, F4, E4, C4
+      const vol = this.masterVolume * this.channels.sfx_failure.volume * 0.1;
+
+      softNotes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.14);
+
+        gain.gain.setValueAtTime(vol, ctx.currentTime + idx * 0.14);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.14 + 0.3);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(ctx.currentTime + idx * 0.14);
+        osc.stop(ctx.currentTime + idx * 0.14 + 0.3);
+      });
+    } catch {
+      // Ignored
     }
   }
 
@@ -350,6 +417,84 @@ class AudioManager {
     }
   }
 
+  // --- HỆ THỐNG NHẠC NỀN BGM TỔNG HỢP OFFLINE (BGM SYNTHESIZER LOOPS) ---
+
+  /**
+   * Bắt đầu phát nhạc nền theo chủ đề (Lâu đài, Phiêu lưu, Chiến đấu, Phòng đồ chơi)
+   */
+  public playBgm(theme: BgmTheme): void {
+    if (this.currentBgmTheme === theme && this.isBgmActiveState) return;
+    this.stopBgm();
+    this.currentBgmTheme = theme;
+
+    if (this.isMasterMuted || this.channels.bgm.muted) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+
+    this.isBgmActiveState = true;
+
+    // Các mẫu hợp âm và nốt nhạc dịu nhẹ theo chủ đề
+    const melodyMap: Record<BgmTheme, number[]> = {
+      castle: [261.63, 329.63, 392.0, 523.25, 440.0, 392.0, 329.63], // Lâu đài quý phái
+      adventure: [392.0, 440.0, 523.25, 587.33, 659.25, 523.25], // Phiêu lưu rộn ràng
+      battle: [220.0, 330.0, 440.0, 493.88, 587.33, 440.0], // Chiến đấu vui nhộn
+      toy_room: [523.25, 659.25, 783.99, 880.0, 1046.5, 783.99], // Hộp nhạc ngọt ngào
+    };
+
+    const notes = melodyMap[theme] || melodyMap.castle;
+    let step = 0;
+
+    const playNextNote = () => {
+      if (!this.isBgmActiveState || this.isMasterMuted || this.channels.bgm.muted) return;
+      try {
+        const freq = notes[step % notes.length];
+        step++;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const vol = this.masterVolume * this.channels.bgm.volume * 0.06;
+
+        osc.type = theme === 'toy_room' ? 'sine' : theme === 'castle' ? 'triangle' : 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        gain.gain.setValueAtTime(vol, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.36);
+      } catch {
+        // Ignored
+      }
+    };
+
+    playNextNote();
+    this.bgmLoopInterval = setInterval(playNextNote, 400);
+  }
+
+  /**
+   * Tắt hoàn toàn nhạc nền BGM
+   */
+  public stopBgm(): void {
+    this.isBgmActiveState = false;
+    if (this.bgmLoopInterval) {
+      clearInterval(this.bgmLoopInterval);
+      this.bgmLoopInterval = null;
+    }
+  }
+
+  public isBgmActive(): boolean {
+    return this.isBgmActiveState && !this.channels.bgm.muted && !this.isMasterMuted;
+  }
+
+  public toggleBgm(): boolean {
+    const newMuted = !this.channels.bgm.muted;
+    this.setChannelMuted('bgm', newMuted);
+    return !newMuted;
+  }
+
   // --- HỆ THỐNG GIỌNG ĐỌC HỘI THOẠI (DIALOGUE VOICE ENGINE) ---
 
   /**
@@ -364,7 +509,7 @@ class AudioManager {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'vi-VN';
       utterance.rate = rate; // Tốc độ nói phù hợp trẻ em
-      utterance.pitch = pitch; // Âm sắc trầm bổng riêng của từng nhân vật
+      utterance.pitch = pitch; // Âm sắc riêng của từng nhân vật
       utterance.volume = this.masterVolume * this.channels.dialogue.volume;
       window.speechSynthesis.speak(utterance);
     } catch {
@@ -372,7 +517,6 @@ class AudioManager {
     }
   }
 
-  // Tương thích ngược
   public speakVietnamese(text: string): void {
     this.speakDialogue(text, 1.1, 0.9);
   }
@@ -381,6 +525,15 @@ class AudioManager {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
+  }
+
+  /**
+   * Dọn dẹp tài nguyên âm thanh khi chuyển cảnh hoặc unmount
+   */
+  public cleanup(): void {
+    this.stopBgm();
+    this.stopDialogueVoice();
+    this.activeSoundCount = 0;
   }
 }
 
