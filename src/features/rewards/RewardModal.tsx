@@ -86,9 +86,9 @@ export const RewardModal: React.FC<RewardModalProps> = ({
 
         {/* HOẠT CẢNH RONIE VÀ NỮ HOÀNG ĂN MỪNG */}
         <div className="flex items-center justify-center gap-6 my-2 p-3 bg-slate-800/80 rounded-2xl border border-slate-700 w-full">
-          <RonieAvatar size="md" state="victory" />
+          <RonieAvatar size="md" state="victory" variant="photo" />
           <div className="text-3xl animate-bounce">💖</div>
-          <QueenNhiMamiAvatar size="md" state="rewarding" />
+          <QueenNhiMamiAvatar size="md" state="rewarding" variant="photo" />
         </div>
 
         {/* LỜI KHEN NGỢI CỦA NỮ HOÀNG */}

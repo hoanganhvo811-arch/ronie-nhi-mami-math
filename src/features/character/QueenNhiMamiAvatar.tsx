@@ -19,7 +19,7 @@ export const QueenNhiMamiAvatar: React.FC<QueenNhiMamiAvatarProps> = ({
   speaking = false,
   className = '',
   showLabel = false,
-  variant = 'vector',
+  variant = 'photo',
 }) => {
   // Chuẩn hóa trạng thái nếu truyền speaking cũ
   const currentState: QueenAnimationState = speaking && state === 'idle' ? 'talking' : state;
@@ -65,7 +65,7 @@ export const QueenNhiMamiAvatar: React.FC<QueenNhiMamiAvatarProps> = ({
           <img
             src="/assets/queen-nhi-mami-official.png"
             alt="Nữ Hoàng Nhi Mami"
-            className="w-full h-full object-contain filter drop-shadow-xl rounded-2xl"
+            className="w-full h-full object-contain filter drop-shadow-2xl"
             loading="lazy"
           />
 

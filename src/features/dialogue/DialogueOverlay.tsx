@@ -37,9 +37,9 @@ export const DialogueOverlay: React.FC<DialogueOverlayProps> = ({
       {/* AVATAR NHÂN VẬT THOẠI */}
       <div className="flex-shrink-0 flex flex-col items-center">
         {isQueen ? (
-          <QueenNhiMamiAvatar size="lg" speaking={true} />
+          <QueenNhiMamiAvatar size="lg" speaking={true} variant="photo" />
         ) : (
-          <RonieAvatar size="lg" state="thinking" />
+          <RonieAvatar size="lg" state="thinking" variant="photo" />
         )}
         <span
           className={`mt-1 font-black text-xs md:text-sm px-3 py-0.5 rounded-full shadow-sm ${

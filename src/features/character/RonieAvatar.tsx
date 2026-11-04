@@ -19,7 +19,7 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
   state = 'idle',
   className = '',
   showLabel = false,
-  variant = 'vector',
+  variant = 'photo',
   costumes,
 }) => {
   // Chuẩn hóa trạng thái tương thích ngược
