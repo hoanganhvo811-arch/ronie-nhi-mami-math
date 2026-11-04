@@ -8,3 +8,4 @@ export * from './QuestionValidator';
 export * from './QuestionGenerator';
 export * from './EvaluationEngine';
 export * from './HintEngine';
+export * from './adaptive';
