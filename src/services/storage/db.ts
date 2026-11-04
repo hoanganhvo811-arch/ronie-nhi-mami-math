@@ -571,32 +571,46 @@ export async function saveStageProgress(
   await db.profiles.update(profileId, { lastPlayedAt: Date.now() });
 }
 
+// Bộ nhớ tạm phòng ngừa khi chạy trong môi trường không có IndexedDB (như SSR / Vitest JSDOM)
+const inMemoryParentSettings: Record<string, IParentSettings> = {};
+export const inMemoryMathSessions: Record<string, IMathSession[]> = {};
+
 /**
  * Ghi nhận phiên học toán để phân tích năng lực phụ huynh
  */
 export async function recordMathSession(
   profileId: string,
-  topicKey: MathTopicKey,
+  topicKey: MathTopicKey | string,
   totalQuestions: number,
   correctQuestions: number,
   hintUsedCount: number,
   durationSeconds: number
 ): Promise<void> {
   const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-  await db.mathSessions.add({
+  const sessionItem: IMathSession = {
     id: sessionId,
     profileId,
-    topicKey,
+    topicKey: topicKey as MathTopicKey,
     totalQuestions,
     correctQuestions,
     hintUsedCount,
     durationSeconds,
     timestamp: Date.now(),
-  });
-}
+  };
 
-// Bộ nhớ tạm phòng ngừa khi chạy trong môi trường không có IndexedDB (như SSR / Vitest JSDOM)
-const inMemoryParentSettings: Record<string, IParentSettings> = {};
+  if (!inMemoryMathSessions[profileId]) {
+    inMemoryMathSessions[profileId] = [];
+  }
+  inMemoryMathSessions[profileId].unshift(sessionItem);
+
+  if (typeof indexedDB !== 'undefined') {
+    try {
+      await db.mathSessions.add(sessionItem);
+    } catch {
+      // Ignored in test environment
+    }
+  }
+}
 
 /**
  * Lấy cài đặt phụ huynh hiện tại (hoặc trả về mặc định nếu chưa lưu) (Phase 7)
@@ -610,6 +624,9 @@ export async function getParentSettings(
     dailyLimitMinutes: 20,
     isTimeLimitEnabled: true,
     breakReminderMinutes: 15,
+    sessionLimitMinutes: 15,
+    enableAdvancedQuestions: true,
+    enableTimedChallenges: true,
     soundEffects: true,
     musicEnabled: true,
     difficultyBias: 'auto',
@@ -629,6 +646,8 @@ export async function getParentSettings(
       questionsPerMission: 5,
       difficulty: 'standard',
       maxMistakesAllowed: 3,
+      enableAdvancedQuestions: true,
+      enableTimedChallenges: true,
     },
   };
 
@@ -690,35 +709,37 @@ export async function getMathSessions(
   profileId: string = DEFAULT_PROFILE_ID,
   timeframe: TimeframeFilter = 'all_time'
 ): Promise<IMathSession[]> {
-  if (typeof indexedDB === 'undefined') {
-    return [];
-  }
-  try {
-    const allSessions = await db.mathSessions.where('profileId').equals(profileId).toArray();
-
-    if (timeframe === 'all_time') {
-      return allSessions.sort((a, b) => b.timestamp - a.timestamp);
+  let allSessions: IMathSession[] = [];
+  if (typeof indexedDB !== 'undefined') {
+    try {
+      allSessions = await db.mathSessions.where('profileId').equals(profileId).toArray();
+    } catch {
+      allSessions = inMemoryMathSessions[profileId] || [];
     }
-
-    const now = Date.now();
-    let cutoffTimestamp = 0;
-
-    if (timeframe === 'today') {
-      const startOfToday = new Date();
-      startOfToday.setHours(0, 0, 0, 0);
-      cutoffTimestamp = startOfToday.getTime();
-    } else if (timeframe === '7_days') {
-      cutoffTimestamp = now - 7 * 24 * 60 * 60 * 1000;
-    } else if (timeframe === '30_days') {
-      cutoffTimestamp = now - 30 * 24 * 60 * 60 * 1000;
-    }
-
-    return allSessions
-      .filter((s) => s.timestamp >= cutoffTimestamp)
-      .sort((a, b) => b.timestamp - a.timestamp);
-  } catch {
-    return [];
+  } else {
+    allSessions = inMemoryMathSessions[profileId] || [];
   }
+
+  if (timeframe === 'all_time') {
+    return allSessions.sort((a, b) => b.timestamp - a.timestamp);
+  }
+
+  const now = Date.now();
+  let cutoffTimestamp = 0;
+
+  if (timeframe === 'today') {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    cutoffTimestamp = startOfToday.getTime();
+  } else if (timeframe === '7_days') {
+    cutoffTimestamp = now - 7 * 24 * 60 * 60 * 1000;
+  } else if (timeframe === '30_days') {
+    cutoffTimestamp = now - 30 * 24 * 60 * 60 * 1000;
+  }
+
+  return allSessions
+    .filter((s) => s.timestamp >= cutoffTimestamp)
+    .sort((a, b) => b.timestamp - a.timestamp);
 }
 
 /**
@@ -928,9 +949,14 @@ export async function resetProfileData(
   }
 
   delete inMemoryParentSettings[profileId];
+  delete inMemoryMathSessions[profileId];
 
   // Tạo lại hồ sơ khởi đầu sạch
-  await initializeDefaultProfile();
+  try {
+    await initializeDefaultProfile();
+  } catch {
+    // Ignored in test environment without full IndexedDB
+  }
 }
 
 // ==========================================

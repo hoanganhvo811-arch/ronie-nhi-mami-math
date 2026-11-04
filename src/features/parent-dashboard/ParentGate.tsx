@@ -2,22 +2,27 @@
 // Cổng xác thực người lớn an toàn (Phép tính 2 chữ số hoặc Nhấn giữ 3 giây) (Phase 7)
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ShieldCheck, Lock, RefreshCw, Hand, Calculator, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Lock, RefreshCw, Hand, Calculator, KeyRound, CheckCircle2 } from 'lucide-react';
 import { soundManager } from '../../services/audio/AudioManager';
 
 interface ParentGateProps {
   onUnlock: () => void;
   onCancel: () => void;
+  pinCode?: string;
 }
 
-export const ParentGate: React.FC<ParentGateProps> = ({ onUnlock, onCancel }) => {
-  const [mode, setMode] = useState<'MATH' | 'HOLD'>('MATH');
+export const ParentGate: React.FC<ParentGateProps> = ({ onUnlock, onCancel, pinCode = '2018' }) => {
+  const [mode, setMode] = useState<'MATH' | 'PIN' | 'HOLD'>('MATH');
 
   // 1. Phép tính người lớn ngẫu nhiên (Adult Math Challenge)
   const [numA, setNumA] = useState<number>(() => Math.floor(Math.random() * 25) + 20);
   const [numB, setNumB] = useState<number>(() => Math.floor(Math.random() * 25) + 15);
   const [gateAnswer, setGateAnswer] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
+
+  // 2. Nhập mã PIN bảo mật
+  const [pinInput, setPinInput] = useState<string>('');
+  const [pinError, setPinError] = useState<boolean>(false);
 
   const refreshMathProblem = () => {
     soundManager.playTap();
@@ -37,6 +42,18 @@ export const ParentGate: React.FC<ParentGateProps> = ({ onUnlock, onCancel }) =>
       soundManager.playTryAgain();
       setIsError(true);
       setGateAnswer('');
+    }
+  };
+
+  const handleVerifyPin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pinInput.trim() === pinCode.trim()) {
+      soundManager.playCorrect();
+      onUnlock();
+    } else {
+      soundManager.playTryAgain();
+      setPinError(true);
+      setPinInput('');
     }
   };
 
@@ -94,7 +111,7 @@ export const ParentGate: React.FC<ParentGateProps> = ({ onUnlock, onCancel }) =>
         Khu vực bảo mật dành riêng cho cha mẹ. Vui lòng hoàn thành thao tác để tiếp tục:
       </p>
 
-      {/* CHUYỂN ĐỔI CHẾ ĐỘ XÁC THỰC: TÍNH TOÁN HOẶC GIỮ NÚT */}
+      {/* CHUYỂN ĐỔI CHẾ ĐỘ XÁC THỰC: TÍNH TOÁN, MÃ PIN HOẶC GIỮ NÚT */}
       <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700 mb-5">
         <button
           type="button"
@@ -108,6 +125,20 @@ export const ParentGate: React.FC<ParentGateProps> = ({ onUnlock, onCancel }) =>
         >
           <Calculator className="w-4 h-4" />
           <span>Phép Tính</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            soundManager.playTap();
+            setMode('PIN');
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-comic font-black flex items-center gap-1.5 transition-all cursor-pointer ${
+            mode === 'PIN' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <KeyRound className="w-4 h-4" />
+          <span>Mã PIN</span>
         </button>
 
         <button
@@ -154,6 +185,47 @@ export const ParentGate: React.FC<ParentGateProps> = ({ onUnlock, onCancel }) =>
           {isError && (
             <span className="text-xs font-comic font-bold text-rose-400 animate-shake">
               Kết quả chưa chính xác, xin vui lòng tính lại nhé!
+            </span>
+          )}
+
+          <div className="flex gap-2 w-full mt-1">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-comic font-bold text-xs rounded-2xl cursor-pointer"
+            >
+              Đóng
+            </button>
+            <button
+              type="submit"
+              className="flex-2 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:brightness-110 active:scale-95 text-white font-comic font-black text-sm rounded-2xl shadow-lg cursor-pointer transition-all"
+            >
+              Xác Nhận Mở
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* CHẾ ĐỘ 2: MÃ PIN */}
+      {mode === 'PIN' && (
+        <form onSubmit={handleVerifyPin} className="w-full max-w-xs flex flex-col items-center gap-3">
+          <div className="w-full text-sm font-comic font-bold text-slate-300 bg-slate-800/90 py-2 px-4 rounded-xl border border-slate-700 text-center">
+            Nhập mã PIN bảo vệ phụ huynh (mặc định: <strong>{pinCode}</strong>)
+          </div>
+
+          <input
+            type="password"
+            maxLength={6}
+            value={pinInput}
+            onChange={(e) => setPinInput(e.target.value)}
+            placeholder="••••"
+            className="w-full px-4 py-3 bg-slate-950 border-2 border-slate-700 focus:border-amber-400 rounded-2xl text-center text-2xl font-mono tracking-widest text-amber-300 outline-none shadow"
+            autoFocus
+          />
+
+          {pinError && (
+            <span className="text-xs font-comic font-bold text-rose-400 animate-shake">
+              Mã PIN chưa chính xác, xin vui lòng thử lại!
             </span>
           )}
 

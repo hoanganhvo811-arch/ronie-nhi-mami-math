@@ -1,5 +1,5 @@
 // src/features/parent-dashboard/ParentDashboardModal.tsx
-// Khu vực Quản lý Phụ Huynh & Phân Tích Năng Lực Học Tập Toàn Diện (Phase 7)
+// Khu vực Quản lý Phụ Huynh & Báo Cáo Phân Tích Năng Lực Học Tập (Phase 6)
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -9,7 +9,6 @@ import {
   BarChart3,
   Download,
   Upload,
-  Volume2,
   CheckCircle2,
   BookOpen,
   Sliders,
@@ -21,6 +20,14 @@ import {
   Layers,
   Award,
   Heart,
+  TrendingUp,
+  Compass,
+  History,
+  ArrowUpRight,
+  ArrowRight,
+  Check,
+  Timer,
+  Zap,
 } from 'lucide-react';
 import { soundManager } from '../../services/audio/AudioManager';
 import { ParentGate } from './ParentGate';
@@ -37,22 +44,30 @@ import {
 } from '../../services/storage/db';
 import {
   AnalyticsEngine,
-  TOPIC_META_MAP,
+  PHASE6_TOPICS_META,
 } from './analyticsEngine';
 import { screenTimeTracker } from '../../services/time/ScreenTimeTracker';
-import type { IParentSettings, MathTopicKey, ParentDifficulty } from '../../types/database';
+import type { IParentSettings } from '../../types/database';
 import type {
   TimeframeFilter,
   IAnalyticsOverview,
-  ITopicAnalytics,
-  ILearningDiagnostics,
+  Phase6TopicKey,
+  ITopicAnalyticsPhase6,
+  ISmartLearningRecommendation,
+  IParentLearningHistoryItem,
 } from '../../types/analytics';
 
 interface ParentDashboardModalProps {
   onClose: () => void;
 }
 
-type DashboardTab = 'overview' | 'diagnostics' | 'time' | 'content' | 'backup';
+type DashboardTab =
+  | 'overview'
+  | 'topics'
+  | 'recommendations'
+  | 'settings'
+  | 'history'
+  | 'backup';
 
 export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onClose }) => {
   // Trạng thái mở khóa bảo mật phụ huynh
@@ -60,10 +75,16 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
   const [timeframe, setTimeframe] = useState<TimeframeFilter>('all_time');
 
-  // Dữ liệu phân tích
+  // Dữ liệu phân tích thực tế từ DB
   const [overview, setOverview] = useState<IAnalyticsOverview | null>(null);
-  const [topicStats, setTopicStats] = useState<ITopicAnalytics[]>([]);
-  const [diagnostics, setDiagnostics] = useState<ILearningDiagnostics | null>(null);
+  const [topicStatsPhase6, setTopicStatsPhase6] = useState<ITopicAnalyticsPhase6[]>([]);
+  const [recommendationsData, setRecommendationsData] = useState<{
+    strengths: string[];
+    needsPractice: string[];
+    recommendations: ISmartLearningRecommendation[];
+    summary: string;
+  } | null>(null);
+  const [learningHistory, setLearningHistory] = useState<IParentLearningHistoryItem[]>([]);
   const [parentSettings, setParentSettings] = useState<IParentSettings | null>(null);
 
   // Trạng thái thông báo thao tác
@@ -93,16 +114,18 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
         breakReminderMinutes: settings.breakReminderMinutes ?? 15,
       });
 
-      // Tính toán các chỉ số
+      // Tính toán các chỉ số thực tế
       const ov = AnalyticsEngine.calculateOverview(sessions, progressList, progression);
-      const topics = AnalyticsEngine.calculateTopicBreakdown(sessions);
-      const diag = AnalyticsEngine.generatePositiveDiagnostics(topics, sessions);
+      const topics6 = AnalyticsEngine.calculateTopicBreakdownPhase6(sessions);
+      const recs = AnalyticsEngine.generateSmartRecommendations(topics6, sessions);
+      const history = AnalyticsEngine.formatLearningHistory(sessions);
 
       setOverview(ov);
-      setTopicStats(topics);
-      setDiagnostics(diag);
+      setTopicStatsPhase6(topics6);
+      setRecommendationsData(recs);
+      setLearningHistory(history);
     } catch (err) {
-      console.warn('Lỗi tải dữ liệu bảng điều khiển:', err);
+      console.warn('Lỗi tải dữ liệu bảng điều khiển phụ huynh:', err);
     }
   };
 
@@ -112,34 +135,89 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
     }
   }, [isUnlocked, timeframe]);
 
-  // Cập nhật cài đặt giới hạn thời gian
+  // Thông báo phản hồi
+  const showNotice = (msg: string) => {
+    setActionSuccessMsg(msg);
+    setActionErrorMsg(null);
+    setTimeout(() => setActionSuccessMsg(null), 3000);
+  };
+
+  // Cập nhật cài đặt giới hạn thời gian chơi mỗi ngày
   const handleUpdateDailyLimit = async (minutes: number) => {
     soundManager.playTap();
     await updateParentSettings(DEFAULT_PROFILE_ID, { dailyLimitMinutes: minutes });
     screenTimeTracker.setConfig({ dailyLimitMinutes: minutes });
     await loadDashboardData();
-    showNotice('Đã lưu giới hạn thời gian chơi mỗi ngày!');
+    showNotice(`Đã thiết lập thời lượng chơi: ${minutes === 0 ? 'Không giới hạn' : `${minutes} phút/ngày`}`);
   };
 
+  // Bật/tắt giới hạn thời gian
   const handleToggleTimeLimit = async (enabled: boolean) => {
     soundManager.playTap();
     await updateParentSettings(DEFAULT_PROFILE_ID, { isTimeLimitEnabled: enabled });
     screenTimeTracker.setConfig({ isLimitEnabled: enabled });
     await loadDashboardData();
-    showNotice(enabled ? 'Đã kích hoạt giới hạn thời gian.' : 'Đã tắt giới hạn thời gian.');
+    showNotice(enabled ? 'Đã bật giới hạn thời gian chơi.' : 'Đã tắt giới hạn thời gian chơi.');
   };
 
-  // Cập nhật chủ đề nội dung học tập
-  const handleToggleTopic = async (topicKey: MathTopicKey) => {
+  // Cập nhật giới hạn mỗi phiên
+  const handleUpdateSessionLimit = async (minutes: number) => {
     soundManager.playTap();
-    if (!parentSettings?.contentConfig) return;
+    await updateParentSettings(DEFAULT_PROFILE_ID, {
+      sessionLimitMinutes: minutes,
+      breakReminderMinutes: minutes,
+    });
+    await loadDashboardData();
+    showNotice(`Đã thiết lập giới hạn mỗi phiên: ${minutes} phút (nhắc nghỉ ngơi).`);
+  };
 
-    const currentTopics = parentSettings.contentConfig.enabledTopics || [];
-    let updatedTopics: MathTopicKey[];
+  // Bật/tắt câu hỏi nâng cao (Level 4 - 5)
+  const handleToggleAdvancedQuestions = async (enabled: boolean) => {
+    soundManager.playTap();
+    await updateParentSettings(DEFAULT_PROFILE_ID, {
+      enableAdvancedQuestions: enabled,
+      contentConfig: {
+        ...(parentSettings?.contentConfig || {
+          enabledTopics: Object.keys(PHASE6_TOPICS_META),
+          questionsPerMission: 5,
+          difficulty: 'standard',
+          maxMistakesAllowed: 3,
+        }),
+        enableAdvancedQuestions: enabled,
+      },
+    });
+    await loadDashboardData();
+    showNotice(enabled ? 'Đã bật chế độ câu hỏi nâng cao (Cấp 4-5).' : 'Đã chuyển sang câu hỏi vừa sức.');
+  };
+
+  // Bật/tắt thử thách thời gian (Timed Challenge)
+  const handleToggleTimedChallenges = async (enabled: boolean) => {
+    soundManager.playTap();
+    await updateParentSettings(DEFAULT_PROFILE_ID, {
+      enableTimedChallenges: enabled,
+      contentConfig: {
+        ...(parentSettings?.contentConfig || {
+          enabledTopics: Object.keys(PHASE6_TOPICS_META),
+          questionsPerMission: 5,
+          difficulty: 'standard',
+          maxMistakesAllowed: 3,
+        }),
+        enableTimedChallenges: enabled,
+      },
+    });
+    await loadDashboardData();
+    showNotice(enabled ? 'Đã bật đồng hồ thử thách thời gian.' : 'Đã tắt tính giờ (chế độ không áp lực).');
+  };
+
+  // Bật/tắt chủ đề toán học
+  const handleToggleTopic = async (topicKey: Phase6TopicKey) => {
+    soundManager.playTap();
+    const currentTopics = (parentSettings?.contentConfig?.enabledTopics as string[]) || Object.keys(PHASE6_TOPICS_META);
+    let updatedTopics: string[];
 
     if (currentTopics.includes(topicKey)) {
       if (currentTopics.length <= 1) {
-        setActionErrorMsg('Phải có ít nhất 1 chủ đề học tập được kích hoạt!');
+        setActionErrorMsg('Phải giữ lại ít nhất 1 chủ đề toán học đang bật!');
         return;
       }
       updatedTopics = currentTopics.filter((t) => t !== topicKey);
@@ -149,42 +227,16 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
 
     await updateParentSettings(DEFAULT_PROFILE_ID, {
       contentConfig: {
-        ...parentSettings.contentConfig,
+        ...(parentSettings?.contentConfig || {
+          questionsPerMission: 5,
+          difficulty: 'standard',
+          maxMistakesAllowed: 3,
+        }),
         enabledTopics: updatedTopics,
       },
     });
     await loadDashboardData();
-    showNotice('Đã cập nhật danh sách chủ đề học tập!');
-  };
-
-  // Cập nhật độ khó
-  const handleUpdateDifficulty = async (difficulty: ParentDifficulty) => {
-    soundManager.playTap();
-    if (!parentSettings?.contentConfig) return;
-
-    await updateParentSettings(DEFAULT_PROFILE_ID, {
-      contentConfig: {
-        ...parentSettings.contentConfig,
-        difficulty,
-      },
-    });
-    await loadDashboardData();
-    showNotice(`Đã chuyển độ khó học tập sang: ${difficulty.toUpperCase()}`);
-  };
-
-  // Cập nhật số câu mỗi nhiệm vụ
-  const handleUpdateQuestionCount = async (count: number) => {
-    soundManager.playTap();
-    if (!parentSettings?.contentConfig) return;
-
-    await updateParentSettings(DEFAULT_PROFILE_ID, {
-      contentConfig: {
-        ...parentSettings.contentConfig,
-        questionsPerMission: count,
-      },
-    });
-    await loadDashboardData();
-    showNotice(`Đã thiết lập ${count} câu hỏi cho mỗi nhiệm vụ.`);
+    showNotice(`Đã cập nhật phạm vi học tập: ${PHASE6_TOPICS_META[topicKey].name}`);
   };
 
   // Xuất file sao lưu JSON
@@ -196,16 +248,16 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ronie_toan_lop1_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `ronie_nhi_mami_backup_${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      showNotice('Đã xuất file sao lưu JSON thành công!');
+      showNotice('Đã xuất file sao lưu thành công!');
     } catch {
-      setActionErrorMsg('Không thể xuất file sao lưu. Vui lòng thử lại!');
+      setActionErrorMsg('Lỗi xuất dữ liệu sao lưu.');
     }
   };
 
-  // Chọn file khôi phục từ máy
+  // Chọn file sao lưu để nạp lại
   const handleSelectRestoreFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -213,19 +265,17 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
-      if (content) {
-        setConfirmRestoreJson(content);
-      }
+      setConfirmRestoreJson(content);
     };
     reader.readAsText(file);
-    e.target.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // Thực hiện ghi đè khôi phục dữ liệu
+  // Xác nhận khôi phục
   const handleConfirmRestore = async () => {
     if (!confirmRestoreJson) return;
     soundManager.playTap();
-    const result = await importBackupData(confirmRestoreJson, DEFAULT_PROFILE_ID);
+    const result = await importBackupData(confirmRestoreJson);
     setConfirmRestoreJson(null);
 
     if (result.success) {
@@ -236,19 +286,13 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
     }
   };
 
-  // Đặt lại dữ liệu gốc
+  // Đặt lại dữ liệu học tập
   const handleConfirmReset = async () => {
     soundManager.playTap();
     await resetProfileData(DEFAULT_PROFILE_ID);
     setConfirmReset(false);
     await loadDashboardData();
-    showNotice('Đã đưa toàn bộ dữ liệu học tập về trạng thái ban đầu.');
-  };
-
-  const showNotice = (msg: string) => {
-    setActionSuccessMsg(msg);
-    setActionErrorMsg(null);
-    setTimeout(() => setActionSuccessMsg(null), 3000);
+    showNotice('Đã đặt lại toàn bộ dữ liệu học tập về ban đầu.');
   };
 
   return (
@@ -259,7 +303,7 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
           type="button"
           onClick={onClose}
           className="absolute top-4 right-4 p-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 rounded-xl transition-all cursor-pointer z-20"
-          title="Đóng Bảng điều khiển"
+          title="Đóng Bảng Điều Khiển"
         >
           <X className="w-5 h-5" />
         </button>
@@ -269,6 +313,7 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
           <ParentGate
             onUnlock={() => setIsUnlocked(true)}
             onCancel={onClose}
+            pinCode={parentSettings?.pinCode || '2018'}
           />
         ) : (
           /* BẢNG ĐIỀU KHIỂN ĐÃ MỞ KHÓA */
@@ -276,7 +321,7 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
             {/* 1. HEADER BẢNG ĐIỀU KHIỂN */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-800 shrink-0 pr-10">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-600 rounded-2xl text-white shadow-md">
+                <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl text-white shadow-md">
                   <BarChart3 className="w-6 h-6" />
                 </div>
                 <div>
@@ -284,7 +329,7 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
                     BẢNG THEO DÕI HỌC TẬP TOÁN LỚP 1
                   </h3>
                   <p className="text-[11px] font-comic font-bold text-slate-400">
-                    Đồng hành cùng bé Ronie chuẩn chương trình GDPT 2018 (Offline-First)
+                    Đồng hành cùng bé Ronie chuẩn chương trình GDPT 2018 • Báo cáo số liệu thực tế
                   </p>
                 </div>
               </div>
@@ -294,9 +339,10 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
             <div className="flex items-center gap-1.5 overflow-x-auto py-2.5 my-1 border-b border-slate-800 scrollbar-none shrink-0">
               {[
                 { id: 'overview', label: 'Tổng Quan', icon: BarChart3 },
-                { id: 'diagnostics', label: 'Năng Lực & Nhận Định', icon: Sparkles },
-                { id: 'time', label: 'Quản Lý Thời Gian', icon: Clock },
-                { id: 'content', label: 'Nội Dung & Độ Khó', icon: Sliders },
+                { id: 'topics', label: '8 Chủ Đề Toán', icon: Sparkles },
+                { id: 'recommendations', label: 'Đề Xuất Luyện Tập', icon: Compass },
+                { id: 'settings', label: 'Thiết Lập Phụ Huynh', icon: Sliders },
+                { id: 'history', label: 'Lịch Sử Học Tập', icon: History },
                 { id: 'backup', label: 'Sao Lưu & Dữ Liệu', icon: Database },
               ].map((tab) => {
                 const IconComponent = tab.icon;
@@ -338,14 +384,16 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
 
             {/* 3. NỘI DUNG TỪNG TAB */}
             <div className="flex-1 overflow-y-auto pr-1 py-2">
+              {/* ============================================================== */}
               {/* TAB 1: TỔNG QUAN (OVERVIEW) */}
+              {/* ============================================================== */}
               {activeTab === 'overview' && (
                 <div className="space-y-4">
                   {/* BỘ LỌC THỜI GIAN */}
                   <div className="flex items-center justify-between bg-slate-800/80 p-2.5 rounded-2xl border border-slate-700">
                     <span className="text-xs font-comic font-bold text-slate-300 flex items-center gap-1.5">
                       <Calendar className="w-4 h-4 text-amber-400" />
-                      Lọc theo mốc thời gian:
+                      Mốc thời gian thống kê:
                     </span>
                     <div className="flex gap-1">
                       {[
@@ -373,106 +421,292 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
                     </div>
                   </div>
 
-                  {/* THẺ CHỈ SỐ TỔNG QUAN (KEY METRICS CARDS) */}
+                  {/* 6 THẺ SỐ LIỆU TỔNG QUAN (THỰC TẾ 100%) */}
                   {overview && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {/* 1. Tổng thời gian học */}
                       <div className="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between">
                         <span className="text-[11px] font-comic font-bold text-slate-400 flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-sky-400" /> Thời gian học
+                          <Clock className="w-3.5 h-3.5 text-sky-400" /> Tổng thời gian học
                         </span>
                         <div className="text-xl sm:text-2xl font-comic font-black text-white mt-1">
-                          {overview.totalPlaytimeMinutes} <span className="text-xs font-bold text-slate-400">phút</span>
+                          {overview.totalPlaytimeMinutes}{' '}
+                          <span className="text-xs font-bold text-slate-400">phút</span>
                         </div>
+                        <span className="text-[10px] text-slate-500 font-comic">
+                          Tích lũy từ các buổi học
+                        </span>
                       </div>
 
+                      {/* 2. Số nhiệm vụ hoàn thành */}
                       <div className="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between">
                         <span className="text-[11px] font-comic font-bold text-slate-400 flex items-center gap-1">
                           <Award className="w-3.5 h-3.5 text-amber-400" /> Nhiệm vụ hoàn thành
                         </span>
                         <div className="text-xl sm:text-2xl font-comic font-black text-amber-300 mt-1">
-                          {overview.totalMissionsCompleted} <span className="text-xs font-bold text-slate-400">màn</span>
+                          {overview.totalMissionsCompleted}{' '}
+                          <span className="text-xs font-bold text-slate-400">nhiệm vụ</span>
                         </div>
+                        <span className="text-[10px] text-amber-400/80 font-comic">
+                          Tiến độ: {overview.curriculumProgressPercentage}%
+                        </span>
                       </div>
 
+                      {/* 3. Tổng số câu hỏi */}
                       <div className="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between">
                         <span className="text-[11px] font-comic font-bold text-slate-400 flex items-center gap-1">
                           <BookOpen className="w-3.5 h-3.5 text-emerald-400" /> Tổng số câu hỏi
                         </span>
                         <div className="text-xl sm:text-2xl font-comic font-black text-emerald-400 mt-1">
-                          {overview.totalQuestionsAnswered} <span className="text-xs font-bold text-slate-400">câu</span>
+                          {overview.totalQuestionsAnswered}{' '}
+                          <span className="text-xs font-bold text-slate-400">câu đã giải</span>
                         </div>
-                      </div>
-
-                      <div className="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between">
-                        <span className="text-[11px] font-comic font-bold text-slate-400 flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" /> Số câu đúng
+                        <span className="text-[10px] text-emerald-400/80 font-comic">
+                          {overview.totalCorrectAnswers} câu chính xác
                         </span>
-                        <div className="text-xl sm:text-2xl font-comic font-black text-teal-300 mt-1">
-                          {overview.totalCorrectAnswers} / {overview.totalQuestionsAnswered}
-                        </div>
                       </div>
 
+                      {/* 4. Tỷ lệ trả lời đúng */}
                       <div className="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between">
                         <span className="text-[11px] font-comic font-bold text-slate-400 flex items-center gap-1">
-                          <Sparkles className="w-3.5 h-3.5 text-pink-400" /> Tỷ lệ chính xác
+                          <Sparkles className="w-3.5 h-3.5 text-pink-400" /> Tỷ lệ trả lời đúng
                         </span>
                         <div className="text-xl sm:text-2xl font-comic font-black text-pink-400 mt-1">
                           {overview.accuracyPercentage}%
                         </div>
+                        <span className="text-[10px] text-slate-500 font-comic">
+                          {overview.accuracyPercentage >= 80 ? 'Rất thành thạo' : overview.accuracyPercentage >= 60 ? 'Đang tiến bộ đều' : 'Cần thêm thời gian'}
+                        </span>
                       </div>
 
+                      {/* 5. Số chủ đề đã thành thạo */}
                       <div className="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between">
                         <span className="text-[11px] font-comic font-bold text-slate-400 flex items-center gap-1">
-                          <Layers className="w-3.5 h-3.5 text-purple-400" /> Tiến độ chuẩn GDPT
+                          <Layers className="w-3.5 h-3.5 text-cyan-400" /> Chủ đề thành thạo
                         </span>
-                        <div className="text-xl sm:text-2xl font-comic font-black text-purple-300 mt-1">
-                          {overview.curriculumProgressPercentage}%
+                        <div className="text-xl sm:text-2xl font-comic font-black text-cyan-300 mt-1">
+                          {overview.masteredTopicsCount ?? 0} / 8{' '}
+                          <span className="text-xs font-bold text-slate-400">chủ đề</span>
+                        </div>
+                        <span className="text-[10px] text-cyan-400/80 font-comic">
+                          Chuẩn 8 mạch kiến thức GDPT
+                        </span>
+                      </div>
+
+                      {/* 6. Tiến bộ theo thời gian */}
+                      <div className="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                        <span className="text-[11px] font-comic font-bold text-slate-400 flex items-center gap-1">
+                          <TrendingUp className="w-3.5 h-3.5 text-purple-400" /> Tiến bộ theo thời gian
+                        </span>
+                        <div className="text-xs font-comic font-black text-purple-200 mt-1 leading-snug">
+                          {overview.progressOverTimeTrend || 'Phong độ làm bài ổn định'}
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* DANH SÁCH CHI TIẾT CÁC MẠCH CHỦ ĐỀ TOÁN HỌC */}
-                  <div className="mt-4">
-                    <h4 className="text-xs font-comic font-black text-cyan-300 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                  {/* THÔNG ĐIỆP SƯ PHẠM ẤM ÁP */}
+                  <div className="bg-gradient-to-r from-indigo-950/70 to-purple-950/70 p-4 rounded-2xl border border-indigo-500/40 flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-400 flex items-center justify-center text-amber-300 shrink-0 text-xl">
+                      👑
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-comic font-black text-amber-300 mb-1">
+                        Lời nhắn gửi từ Nữ Hoàng Nhi Mami:
+                      </h4>
+                      <p className="text-xs font-comic text-slate-200 leading-relaxed">
+                        &quot;Mỗi câu hỏi toán học là một bước chân phiêu lưu của bé Ronie. Trò chơi ghi nhận mọi nỗ lực và sự kiên nhẫn, không tạo áp lực điểm số, giúp bé hình thành tình yêu tự nhiên với các con số!&quot;
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ============================================================== */}
+              {/* TAB 2: PHÂN TÍCH THEO CHỦ ĐỀ (8 CHỦ ĐỀ TOÁN HỌC) */}
+              {/* ============================================================== */}
+              {activeTab === 'topics' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-comic font-black text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
                       <BarChart3 className="w-4 h-4" />
-                      Mức Độ Thành Thạo 10 Mạch Chủ Đề Toán Lớp 1
+                      Phân Tích Chi Tiết 8 Nhóm Kiến Thức Toán Lớp 1
+                    </h4>
+                    <span className="text-[11px] font-comic text-slate-400">
+                      Mức 1 (Nhận biết) đến Mức 5 (Thử thách)
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {topicStatsPhase6.map((topic) => (
+                      <div
+                        key={topic.topicKey}
+                        className="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700 flex flex-col justify-between gap-2 shadow-sm"
+                      >
+                        {/* Header của chủ đề */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{topic.icon}</span>
+                            <div>
+                              <div className="text-xs font-comic font-black text-slate-100">
+                                {topic.topicName}
+                              </div>
+                              <div className="text-[10px] font-comic text-slate-400">
+                                {topic.curriculumCategory}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs font-comic font-black text-amber-300">
+                              {topic.totalQuestions > 0 ? `${topic.accuracy}%` : 'Chưa luyện tập'}
+                            </div>
+                            <span
+                              className={`text-[9px] font-comic font-bold px-2 py-0.5 rounded-full ${
+                                topic.status === 'mastered'
+                                  ? 'bg-emerald-900/80 text-emerald-300 border border-emerald-500/50'
+                                  : topic.status === 'practicing'
+                                  ? 'bg-amber-900/80 text-amber-300 border border-amber-500/50'
+                                  : 'bg-slate-800 text-slate-400 border border-slate-700'
+                              }`}
+                            >
+                              {topic.statusText}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Thanh tỷ lệ chính xác */}
+                        <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              topic.accuracy >= 80
+                                ? 'bg-emerald-500'
+                                : topic.accuracy >= 60
+                                ? 'bg-amber-500'
+                                : topic.totalQuestions === 0
+                                ? 'bg-slate-700'
+                                : 'bg-rose-500'
+                            }`}
+                            style={{ width: `${topic.totalQuestions > 0 ? topic.accuracy : 0}%` }}
+                          />
+                        </div>
+
+                        {/* Thông tin số liệu */}
+                        <div className="grid grid-cols-3 gap-1 bg-slate-900/70 p-2 rounded-xl text-[10px] font-comic">
+                          <div>
+                            <span className="text-slate-500 block">Cấp độ hiện tại:</span>
+                            <span className="font-bold text-slate-200">{topic.levelName}</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 block">Luyện tập:</span>
+                            <span className="font-bold text-slate-200">
+                              {topic.practiceSessionsCount} lượt ({topic.totalQuestions} câu)
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 block">Xu hướng:</span>
+                            <span className="font-bold text-slate-200">{topic.trendText}</span>
+                          </div>
+                        </div>
+
+                        {/* Nội dung cần luyện thêm */}
+                        <div className="text-[11px] font-comic text-slate-300 bg-slate-850 p-2 rounded-xl border border-slate-750 flex items-start gap-1.5">
+                          <span className="text-amber-400 text-xs mt-0.5">💡</span>
+                          <span>{topic.focusAreas}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ============================================================== */}
+              {/* TAB 3: ĐỀ XUẤT LUYỆN TẬP (SMART RECOMMENDATIONS) */}
+              {/* ============================================================== */}
+              {activeTab === 'recommendations' && recommendationsData && (
+                <div className="space-y-4">
+                  {/* TỔNG KẾT PHÂN TÍCH */}
+                  <div className="bg-slate-800/90 p-4 rounded-2xl border border-indigo-500/40">
+                    <h4 className="text-sm font-comic font-black text-amber-300 mb-2 flex items-center gap-1.5">
+                      <Compass className="w-5 h-5 text-indigo-400" />
+                      Phân Tích Năng Lực Của Bé
+                    </h4>
+                    <p className="text-xs font-comic font-bold text-slate-200 leading-relaxed mb-3">
+                      {recommendationsData.summary}
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-700/80">
+                      {/* Điểm mạnh */}
+                      <div className="bg-emerald-950/40 border border-emerald-500/30 p-3 rounded-xl">
+                        <div className="text-xs font-comic font-black text-emerald-400 mb-1.5 flex items-center gap-1">
+                          <Sparkles className="w-4 h-4" /> Bé làm rất tốt:
+                        </div>
+                        <ul className="space-y-1">
+                          {recommendationsData.strengths.map((str, i) => (
+                            <li key={i} className="text-xs font-comic text-slate-200 flex items-center gap-1.5">
+                              <span className="text-emerald-400">✓</span> {str}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Cần rèn luyện thêm */}
+                      <div className="bg-amber-950/40 border border-amber-500/30 p-3 rounded-xl">
+                        <div className="text-xs font-comic font-black text-amber-300 mb-1.5 flex items-center gap-1">
+                          <Heart className="w-4 h-4" /> Cần bồi dưỡng thêm:
+                        </div>
+                        <ul className="space-y-1">
+                          {recommendationsData.needsPractice.map((np, i) => (
+                            <li key={i} className="text-xs font-comic text-slate-200 flex items-center gap-1.5">
+                              <span className="text-amber-400">★</span> {np}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CÁC NHIỆM VỤ ĐỀ XUẤT PHÙ HỢP */}
+                  <div>
+                    <h4 className="text-xs font-comic font-black text-cyan-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Zap className="w-4 h-4 text-amber-400" />
+                      Nhiệm Vụ Học Tập Hệ Thống Tự Đề Xuất Cho Bé
                     </h4>
 
-                    <div className="space-y-2">
-                      {topicStats.map((topic) => (
+                    <div className="space-y-2.5">
+                      {recommendationsData.recommendations.map((rec) => (
                         <div
-                          key={topic.topicKey}
-                          className="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 flex flex-col gap-1.5"
+                          key={rec.id}
+                          className="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm hover:border-indigo-400/60 transition-all"
                         >
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="font-comic font-bold text-slate-200">
-                              {TOPIC_META_MAP[topic.topicKey]?.icon} {topic.topicName}
-                            </span>
-                            <span className="font-comic font-black text-amber-300">
-                              {topic.totalQuestions > 0 ? `${topic.accuracy}%` : 'Chưa làm'}
-                            </span>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span
+                                className={`text-[10px] font-comic font-black px-2.5 py-0.5 rounded-full ${
+                                  rec.priority === 'high'
+                                    ? 'bg-rose-900/80 text-rose-300 border border-rose-500/50'
+                                    : rec.priority === 'medium'
+                                    ? 'bg-amber-900/80 text-amber-300 border border-amber-500/50'
+                                    : 'bg-indigo-900/80 text-indigo-300 border border-indigo-500/50'
+                                }`}
+                              >
+                                {rec.priority === 'high' ? 'Ưu tiên củng cố' : rec.priority === 'medium' ? 'Thử thách nâng cao' : 'Khởi động nhẹ nhàng'}
+                              </span>
+                              <span className="text-xs font-comic font-bold text-slate-400">
+                                {rec.levelName}
+                              </span>
+                            </div>
+                            <div className="text-sm font-comic font-black text-white">
+                              {rec.activityTitle}
+                            </div>
+                            <p className="text-xs font-comic text-slate-300 mt-1">
+                              {rec.reason}
+                            </p>
                           </div>
 
-                          {/* THANH TIẾN ĐỘ TỶ LỆ ĐÚNG */}
-                          <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all duration-500 ${
-                                topic.accuracy >= 80
-                                  ? 'bg-emerald-500'
-                                  : topic.accuracy >= 60
-                                  ? 'bg-amber-500'
-                                  : topic.totalQuestions === 0
-                                  ? 'bg-slate-700'
-                                  : 'bg-rose-500'
-                              }`}
-                              style={{ width: `${topic.totalQuestions > 0 ? topic.accuracy : 0}%` }}
-                            />
-                          </div>
-
-                          <div className="flex items-center justify-between text-[10px] text-slate-400 font-comic">
-                            <span>Đã làm: {topic.totalQuestions} câu ({topic.correctQuestions} đúng)</span>
-                            <span>Thời gian TB: {topic.avgDurationSeconds}s/câu</span>
+                          <div className="shrink-0 flex items-center gap-2 w-full sm:w-auto">
+                            <span className="text-xs font-comic font-bold text-amber-300 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700">
+                              Mục tiêu: {rec.topicName}
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -481,203 +715,26 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
                 </div>
               )}
 
-              {/* TAB 2: NĂNG LỰC & NHẬN ĐỊNH SƯ PHẠM (DIAGNOSTICS) */}
-              {activeTab === 'diagnostics' && diagnostics && (
+              {/* ============================================================== */}
+              {/* TAB 4: THIẾT LẬP CỦA PHỤ HUYNH (PARENT SETTINGS) */}
+              {/* ============================================================== */}
+              {activeTab === 'settings' && parentSettings && (
                 <div className="space-y-4">
-                  {/* KHỐI 1: THẾ MẠNH CỦA BÉ */}
-                  <div className="bg-gradient-to-br from-emerald-950/60 to-slate-800 p-4 rounded-2xl border border-emerald-500/50">
-                    <h4 className="text-sm font-comic font-black text-emerald-400 mb-2 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-emerald-400" />
-                      🌟 Những Điểm Mạnh Nổi Trội Của Bé
+                  {/* KHỐI 1: CHỌN PHẠM VI KIẾN THỨC (8 CHỦ ĐỀ) */}
+                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                    <h4 className="text-sm font-comic font-black text-cyan-300 mb-1 flex items-center gap-1.5">
+                      <BookOpen className="w-4 h-4 text-cyan-400" />
+                      Phạm Vi Kiến Thức Cho Bé (8 Mạch Chủ Đề)
                     </h4>
-                    <ul className="space-y-2">
-                      {diagnostics.strengths.map((str, idx) => (
-                        <li key={idx} className="text-xs font-comic font-bold text-slate-200 flex items-start gap-2">
-                          <span className="text-emerald-400 mt-0.5">✓</span>
-                          <span>{str}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* KHỐI 2: ĐANG RÈN LUYỆN THÊM (KHÔNG TIÊU CỰC) */}
-                  <div className="bg-gradient-to-br from-amber-950/60 to-slate-800 p-4 rounded-2xl border border-amber-500/50">
-                    <h4 className="text-sm font-comic font-black text-amber-300 mb-2 flex items-center gap-2">
-                      <Heart className="w-5 h-5 text-amber-400" />
-                      🌱 Chủ Đề Bé Đang Luyện Tập Thêm
-                    </h4>
-                    <ul className="space-y-2">
-                      {diagnostics.needsPractice.map((np, idx) => (
-                        <li key={idx} className="text-xs font-comic font-bold text-slate-200 flex items-start gap-2">
-                          <span className="text-amber-400 mt-0.5">★</span>
-                          <span>{np}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* KHỐI 3: PHẢN XẠ & THÓI QUEN SỬ DỤNG GỢI Ý */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700">
-                      <h5 className="text-xs font-comic font-black text-cyan-300 mb-1 flex items-center gap-1.5">
-                        <Clock className="w-4 h-4" /> Tốc Độ Phản Xạ
-                      </h5>
-                      <div className="text-lg font-comic font-black text-white mb-1">
-                        {diagnostics.avgResponseSpeed} giây / câu
-                      </div>
-                      <p className="text-[11px] font-comic font-bold text-slate-300 leading-relaxed">
-                        {diagnostics.speedFeedback}
-                      </p>
-                    </div>
-
-                    <div className="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700">
-                      <h5 className="text-xs font-comic font-black text-purple-300 mb-1 flex items-center gap-1.5">
-                        <BookOpen className="w-4 h-4" /> Sử Dụng Gợi Ý Sư Phạm
-                      </h5>
-                      <p className="text-xs font-comic font-bold text-slate-200 mt-1 leading-relaxed">
-                        {diagnostics.hintTendency}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* KHỐI 4: XU HƯỚNG TIẾN BỘ */}
-                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-indigo-500/40">
-                    <h5 className="text-xs font-comic font-black text-indigo-300 mb-1 flex items-center gap-1.5">
-                      <Award className="w-4 h-4" /> Xu Hướng Phát Triển Toàn Diện
-                    </h5>
-                    <p className="text-xs font-comic font-bold text-slate-200 leading-relaxed">
-                      {diagnostics.progressTrend}
+                    <p className="text-[11px] font-comic text-slate-400 mb-3">
+                      Cha mẹ có thể chủ động bật hoặc tạm tắt các chủ đề chưa học tới ở trường
                     </p>
-                  </div>
-                </div>
-              )}
 
-              {/* TAB 3: QUẢN LÝ THỜI GIAN & SỨC KHỎE (SCREEN TIME) */}
-              {activeTab === 'time' && (
-                <div className="space-y-4">
-                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h4 className="text-sm font-comic font-black text-amber-300 flex items-center gap-1.5">
-                          <Clock className="w-4 h-4 text-amber-400" />
-                          Giới Hạn Thời Gian Chơi Mỗi Ngày
-                        </h4>
-                        <p className="text-[11px] font-comic text-slate-400">
-                          Bảo vệ thị lực và cân bằng hoạt động thể chất cho trẻ 6-7 tuổi
-                        </p>
-                      </div>
-
-                      {/* NÚT BẬT/TẮT GIỚI HẠN */}
-                      <button
-                        type="button"
-                        onClick={() => handleToggleTimeLimit(!(parentSettings?.isTimeLimitEnabled ?? true))}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-comic font-black transition-all cursor-pointer ${
-                          parentSettings?.isTimeLimitEnabled ?? true
-                            ? 'bg-emerald-600 text-white shadow'
-                            : 'bg-slate-700 text-slate-400'
-                        }`}
-                      >
-                        {parentSettings?.isTimeLimitEnabled ?? true ? 'ĐANG BẬT' : 'ĐÃ TẮT'}
-                      </button>
-                    </div>
-
-                    {/* LỰA CHỌN MỐC THỜI GIAN (PHÚT) */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-                      {[15, 20, 30, 45].map((mins) => (
-                        <button
-                          key={mins}
-                          type="button"
-                          onClick={() => handleUpdateDailyLimit(mins)}
-                          className={`py-3 rounded-2xl text-xs font-comic font-black transition-all cursor-pointer ${
-                            parentSettings?.dailyLimitMinutes === mins
-                              ? 'bg-amber-400 text-slate-950 shadow-md ring-2 ring-amber-300'
-                              : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-700'
-                          }`}
-                        >
-                          {mins} phút / ngày
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* THỜI GIAN ĐÃ SỬ DỤNG HÔM NAY */}
-                    <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs font-comic">
-                      <span className="text-slate-400">Thời gian bé đã chơi hôm nay:</span>
-                      <span className="font-black text-amber-300">
-                        {screenTimeTracker.getTodayPlayedMinutes()} phút
-                      </span>
-                    </div>
-
-                    <p className="text-[11px] font-comic text-slate-400 mt-2">
-                      * <strong>Nguyên tắc dịu dàng:</strong> Khi hết giờ, trò chơi sẽ chờ bé hoàn thành màn hiện tại rồi nhẹ nhàng đưa về Lâu đài nghỉ ngơi, tuyệt đối không khóa gián đoạn giữa chừng.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 4: QUẢN LÝ NỘI DUNG & ĐỘ KHÓ (CONTENT) */}
-              {activeTab === 'content' && parentSettings && (
-                <div className="space-y-4">
-                  {/* CHỌN ĐỘ KHÓ */}
-                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <h4 className="text-sm font-comic font-black text-indigo-300 mb-2 flex items-center gap-1.5">
-                      <Sliders className="w-4 h-4 text-indigo-400" />
-                      Mức Độ Thử Thách
-                    </h4>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'easy', label: 'Dễ Dàng', desc: 'Nhiều gợi ý, số nhỏ' },
-                        { id: 'standard', label: 'Tiêu Chuẩn', desc: 'Chuẩn GDPT 2018' },
-                        { id: 'challenge', label: 'Thử Thách', desc: 'Nhiều bài toán đố' },
-                      ].map((lvl) => (
-                        <button
-                          key={lvl.id}
-                          type="button"
-                          onClick={() => handleUpdateDifficulty(lvl.id as ParentDifficulty)}
-                          className={`p-3 rounded-2xl text-left transition-all cursor-pointer ${
-                            parentSettings.contentConfig?.difficulty === lvl.id
-                              ? 'bg-indigo-600 text-white shadow-md ring-2 ring-indigo-300'
-                              : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-700'
-                          }`}
-                        >
-                          <div className="text-xs font-comic font-black">{lvl.label}</div>
-                          <div className="text-[10px] font-comic opacity-80">{lvl.desc}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* SỐ CÂU HỎI MỖI NHIỆM VỤ */}
-                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <h4 className="text-sm font-comic font-black text-amber-300 mb-2">
-                      Số Câu Hỏi Trong Mỗi Nhiệm Vụ
-                    </h4>
-                    <div className="flex gap-2">
-                      {[3, 5, 8, 10].map((cnt) => (
-                        <button
-                          key={cnt}
-                          type="button"
-                          onClick={() => handleUpdateQuestionCount(cnt)}
-                          className={`flex-1 py-2.5 rounded-xl text-xs font-comic font-black transition-all cursor-pointer ${
-                            parentSettings.contentConfig?.questionsPerMission === cnt
-                              ? 'bg-amber-400 text-slate-950 shadow'
-                              : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-700'
-                          }`}
-                        >
-                          {cnt} câu
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* BẬT / TẮT CHỦ ĐỀ HỌC TẬP */}
-                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <h4 className="text-sm font-comic font-black text-cyan-300 mb-2">
-                      Lựa Chọn Mạch Kiến Thức Đang Bật
-                    </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {(Object.keys(TOPIC_META_MAP) as MathTopicKey[]).map((topicKey) => {
-                        const meta = TOPIC_META_MAP[topicKey];
-                        const isEnabled = parentSettings.contentConfig?.enabledTopics.includes(topicKey);
+                      {(Object.keys(PHASE6_TOPICS_META) as Phase6TopicKey[]).map((topicKey) => {
+                        const meta = PHASE6_TOPICS_META[topicKey];
+                        const enabledList = (parentSettings.contentConfig?.enabledTopics as string[]) || Object.keys(PHASE6_TOPICS_META);
+                        const isEnabled = enabledList.includes(topicKey);
 
                         return (
                           <button
@@ -686,25 +743,249 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
                             onClick={() => handleToggleTopic(topicKey)}
                             className={`p-2.5 rounded-xl border text-left flex items-center justify-between text-xs font-comic font-bold transition-all cursor-pointer ${
                               isEnabled
-                                ? 'bg-indigo-950/60 border-indigo-500 text-white'
+                                ? 'bg-indigo-950/60 border-indigo-500 text-white shadow-sm'
                                 : 'bg-slate-900/60 border-slate-800 text-slate-500 hover:text-slate-300'
                             }`}
                           >
-                            <span>
-                              {meta.icon} {meta.name}
+                            <span className="flex items-center gap-1.5">
+                              <span>{meta.icon}</span>
+                              <span>{meta.name}</span>
                             </span>
-                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-800">
-                              {isEnabled ? 'BẬT' : 'TẮT'}
+                            <span
+                              className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                                isEnabled ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-500'
+                              }`}
+                            >
+                              {isEnabled ? 'ĐANG BẬT' : 'ĐÃ TẮT'}
                             </span>
                           </button>
                         );
                       })}
                     </div>
                   </div>
+
+                  {/* KHỐI 2: ĐỘ KHÓ NÂNG CAO & CHẾ ĐỘ TÍNH GIỜ */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Bật/tắt câu hỏi nâng cao */}
+                    <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-xs font-comic font-black text-amber-300 flex items-center gap-1">
+                            <Sparkles className="w-4 h-4 text-amber-400" />
+                            Câu Hỏi Nâng Cao (Cấp 4 - 5)
+                          </h4>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleToggleAdvancedQuestions(
+                                !(parentSettings.enableAdvancedQuestions ?? true)
+                              )
+                            }
+                            className={`px-2.5 py-1 rounded-xl text-[10px] font-comic font-black cursor-pointer ${
+                              parentSettings.enableAdvancedQuestions ?? true
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-slate-700 text-slate-400'
+                            }`}
+                          >
+                            {parentSettings.enableAdvancedQuestions ?? true ? 'ĐANG BẬT' : 'ĐÃ TẮT'}
+                          </button>
+                        </div>
+                        <p className="text-[11px] font-comic text-slate-400 leading-relaxed">
+                          Khi bật, hệ thống sẽ đưa thêm các bài toán đố nhiều bước và thử thách tư duy sâu cho bé.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Bật/tắt thử thách thời gian */}
+                    <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-xs font-comic font-black text-sky-300 flex items-center gap-1">
+                            <Timer className="w-4 h-4 text-sky-400" />
+                            Thử Thách Thời Gian
+                          </h4>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleToggleTimedChallenges(
+                                !(parentSettings.enableTimedChallenges ?? true)
+                              )
+                            }
+                            className={`px-2.5 py-1 rounded-xl text-[10px] font-comic font-black cursor-pointer ${
+                              parentSettings.enableTimedChallenges ?? true
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-slate-700 text-slate-400'
+                            }`}
+                          >
+                            {parentSettings.enableTimedChallenges ?? true ? 'ĐANG BẬT' : 'ĐÃ TẮT'}
+                          </button>
+                        </div>
+                        <p className="text-[11px] font-comic text-slate-400 leading-relaxed">
+                          Khi tắt, đồng hồ đếm ngược sẽ dừng lại để bé làm bài thong thả mà không bị áp lực.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* KHỐI 3: CÀI ĐẶT THỜI LƯỢNG CHƠI & GIỚI HẠN PHIÊN */}
+                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-xs font-comic font-black text-amber-300 flex items-center gap-1">
+                          <Clock className="w-4 h-4 text-amber-400" />
+                          Thời Lượng Chơi Mỗi Ngày
+                        </h4>
+                        <p className="text-[11px] font-comic text-slate-400">
+                          Bảo vệ thị lực và tạo thói quen học tập cân bằng
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleTimeLimit(!(parentSettings.isTimeLimitEnabled ?? true))}
+                        className={`px-2.5 py-1 rounded-xl text-[10px] font-comic font-black cursor-pointer ${
+                          parentSettings.isTimeLimitEnabled ?? true
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-slate-700 text-slate-400'
+                        }`}
+                      >
+                        {parentSettings.isTimeLimitEnabled ?? true ? 'ĐANG BẬT' : 'ĐÃ TẮT'}
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                      {[15, 20, 30, 45, 60].map((mins) => (
+                        <button
+                          key={mins}
+                          type="button"
+                          onClick={() => handleUpdateDailyLimit(mins)}
+                          className={`py-2 rounded-xl text-xs font-comic font-black transition-all cursor-pointer ${
+                            parentSettings.dailyLimitMinutes === mins
+                              ? 'bg-amber-400 text-slate-950 shadow-md ring-2 ring-amber-300'
+                              : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-700'
+                          }`}
+                        >
+                          {mins} phút
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Giới hạn mỗi phiên học */}
+                    <div className="pt-2 border-t border-slate-700/80 flex items-center justify-between">
+                      <div>
+                        <span className="text-xs font-comic font-bold text-slate-300 block">
+                          Giới hạn mỗi phiên học (nhắc giải lao):
+                        </span>
+                        <span className="text-[10px] font-comic text-slate-400">
+                          Nhắc bé đứng dậy vận động nhẹ nhàng sau phiên
+                        </span>
+                      </div>
+                      <div className="flex gap-1.5">
+                        {[10, 15, 20, 30].map((sessionMins) => (
+                          <button
+                            key={sessionMins}
+                            type="button"
+                            onClick={() => handleUpdateSessionLimit(sessionMins)}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-comic font-bold transition-all cursor-pointer ${
+                              (parentSettings.sessionLimitMinutes ?? 15) === sessionMins
+                                ? 'bg-indigo-500 text-white font-black shadow'
+                                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-700'
+                            }`}
+                          >
+                            {sessionMins}p
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* TAB 5: SAO LƯU & PHỤC HỒI (BACKUP & RESTORE) */}
+              {/* ============================================================== */}
+              {/* TAB 5: LỊCH SỬ HỌC TẬP (LEARNING HISTORY - 100% REAL DATA) */}
+              {/* ============================================================== */}
+              {activeTab === 'history' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-comic font-black text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <History className="w-4 h-4" />
+                      Nhật Ký Các Phiên Học Thực Tế Của Bé
+                    </h4>
+                    <span className="text-[11px] font-comic text-slate-400">
+                      Tổng số: {learningHistory.length} phiên đã lưu
+                    </span>
+                  </div>
+
+                  {learningHistory.length === 0 ? (
+                    <div className="p-8 text-center bg-slate-800/40 rounded-2xl border border-slate-800 flex flex-col items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 mb-2">
+                        <History className="w-6 h-6" />
+                      </div>
+                      <p className="text-xs font-comic font-bold text-slate-300">
+                        Chưa có dữ liệu phiên học nào được ghi nhận.
+                      </p>
+                      <p className="text-[11px] font-comic text-slate-500 mt-1 max-w-sm">
+                        Khi bé Ronie bắt đầu làm các bài toán trong Nhiệm vụ cốt truyện, Phòng Luyện Toán hoặc Đấu Trường, lịch sử sẽ tự động hiển thị tại đây.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bg-slate-800/80 rounded-2xl border border-slate-700 overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs font-comic border-collapse">
+                          <thead>
+                            <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-700 text-[11px]">
+                              <th className="py-2.5 px-3">Thời Gian</th>
+                              <th className="py-2.5 px-3">Chủ Đề & Hoạt Động</th>
+                              <th className="py-2.5 px-3 text-center">Câu Đúng</th>
+                              <th className="py-2.5 px-3 text-center">Độ Chính Xác</th>
+                              <th className="py-2.5 px-3 text-center">Thời Gian</th>
+                              <th className="py-2.5 px-3 text-center">Gợi Ý</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-700/60">
+                            {learningHistory.map((item) => (
+                              <tr key={item.id} className="hover:bg-slate-750 transition-colors">
+                                <td className="py-2 px-3 text-slate-300 whitespace-nowrap text-[11px]">
+                                  {item.dateFormatted}
+                                </td>
+                                <td className="py-2 px-3">
+                                  <div className="font-bold text-white">{item.topicName}</div>
+                                  <div className="text-[10px] text-indigo-400">{item.modeName}</div>
+                                </td>
+                                <td className="py-2 px-3 text-center font-bold text-amber-300">
+                                  {item.correctQuestions} / {item.totalQuestions}
+                                </td>
+                                <td className="py-2 px-3 text-center font-black">
+                                  <span
+                                    className={`px-2 py-0.5 rounded-full text-[10px] ${
+                                      item.accuracy >= 80
+                                        ? 'bg-emerald-900 text-emerald-300'
+                                        : item.accuracy >= 60
+                                        ? 'bg-amber-900 text-amber-300'
+                                        : 'bg-rose-900 text-rose-300'
+                                    }`}
+                                  >
+                                    {item.accuracy}%
+                                  </span>
+                                </td>
+                                <td className="py-2 px-3 text-center text-slate-300 whitespace-nowrap">
+                                  {item.durationSeconds}s
+                                </td>
+                                <td className="py-2 px-3 text-center text-slate-400">
+                                  {item.hintsUsed}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ============================================================== */}
+              {/* TAB 6: SAO LƯU & DỮ LIỆU (BACKUP & RESTORE) */}
+              {/* ============================================================== */}
               {activeTab === 'backup' && (
                 <div className="space-y-4">
                   {/* XUẤT SAO LƯU */}
@@ -715,7 +996,7 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
                         Sao Lưu Dữ Liệu Học Tập (Export JSON)
                       </h4>
                       <p className="text-[11px] font-comic text-slate-400">
-                        Tải file JSON lưu giữ toàn bộ tiến trình, kho đồ, huy hiệu và lịch sử làm bài
+                        Tải file JSON an toàn chứa toàn bộ tiến trình, lịch sử làm bài và kho đồ của bé
                       </p>
                     </div>
                     <button
@@ -735,7 +1016,7 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
                         Khôi Phục Tiến Trình (Import JSON)
                       </h4>
                       <p className="text-[11px] font-comic text-slate-400">
-                        Nạp lại dữ liệu từ file sao lưu đã lưu trước đó trên máy
+                        Nạp lại dữ liệu từ file sao lưu đã lưu trên thiết bị
                       </p>
                     </div>
 
@@ -756,21 +1037,21 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
                     </button>
                   </div>
 
-                  {/* ĐẶT LẠI DỮ LIỆU BAN ĐẦU */}
-                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-rose-900/40 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  {/* ĐẶT LẠI DỮ LIỆU */}
+                  <div className="bg-rose-950/30 p-4 rounded-2xl border border-rose-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div>
-                      <h4 className="text-sm font-comic font-black text-rose-400 flex items-center gap-1.5">
-                        <RotateCcw className="w-4 h-4 text-rose-500" />
-                        Đặt Lại Về Trạng Thái Ban Đầu
+                      <h4 className="text-sm font-comic font-black text-rose-300 flex items-center gap-1.5">
+                        <RotateCcw className="w-4 h-4 text-rose-400" />
+                        Đặt Lại Dữ Liệu Học Tập (Reset)
                       </h4>
                       <p className="text-[11px] font-comic text-slate-400">
-                        Xóa lịch sử làm bài và mở lại từ Vùng 1 (Không ảnh hưởng đến tài khoản máy)
+                        Xóa toàn bộ tiến trình học tập và đưa ứng dụng về trạng thái ban đầu
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setConfirmReset(true)}
-                      className="w-full sm:w-auto py-2.5 px-4 bg-rose-600/80 hover:bg-rose-600 active:scale-95 text-white font-comic font-black text-xs rounded-xl shadow transition-all cursor-pointer whitespace-nowrap"
+                      className="w-full sm:w-auto py-2.5 px-4 bg-rose-700 hover:bg-rose-800 active:scale-95 text-white font-comic font-black text-xs rounded-xl shadow transition-all cursor-pointer whitespace-nowrap"
                     >
                       Đặt Lại Dữ Liệu
                     </button>
@@ -778,64 +1059,66 @@ export const ParentDashboardModal: React.FC<ParentDashboardModalProps> = ({ onCl
                 </div>
               )}
             </div>
-          </div>
-        )}
 
-        {/* MODAL XÁC NHẬN GHI ĐÈ KHI IMPORT BACKUP */}
-        {confirmRestoreJson && (
-          <div className="fixed inset-0 z-60 bg-black/80 flex items-center justify-center p-4">
-            <div className="bg-slate-900 p-6 rounded-3xl border-3 border-amber-400 max-w-md w-full text-center space-y-4">
-              <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto animate-bounce" />
-              <h4 className="text-lg font-comic font-black text-white">Xác Nhận Khôi Phục Dữ Liệu?</h4>
-              <p className="text-xs font-comic text-slate-300 leading-relaxed">
-                Tiến trình học tập và kho đồ hiện tại sẽ được thay thế bằng dữ liệu từ file sao lưu. Thao tác này không thể hoàn tác.
-              </p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setConfirmRestoreJson(null)}
-                  className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-comic font-bold text-xs rounded-xl cursor-pointer"
-                >
-                  Hủy Bỏ
-                </button>
-                <button
-                  type="button"
-                  onClick={handleConfirmRestore}
-                  className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-comic font-black text-xs rounded-xl cursor-pointer"
-                >
-                  Xác Nhận Ghi Đè
-                </button>
+            {/* HỘP THOẠI XÁC NHẬN KHÔI PHỤC FILE */}
+            {confirmRestoreJson && (
+              <div className="fixed inset-0 z-60 bg-black/70 flex items-center justify-center p-4">
+                <div className="bg-slate-900 border-2 border-amber-400 p-5 rounded-2xl max-w-sm w-full text-center">
+                  <h4 className="text-sm font-comic font-black text-amber-300 mb-2">
+                    Xác nhận khôi phục dữ liệu?
+                  </h4>
+                  <p className="text-xs font-comic text-slate-300 mb-4 leading-relaxed">
+                    Tiến trình hiện tại trên máy sẽ được thay thế bằng dữ liệu từ file sao lưu.
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmRestoreJson(null)}
+                      className="flex-1 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-comic font-bold cursor-pointer"
+                    >
+                      Hủy bỏ
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleConfirmRestore}
+                      className="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-xs font-comic font-black cursor-pointer"
+                    >
+                      Đồng ý
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            )}
 
-        {/* MODAL XÁC NHẬN RESET DỮ LIỆU */}
-        {confirmReset && (
-          <div className="fixed inset-0 z-60 bg-black/80 flex items-center justify-center p-4">
-            <div className="bg-slate-900 p-6 rounded-3xl border-3 border-rose-500 max-w-md w-full text-center space-y-4">
-              <RotateCcw className="w-12 h-12 text-rose-500 mx-auto" />
-              <h4 className="text-lg font-comic font-black text-white">Đặt Lại Toàn Bộ Tiến Trình?</h4>
-              <p className="text-xs font-comic text-slate-300 leading-relaxed">
-                Bé sẽ bắt đầu lại từ Vùng 1 Màn 1 như khi mới cài game. Bạn có chắc chắn muốn đặt lại không?
-              </p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setConfirmReset(false)}
-                  className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-comic font-bold text-xs rounded-xl cursor-pointer"
-                >
-                  Không, giữ lại
-                </button>
-                <button
-                  type="button"
-                  onClick={handleConfirmReset}
-                  className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-comic font-black text-xs rounded-xl cursor-pointer"
-                >
-                  Đồng Ý Đặt Lại
-                </button>
+            {/* HỘP THOẠI XÁC NHẬN RESET */}
+            {confirmReset && (
+              <div className="fixed inset-0 z-60 bg-black/70 flex items-center justify-center p-4">
+                <div className="bg-slate-900 border-2 border-rose-500 p-5 rounded-2xl max-w-sm w-full text-center">
+                  <h4 className="text-sm font-comic font-black text-rose-300 mb-2">
+                    Cảnh báo xóa dữ liệu!
+                  </h4>
+                  <p className="text-xs font-comic text-slate-300 mb-4 leading-relaxed">
+                    Bạn có chắc chắn muốn xóa toàn bộ sao, cấp bậc và lịch sử làm bài của bé không?
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmReset(false)}
+                      className="flex-1 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-comic font-bold cursor-pointer"
+                    >
+                      Hủy
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleConfirmReset}
+                      className="flex-1 py-2 bg-rose-600 text-white rounded-xl text-xs font-comic font-black cursor-pointer"
+                    >
+                      Xóa và Đặt Lại
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

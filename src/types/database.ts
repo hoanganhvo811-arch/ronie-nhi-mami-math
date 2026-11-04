@@ -11,7 +11,15 @@ export type MathTopicKey =
   | 'spatial_shapes'        // Khối lập phương, khối hộp chữ nhật
   | 'length_centimeter'     // Đo độ dài bằng thước xăng-ti-mét
   | 'clock_reading'         // Xem đồng hồ kim đúng giờ
-  | 'numbers_to_100';       // Số tròn chục và phép tính tới 100 không nhớ
+  | 'numbers_to_100'        // Số tròn chục và phép tính tới 100 không nhớ
+  | 'addition'
+  | 'subtraction'
+  | 'comparison'
+  | 'missing_numbers'
+  | 'word_problems'
+  | 'logical_thinking'
+  | 'geometry'
+  | 'measurement';
 
 export type ItemType =
   | 'toy'
@@ -121,10 +129,12 @@ export interface IQuestRecord {
 export type ParentDifficulty = 'easy' | 'standard' | 'challenge';
 
 export interface IParentContentConfig {
-  enabledTopics: MathTopicKey[];
+  enabledTopics: (MathTopicKey | string)[];
   questionsPerMission: number;
   difficulty: ParentDifficulty;
   maxMistakesAllowed: number;
+  enableAdvancedQuestions?: boolean;
+  enableTimedChallenges?: boolean;
 }
 
 export interface IParentSettings {
@@ -134,8 +144,11 @@ export interface IParentSettings {
   soundEffects: boolean;
   musicEnabled: boolean;
   difficultyBias: 'auto' | 'gentle' | 'challenge';
-  // Bổ sung Phase 7:
+  // Bổ sung Phase 6 & Phase 7:
   isTimeLimitEnabled?: boolean;
   breakReminderMinutes?: number;
+  sessionLimitMinutes?: number;
+  enableAdvancedQuestions?: boolean;
+  enableTimedChallenges?: boolean;
   contentConfig?: IParentContentConfig;
 }

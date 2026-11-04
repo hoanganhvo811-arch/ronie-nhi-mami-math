@@ -22,6 +22,64 @@ export interface IAnalyticsOverview {
   totalCorrectAnswers: number;
   accuracyPercentage: number;
   curriculumProgressPercentage: number;
+  // Phase 6 Extensions:
+  masteredTopicsCount?: number;
+  progressOverTimeTrend?: string;
+}
+
+export type Phase6TopicKey =
+  | 'addition'
+  | 'subtraction'
+  | 'comparison'
+  | 'missing_numbers'
+  | 'word_problems'
+  | 'logical_thinking'
+  | 'geometry'
+  | 'measurement';
+
+export interface ITopicAnalyticsPhase6 {
+  topicKey: Phase6TopicKey;
+  topicName: string;
+  curriculumCategory: string;
+  icon: string;
+  color: string;
+  totalQuestions: number;
+  correctQuestions: number;
+  accuracy: number; // 0 - 100
+  practiceSessionsCount: number;
+  currentLevel: number; // 1 - 5
+  levelName: string; // Nhận biết, Thông hiểu, Vận dụng, Vận dụng nâng cao, Thử thách
+  status: 'mastered' | 'practicing' | 'needs_practice';
+  statusText: string;
+  trend: 'improving' | 'stable' | 'needs_support';
+  trendText: string;
+  focusAreas: string; // Những nội dung cần luyện thêm
+}
+
+export interface ISmartLearningRecommendation {
+  id: string;
+  topicKey: Phase6TopicKey;
+  topicName: string;
+  type: 'training_station' | 'challenge_arena' | 'story_mission';
+  activityTitle: string;
+  suggestedLevel: number;
+  levelName: string;
+  reason: string;
+  priority: 'high' | 'medium' | 'gentle';
+}
+
+export interface IParentLearningHistoryItem {
+  id: string;
+  timestamp: number;
+  dateFormatted: string;
+  topicKey: string;
+  topicName: string;
+  modeName: string;
+  totalQuestions: number;
+  correctQuestions: number;
+  accuracy: number;
+  durationSeconds: number;
+  hintsUsed: number;
 }
 
 export interface ITopicAnalytics {
