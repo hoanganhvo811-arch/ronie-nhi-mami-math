@@ -76,7 +76,7 @@ export interface IMathQuestion {
     countItems?: { emoji: string; count: number; name: string };
     groupA?: { emoji: string; count: number };
     groupB?: { emoji: string; count: number };
-    comparisonValues?: { left: number; right: number };
+    comparisonValues?: { left: number | string; right: number | string };
     shapes?: { name: string; type: 'square' | 'circle' | 'triangle' | 'rectangle' | 'cube'; color: string }[];
     measurement?: { objectName: string; lengthCm: number };
     clockTime?: { hour: number; minute: number };

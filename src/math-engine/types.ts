@@ -2,9 +2,9 @@
 // Định nghĩa cấu trúc chuẩn cho Math Engine & Question Bank Toán Lớp 1 (GDPT 2018)
 
 /**
- * 5 Nhóm chủ đề chính của Toán Lớp 1 theo Chương trình GDPT 2018
+ * 5 Nhóm chủ đề cơ bản (Core Topics)
  */
-export type MathTopic =
+export type CoreMathTopic =
   | 'numbers' // Nhóm A: Số học (Đếm, nhận biết, đọc viết, so sánh, thứ tự, liền trước/sau)
   | 'operations' // Nhóm B: Phép tính (Cộng trừ 10, 20, tìm số chưa biết, điền dấu)
   | 'geometry' // Nhóm C: Hình học (Vuông, tròn, tam giác, chữ nhật, vị trí không gian)
@@ -12,13 +12,36 @@ export type MathTopic =
   | 'word_problems'; // Nhóm E: Toán có lời văn (Thêm, bớt, trực quan, thực tế đơn giản)
 
 /**
- * 4 Mức độ nhận thức chuẩn sư phạm
+ * 12 Nhóm kiến thức chuẩn chuyên sâu (Advanced 12 Topics - Phase 1)
  */
-export type MathDifficulty = 1 | 2 | 3 | 4;
-// 1 = Level 1: Làm quen (Trực quan, hình ảnh minh họa, thao tác đếm)
-// 2 = Level 2: Cơ bản (Hỏi trực tiếp, kỹ năng nền tảng)
-// 3 = Level 3: Vận dụng (Tư duy 1 bước, so sánh biểu thức, giải quyết bài toán)
-// 4 = Level 4: Thử thách (Tổng hợp, suy luận logic phù hợp năng lực học sinh lớp 1)
+export type AdvancedMathTopic =
+  | 'counting_recognition'      // 1. Counting and Number Recognition
+  | 'number_comparison'         // 2. Number Comparison
+  | 'addition'                  // 3. Addition
+  | 'subtraction'               // 4. Subtraction
+  | 'missing_numbers'           // 5. Missing Numbers
+  | 'number_composition'        // 6. Number Composition and Decomposition
+  | 'tens_and_ones'             // 7. Tens and Ones
+  | 'word_problems'             // 8. Word Problems
+  | 'number_patterns'           // 9. Number Patterns
+  | 'geometry'                  // 10. Geometry
+  | 'measurement_time'          // 11. Measurement and Time
+  | 'logical_thinking';         // 12. Logical Thinking
+
+/**
+ * Toàn bộ các chủ đề toán học hợp lệ (Bao gồm cả Core và 12 Advanced Topics)
+ */
+export type MathTopic = CoreMathTopic | AdvancedMathTopic;
+
+/**
+ * 5 Mức độ nhận thức chuẩn sư phạm (Blooms Taxonomy / GDPT 2018)
+ */
+export type MathDifficulty = 1 | 2 | 3 | 4 | 5;
+// 1 = Level 1: Nhận biết (Recognition / Trực quan, đếm, thao tác đơn giản)
+// 2 = Level 2: Thông hiểu (Comprehension / Hiểu bản chất phép tính, so sánh, dạng cơ bản)
+// 3 = Level 3: Vận dụng (Application / Tính toán 1 bước, số có 2 chữ số, giải quyết bài toán)
+// 4 = Level 4: Vận dụng nâng cao (Advanced Application / Toán 2 bước, cấu tạo số, thước lệch)
+// 5 = Level 5: Thử thách (Challenge / Suy luận logic, phát hiện quy luật, Olympiad nhí)
 
 /**
  * 10 Dạng câu hỏi tương tác theo yêu cầu Phase 3
@@ -49,11 +72,13 @@ export interface IQuestionVisualData {
     | 'RULER_CM'
     | 'CLOCK'
     | 'ORDERING'
-    | 'GRID_OBJECTS';
+    | 'GRID_OBJECTS'
+    | 'NUMBER_BONDS'
+    | 'DICE';
   items?: { emoji: string; count: number; name: string }[];
   groupA?: { emoji: string; count: number; name?: string };
   groupB?: { emoji: string; count: number; name?: string };
-  comparisonValues?: { left: number; right: number };
+  comparisonValues?: { left: number | string; right: number | string };
   subtractedCount?: number; // Số lượng bị gạch chéo/bớt đi
   shapes?: {
     type: 'square' | 'circle' | 'triangle' | 'rectangle' | 'cube';
@@ -62,6 +87,8 @@ export interface IQuestionVisualData {
   }[];
   rulerCm?: {
     length: number;
+    startCm?: number;
+    endCm?: number;
     objectName: string;
     objectEmoji: string;
   };
@@ -70,6 +97,11 @@ export interface IQuestionVisualData {
     minute: number;
   };
   sequence?: (number | string | null)[];
+  numberBonds?: {
+    whole: number;
+    parts: (number | string)[];
+  };
+  diceValues?: number[];
 }
 
 /**
@@ -87,15 +119,16 @@ export interface IQuestionHint {
 }
 
 /**
- * Cấu trúc dữ liệu toàn diện của một câu hỏi Toán Lớp 1
+ * Cấu trúc dữ liệu toàn diện của một câu hỏi Toán Lớp 1 (Chuẩn v2.0)
  */
 export interface IGrade1Question {
-  id: string; // Mã định danh duy nhất (VD: "Q_NUM_001")
-  topic: MathTopic; // Nhóm chủ đề (A, B, C, D, E)
+  id: string; // Mã định danh duy nhất (VD: "ADV_ADD_001", "Q_NUM_001")
+  questionId?: string; // Tương đương id
+  topic: MathTopic; // Nhóm chủ đề (Core hoặc Advanced)
   subtopic: string; // Chủ đề phụ cụ thể
   grade: 1; // Khối lớp 1
   semester: 1 | 2; // Học kỳ 1 hoặc Học kỳ 2
-  difficulty: MathDifficulty; // Mức độ (1, 2, 3, 4)
+  difficulty: MathDifficulty; // Mức độ (1, 2, 3, 4, 5)
   questionType: QuestionType; // 1 trong 10 dạng câu hỏi
   questionText: string; // Nội dung câu hỏi chữ to, dễ đọc
   audioId?: string; // ID âm thanh (nếu có thu âm)
@@ -105,8 +138,12 @@ export interface IGrade1Question {
   correctAnswer: string | number | (string | number)[]; // Đáp án chính xác
   wrongAnswers: (string | number)[]; // Danh sách đáp án gây nhiễu hợp lý
   options: (string | number)[]; // Toàn bộ tùy chọn hiển thị
-  hint: IQuestionHint; // Gợi ý sư phạm
+  hint: IQuestionHint; // Gợi ý sư phạm gốc
+  hintLevel1?: string; // Gợi ý cấp 1: định hướng nhẹ nhàng
+  hintLevel2?: string; // Gợi ý cấp 2: phân tích bước giải
+  hintLevel3?: string; // Gợi ý cấp 3: chỉ rõ cách tính
   explanation: string; // Giải thích chi tiết sau khi làm
+  estimatedTime?: number; // Thời gian làm bài dự kiến (giây)
   curriculumReference: string; // Căn cứ chương trình GDPT 2018
   tags: string[]; // Thẻ phân loại tìm kiếm
 }
@@ -130,7 +167,7 @@ export interface IEvaluationResult {
  */
 export interface IBankDistributionReport {
   totalQuestions: number;
-  byTopic: Record<MathTopic, number>;
+  byTopic: Record<string, number>;
   byDifficulty: Record<MathDifficulty, number>;
   byQuestionType: Record<QuestionType, number>;
   bySemester: Record<1 | 2, number>;

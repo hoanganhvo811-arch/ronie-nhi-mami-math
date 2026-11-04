@@ -24,6 +24,7 @@ export class EvaluationEngine {
       2: 20,
       3: 30,
       4: 40,
+      5: 50,
     };
 
     const base = baseScoreByDifficulty[difficulty] || 10;

@@ -3,6 +3,7 @@
 
 export * from './types';
 export * from './bank';
+export * from './advanced-bank';
 export * from './QuestionValidator';
 export * from './QuestionGenerator';
 export * from './EvaluationEngine';

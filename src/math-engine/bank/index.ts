@@ -13,14 +13,24 @@ import { OPERATIONS_BANK } from './operationsBank';
 import { GEOMETRY_BANK } from './geometryBank';
 import { MEASUREMENT_TIME_BANK } from './measurementTimeBank';
 import { WORD_PROBLEMS_BANK } from './wordProblemsBank';
+import { ADVANCED_QUESTION_BANK_12 } from '../advanced-bank';
 
-// TOÀN BỘ NGÂN HÀNG CÂU HỎI ĐÃ ĐƯỢC KIỂM ĐỊNH (205 CÂU)
-export const QUESTION_BANK: IGrade1Question[] = [
+// NGÂN HÀNG CÂU HỎI CỐT LÕI (205 CÂU)
+export const CORE_QUESTION_BANK: IGrade1Question[] = [
   ...NUMBERS_BANK,
   ...OPERATIONS_BANK,
   ...GEOMETRY_BANK,
   ...MEASUREMENT_TIME_BANK,
   ...WORD_PROBLEMS_BANK,
+];
+
+// NGÂN HÀNG CÂU HỎI NÂNG CAO 12 CHỦ ĐỀ (120 CÂU)
+export const ADVANCED_QUESTION_BANK: IGrade1Question[] = ADVANCED_QUESTION_BANK_12;
+
+// TOÀN BỘ NGÂN HÀNG CÂU HỎI TÍCH HỢP ĐÃ KIỂM ĐỊNH (325 CÂU)
+export const QUESTION_BANK: IGrade1Question[] = [
+  ...CORE_QUESTION_BANK,
+  ...ADVANCED_QUESTION_BANK,
 ];
 
 // Bản đồ tra cứu nhanh theo ID (O(1))
@@ -133,12 +143,21 @@ export function getRandomQuestions(options: {
  * Tạo báo cáo phân bố ngân hàng câu hỏi theo chủ đề, mức độ, dạng bài và học kỳ
  */
 export function getQuestionDistribution(): IBankDistributionReport {
-  const byTopic: Record<MathTopic, number> = {
+  const byTopic: Record<string, number> = {
     numbers: 0,
     operations: 0,
     geometry: 0,
     measurement_time: 0,
     word_problems: 0,
+    counting_recognition: 0,
+    number_comparison: 0,
+    addition: 0,
+    subtraction: 0,
+    missing_numbers: 0,
+    number_composition: 0,
+    tens_and_ones: 0,
+    number_patterns: 0,
+    logical_thinking: 0,
   };
 
   const byDifficulty: Record<MathDifficulty, number> = {
@@ -146,6 +165,7 @@ export function getQuestionDistribution(): IBankDistributionReport {
     2: 0,
     3: 0,
     4: 0,
+    5: 0,
   };
 
   const byQuestionType: Record<QuestionType, number> = {
