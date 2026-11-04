@@ -1,0 +1,23 @@
+{
+  "name": "Ronie & Nhi Mami: Vương Quốc Toán Học",
+  "short_name": "Vương Quốc Toán Học",
+  "description": "Game phiêu lưu giáo dục Toán Lớp 1 dành cho trẻ em Việt Nam theo chuẩn GDPT 2018",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#FDF2F8",
+  "theme_color": "#0284C7",
+  "categories": ["education", "games", "kids"],
+  "icons": [
+    {
+      "src": "/assets/hero.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/ronie-official.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

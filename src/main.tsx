@@ -3,6 +3,15 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 
+// Đăng ký Service Worker hỗ trợ chơi 100% Offline (Phase 9 PWA)
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.warn('Không thể đăng ký ServiceWorker:', err);
+    });
+  });
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
