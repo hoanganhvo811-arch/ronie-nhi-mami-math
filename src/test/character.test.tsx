@@ -1,7 +1,7 @@
 // src/test/character.test.tsx
 import React from 'react';
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import type { RonieAnimationState, QueenAnimationState, NPCId } from '../types/character';
 import { RonieAvatar } from '../features/character/RonieAvatar';
 import { QueenNhiMamiAvatar } from '../features/character/QueenNhiMamiAvatar';
@@ -96,5 +96,35 @@ describe('Character System & 12 States Ronie, 8 States Queen (Phase 2)', () => {
 
     const updated = npcRegistry.get('robot');
     expect(updated.name).toBe('Robot Trợ Lý Vàng');
+  });
+
+  it('tự động fallback sang Vector SVG khi ảnh photo gặp lỗi onError (Zero broken image)', () => {
+    const { container } = render(<RonieAvatar size="md" state="idle" variant="photo" />);
+    const img = container.querySelector('img');
+    expect(img).toBeTruthy();
+
+    // Kích hoạt sự kiện onError qua fireEvent trong act
+    act(() => {
+      fireEvent.error(img!);
+    });
+
+    // Sau khi ảnh lỗi, component tự động chuyển sang render thẻ SVG vector
+    const svg = container.querySelector('svg');
+    expect(svg).toBeTruthy();
+    expect(container.querySelector('img')).toBeNull();
+  });
+
+  it('Nữ Hoàng Nhi Mami tự động fallback sang Vector SVG khi ảnh photo lỗi', () => {
+    const { container } = render(<QueenNhiMamiAvatar size="md" state="greeting" variant="photo" />);
+    const img = container.querySelector('img');
+    expect(img).toBeTruthy();
+
+    act(() => {
+      fireEvent.error(img!);
+    });
+
+    const svg = container.querySelector('svg');
+    expect(svg).toBeTruthy();
+    expect(container.querySelector('img')).toBeNull();
   });
 });

@@ -1,8 +1,9 @@
 // src/features/character/QueenNhiMamiAvatar.tsx
 // Hình tượng Nữ hoàng Tri thức Nhi Mami (Queen Nhi Mami) - 8 Trạng Thái Biểu Cảm & Hoạt Ảnh
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { QueenAnimationState } from '../../types/character';
+import queenOfficialImg from '../../assets/queen-nhi-mami-official.png';
 
 interface QueenNhiMamiAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
@@ -21,6 +22,9 @@ export const QueenNhiMamiAvatar: React.FC<QueenNhiMamiAvatarProps> = ({
   showLabel = false,
   variant = 'photo',
 }) => {
+  const [imgError, setImgError] = useState(false);
+  const showPhoto = variant === 'photo' && !imgError;
+
   // Chuẩn hóa trạng thái nếu truyền speaking cũ
   const currentState: QueenAnimationState = speaking && state === 'idle' ? 'talking' : state;
 
@@ -60,13 +64,14 @@ export const QueenNhiMamiAvatar: React.FC<QueenNhiMamiAvatarProps> = ({
       />
 
       {/* HIỂN THỊ ẢNH 3D CHÍNH THỨC HOẶC VECTOR ĐỘC QUYỀN */}
-      {variant === 'photo' ? (
+      {showPhoto ? (
         <div className="relative w-full h-full flex items-center justify-center">
           <img
-            src="/assets/queen-nhi-mami-official.png"
+            src={queenOfficialImg}
+            onError={() => setImgError(true)}
             alt="Nữ Hoàng Nhi Mami"
             className="w-full h-full object-contain filter drop-shadow-2xl"
-            loading="lazy"
+            loading="eager"
           />
 
           {/* QUYỀN TRƯỢNG & VƯƠNG MIỆN KHI REWARDING HOẶC GREETING */}

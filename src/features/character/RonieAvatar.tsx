@@ -1,9 +1,10 @@
 // src/features/character/RonieAvatar.tsx
 // Hình tượng nguyên bản Hiệp Sĩ Nhện Nhí Ronie (Original IP) - 12 Trạng Thái Biểu Cảm & Hoạt Ảnh
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { RonieAnimationState } from '../../types/character';
 import type { IEquippedCostumes } from '../../types/rewards';
+import ronieOfficialImg from '../../assets/ronie-official.png';
 
 interface RonieAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
@@ -22,6 +23,9 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
   variant = 'photo',
   costumes,
 }) => {
+  const [imgError, setImgError] = useState(false);
+  const showPhoto = variant === 'photo' && !imgError;
+
   // Chuẩn hóa trạng thái tương thích ngược
   const normalizedState: RonieAnimationState =
     state === 'walking'
@@ -81,13 +85,14 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
       />
 
       {/* HIỆN THỊ ẢNH 3D CHÍNH THỨC HOẶC VECTOR ĐỘC QUYỀN */}
-      {variant === 'photo' ? (
+      {showPhoto ? (
         <div className="relative w-full h-full flex items-center justify-center">
           <img
-            src="/assets/ronie-official.png"
+            src={ronieOfficialImg}
+            onError={() => setImgError(true)}
             alt="Bé Ronie"
             className="w-full h-full object-contain filter drop-shadow-xl"
-            loading="lazy"
+            loading="eager"
           />
 
           {/* SỢI TƠ BẮN RA (CHỈ Ở WEB_SHOOT HOẶC PULL) */}
@@ -155,12 +160,13 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
         </div>
       ) : (
         /* SVG VECTOR ĐỘC QUYỀN CHIBI NGUYÊN BẢN CỦA RONIE */
-        <svg
-          viewBox="0 0 100 100"
-          className="w-full h-full drop-shadow-lg"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <div className="relative w-full h-full flex items-center justify-center">
+          <svg
+            viewBox="0 0 100 100"
+            className="w-full h-full drop-shadow-lg"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
         {/* SỢI TƠ BẮN RA (CHỈ Ở WEB_SHOOT HOẶC PULL) */}
         {(normalizedState === 'web_shoot' || normalizedState === 'pull') && (
           <path
@@ -281,7 +287,33 @@ export const RonieAvatar: React.FC<RonieAvatarProps> = ({
         <path d="M 55 81 Q 60 79 62 82" stroke="#1E3A8A" strokeWidth="2" strokeLinecap="round" />
         <path d="M 55 84 Q 61 86 62 90" stroke="#1E3A8A" strokeWidth="2" strokeLinecap="round" />
       </svg>
+
+      {/* TRANG BỊ TRANG PHỤC TRÊN BẢN VECTOR */}
+      {costumes?.hat && (
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-2xl animate-bounce pointer-events-none z-30 drop-shadow-md">
+          👑
+        </div>
       )}
+      {costumes?.cloak && (
+        <div className="absolute -top-1 -left-2 text-xl animate-pulse pointer-events-none z-30 drop-shadow-md">
+          🌟
+        </div>
+      )}
+      {costumes?.mask && (
+        <div className="absolute top-2 right-0 text-sm bg-rose-600/80 p-0.5 rounded-full text-white pointer-events-none z-30 shadow-sm">
+          🎭
+        </div>
+      )}
+      {costumes?.boots && (
+        <div className="absolute -bottom-2 right-0 text-base animate-bounce pointer-events-none z-30">
+          ⚡
+        </div>
+      )}
+      {costumes?.suit && (
+        <div className="absolute inset-0 border-3 border-amber-300 rounded-full animate-pulse pointer-events-none z-20 shadow-lg shadow-amber-400/40" />
+      )}
+    </div>
+  )}
 
       {/* NHÃN TRẠNG THÁI (OPTIONAL) */}
       {showLabel && (

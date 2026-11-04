@@ -2,10 +2,10 @@
 ### Game Phiêu Lưu Giáo Dục Toán Lớp 1 (Chuẩn GDPT 2018)
 
 [![Version](https://img.shields.io/badge/version-1.0.0--release-brightgreen.svg)]()
-[![Tests](https://img.shields.io/badge/tests-165%2F165%20passing-success.svg)]()
+[![Tests](https://img.shields.io/badge/tests-291%2F291%20passing-success.svg)]()
 [![Coverage](https://img.shields.io/badge/math%20engine-100%25%20verified-blue.svg)]()
 [![License](https://img.shields.io/badge/license-Proprietary-rose.svg)]()
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web%20%7C%20PWA%20Offline-orange.svg)]()
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web%20%7C%20iOS%20%7C%20Android%20%7C%20PWA%20Offline-orange.svg)]()
 
 > **"Biến mỗi phép tính thành một chiến công, mỗi bài toán thành một cuộc phiêu lưu diệu kỳ."**
 
@@ -64,18 +64,24 @@ CHAY_GAME.bat
 
 ### Cách 2: Khởi chạy từ dòng lệnh (Developer Mode)
 ```bash
-# Cài đặt thư viện phụ thuộc
+# 1. Cài đặt thư viện phụ thuộc
 npm install
 
-# Khởi động máy chủ phát triển
+# 2. Khởi động máy chủ phát triển (localhost:3399)
 npm run dev
 
-# Chạy toàn bộ 165 bài kiểm thử tự động
+# 3. Chạy toàn bộ 291 bài kiểm thử tự động (22 test suites)
 npm test
 
-# Đóng gói bản phát hành Production
+# 4. Đóng gói bản phát hành Production (Output: dist/)
 npm run build
+
+# 5. Chạy thử nghiệm bản Production tại local
+npm run preview
 ```
+
+### Cách 3: Triển khai trực tuyến lên Vercel / Netlify
+Xem chi tiết hướng dẫn từng bước tại tài liệu [VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md).
 
 ---
 

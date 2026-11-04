@@ -1,7 +1,7 @@
 // public/sw.js
 // Service Worker hỗ trợ chơi 100% Offline cho Vương Quốc Toán Học (Phase 9 PWA)
 
-const CACHE_NAME = 'ronie-math-kingdom-v1.0.0';
+const CACHE_NAME = 'ronie-math-kingdom-v1.1.0';
 const CORE_ASSETS = [
   '/',
   '/index.html',
@@ -53,8 +53,11 @@ self.addEventListener('fetch', (event) => {
         });
         return networkResponse;
       }).catch(() => {
-        // Trả về trang chủ nếu mất mạng hoàn toàn
-        return caches.match('/');
+        // Chỉ trả về trang chủ SPA nếu đây là yêu cầu điều hướng trang (navigate)
+        if (event.request.mode === 'navigate') {
+          return caches.match('/');
+        }
+        return new Response('', { status: 408, statusText: 'Offline asset unavailable' });
       });
     })
   );
