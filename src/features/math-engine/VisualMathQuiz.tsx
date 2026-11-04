@@ -1,7 +1,7 @@
 // src/features/math-engine/VisualMathQuiz.tsx
 // Giao diện câu hỏi toán học tương tác trực quan đa giác quan cho trẻ Lớp 1
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, HelpCircle, CheckCircle2, Sparkles, RefreshCw } from 'lucide-react';
 import type { IMathQuestion } from '../../types/game';
 import { soundManager } from '../../services/audio/AudioManager';
@@ -21,30 +21,60 @@ export const VisualMathQuiz: React.FC<VisualMathQuizProps> = ({ question, onAnsw
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showHint, setShowHint] = useState<boolean>(false);
   const [isLocked, setIsLocked] = useState<boolean>(false);
+  const transitionTimerRef = useRef<any>(null);
+
+  // Đảm bảo mở khóa và xóa lựa chọn cũ ngay khi có câu hỏi mới
+  useEffect(() => {
+    setSelectedAnswer(null);
+    setIsCorrect(null);
+    setIsLocked(false);
+    setShowHint(false);
+
+    return () => {
+      if (transitionTimerRef.current) {
+        clearTimeout(transitionTimerRef.current);
+      }
+    };
+  }, [question.id, question.questionText]);
 
   const handleSelectOption = (option: string | number) => {
     if (isLocked) return;
     setSelectedAnswer(option);
     setIsLocked(true);
 
-    const correct = option.toString() === question.correctAnswer.toString();
+    const correct = option.toString().trim() === question.correctAnswer.toString().trim();
     setIsCorrect(correct);
 
     if (correct) {
-      const cheer = getRandomPhrase('answer_correct');
-      VoiceSystem.givePositiveFeedback(cheer);
-      setTimeout(() => {
+      soundManager.playCorrect();
+      try {
+        const cheer = getRandomPhrase('answer_correct');
+        VoiceSystem.givePositiveFeedback(cheer);
+      } catch (err) {
+        console.warn('Lỗi âm thanh khen ngợi:', err);
+      }
+
+      transitionTimerRef.current = setTimeout(() => {
+        setIsLocked(false);
+        setSelectedAnswer(null);
+        setIsCorrect(null);
         onAnswer(true);
-      }, 1200);
+      }, 1000);
     } else {
-      const comfort = getRandomPhrase('answer_wrong');
-      VoiceSystem.giveEncouragingFeedback(comfort);
-      setTimeout(() => {
+      soundManager.playTryAgain();
+      try {
+        const comfort = getRandomPhrase('answer_wrong');
+        VoiceSystem.giveEncouragingFeedback(comfort);
+      } catch (err) {
+        console.warn('Lỗi âm thanh động viên:', err);
+      }
+
+      transitionTimerRef.current = setTimeout(() => {
         setIsLocked(false);
         setIsCorrect(null);
         setSelectedAnswer(null);
         setShowHint(true);
-      }, 1500);
+      }, 1200);
     }
   };
 

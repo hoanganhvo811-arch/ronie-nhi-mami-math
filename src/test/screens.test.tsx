@@ -9,6 +9,8 @@ import { RoyalCastle } from '../features/castle/RoyalCastle';
 import { MissionSelection } from '../features/missions/MissionSelection';
 import { ToyRoom } from '../features/toy-room/ToyRoom';
 import { ProfileScreen } from '../features/profile/ProfileScreen';
+import { VisualMathQuiz } from '../features/math-engine/VisualMathQuiz';
+import type { IMathQuestion } from '../types/game';
 
 describe('Giao Diện Các Màn Hình Phase 1 (UI & Navigation)', () => {
   it('render SplashScreen và nút BẮT ĐẦU hoạt động', () => {
@@ -134,5 +136,57 @@ describe('Giao Diện Các Màn Hình Phase 1 (UI & Navigation)', () => {
     expect(screen.getAllByText(/Sao Tri Thức/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/Nhiệm Vụ Xong/i)).toBeTruthy();
     expect(screen.getByText(/Kỹ Năng Toán Học Thành Thạo/i)).toBeTruthy();
+  });
+
+  it('VisualMathQuiz cho phép chọn đáp án và tự động mở khóa khi sang câu hỏi mới', () => {
+    const mockQ1: IMathQuestion = {
+      id: 'q_test_1',
+      zoneId: 1,
+      topicKey: 'counting_to_10',
+      questionText: 'Bé hãy đếm xem có bao nhiêu củ cà rốt?',
+      visualType: 'COUNTING',
+      visualData: {
+        countItems: { emoji: '🥕', count: 3, name: 'củ cà rốt' },
+      },
+      options: [6, 3, 2, 4],
+      correctAnswer: 3,
+      hint: 'Hãy đếm từ 1 đến hết nhé!',
+    };
+
+    const mockQ2: IMathQuestion = {
+      id: 'q_test_2',
+      zoneId: 1,
+      topicKey: 'counting_to_10',
+      questionText: 'Bé hãy đếm xem có bao nhiêu quả táo?',
+      visualType: 'COUNTING',
+      visualData: {
+        countItems: { emoji: '🍎', count: 5, name: 'quả táo' },
+      },
+      options: [5, 4, 3, 2],
+      correctAnswer: 5,
+      hint: 'Đếm các quả táo nào!',
+    };
+
+    const handleAnswer = vi.fn();
+    const { rerender } = render(<VisualMathQuiz question={mockQ1} onAnswer={handleAnswer} />);
+
+    // Kiểm tra các nút đáp án xuất hiện và không bị disabled
+    const btn3 = screen.getByRole('button', { name: '3' }) as HTMLButtonElement;
+    const btn4 = screen.getByRole('button', { name: '4' }) as HTMLButtonElement;
+    expect(btn3.disabled).toBe(false);
+    expect(btn4.disabled).toBe(false);
+
+    // Nhấp chọn đáp án 3
+    fireEvent.click(btn3);
+    // Button bị lock tạm thời trong lúc diễn hoạt
+    expect(btn3.disabled).toBe(true);
+
+    // Re-render với câu hỏi mới Q2 (như khi nhấn màn sau)
+    rerender(<VisualMathQuiz question={mockQ2} onAnswer={handleAnswer} />);
+
+    // Nút đáp án câu hỏi mới phải được mở khóa ngay lập tức!
+    const btn5 = screen.getByRole('button', { name: '5' }) as HTMLButtonElement;
+    expect(btn5.disabled).toBe(false);
+    expect(screen.queryByRole('button', { name: '6' })).toBeNull();
   });
 });

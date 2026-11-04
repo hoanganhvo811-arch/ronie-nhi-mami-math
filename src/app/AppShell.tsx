@@ -367,6 +367,7 @@ export const AppShell: React.FC = () => {
           </button>
 
           <VisualMathQuiz
+            key={currentQuestion.id}
             question={currentQuestion}
             onAnswer={handleAnswerQuestion}
             onClose={handleReturnToMissions}
