@@ -164,6 +164,7 @@ export class MissionEngine {
         };
         break;
 
+      case 'MONSTER_PUSH':
       case 'PUSH_BACK_MONSTER':
         soundManager.playAttack();
         this.state.ronieAnimState = 'attack';
@@ -175,6 +176,7 @@ export class MissionEngine {
         };
         break;
 
+      case 'BRIDGE_BUILDER':
       case 'BRIDGE_CROSSING':
         soundManager.playTap();
         this.state.ronieAnimState = 'jump';
@@ -192,6 +194,50 @@ export class MissionEngine {
         this.state.secondaryAnimState = 'happy';
         this.state.actionFeedback = {
           text: `🔓 Tách! Một ổ khóa hoàng gia đã được mở!`,
+          type: 'success',
+          timestamp: Date.now(),
+        };
+        break;
+
+      case 'ROCKET_LAUNCH':
+        soundManager.playWebShoot();
+        this.state.ronieAnimState = 'jump';
+        this.state.secondaryAnimState = 'happy';
+        this.state.actionFeedback = {
+          text: `🚀 Nhiên liệu sao nạp đầy tầng đẩy! Tên lửa sẵn sàng phóng! (+${this.config.stepPerCorrect}%)`,
+          type: 'success',
+          timestamp: Date.now(),
+        };
+        break;
+
+      case 'MAGIC_KEY':
+        soundManager.playTap();
+        this.state.ronieAnimState = 'celebrate';
+        this.state.secondaryAnimState = 'happy';
+        this.state.actionFeedback = {
+          text: `🗝️ Keng! Mảnh chìa khóa vàng phát sáng và ghép vào ổ khóa! (+${this.config.stepPerCorrect}%)`,
+          type: 'success',
+          timestamp: Date.now(),
+        };
+        break;
+
+      case 'NUMBER_MAZE':
+        soundManager.playTap();
+        this.state.ronieAnimState = 'run';
+        this.state.secondaryAnimState = 'clapping';
+        this.state.actionFeedback = {
+          text: `🌟 Ronie lướt nhanh qua mê cung số kỳ diệu! (+${this.config.stepPerCorrect} bước)`,
+          type: 'success',
+          timestamp: Date.now(),
+        };
+        break;
+
+      case 'BOSS_BATTLE':
+        soundManager.playAttack();
+        this.state.ronieAnimState = 'attack';
+        this.state.secondaryAnimState = 'pushed_back';
+        this.state.actionFeedback = {
+          text: `⚡ Chiêu thức Sao Băng trúng đích! Boss Quái vật mất máu! (+${this.config.stepPerCorrect} sát thương)`,
           type: 'success',
           timestamp: Date.now(),
         };
@@ -244,6 +290,7 @@ export class MissionEngine {
         };
         break;
 
+      case 'MONSTER_PUSH':
       case 'PUSH_BACK_MONSTER':
         this.state.secondaryAnimState = 'advance';
         this.state.actionFeedback = {
@@ -253,6 +300,7 @@ export class MissionEngine {
         };
         break;
 
+      case 'BRIDGE_BUILDER':
       case 'BRIDGE_CROSSING':
         this.state.secondaryAnimState = 'worried';
         this.state.actionFeedback = {
@@ -266,6 +314,42 @@ export class MissionEngine {
         this.state.secondaryAnimState = 'idle';
         this.state.actionFeedback = {
           text: `Khóa ma thuật rung lắc! Chưa mở được!`,
+          type: 'warning',
+          timestamp: Date.now(),
+        };
+        break;
+
+      case 'ROCKET_LAUNCH':
+        this.state.secondaryAnimState = 'worried';
+        this.state.actionFeedback = {
+          text: `Ống khói tên lửa xì nhẹ! Nữ hoàng đang hỗ trợ tiếp nhiên liệu!`,
+          type: 'warning',
+          timestamp: Date.now(),
+        };
+        break;
+
+      case 'MAGIC_KEY':
+        this.state.secondaryAnimState = 'worried';
+        this.state.actionFeedback = {
+          text: `Chìa khóa ma thuật chưa đúng rãnh! Thử lại chìa khác nào!`,
+          type: 'warning',
+          timestamp: Date.now(),
+        };
+        break;
+
+      case 'NUMBER_MAZE':
+        this.state.secondaryAnimState = 'worried';
+        this.state.actionFeedback = {
+          text: `Gặp ngõ cụt hoa cỏ mềm! Ronie lùi lại 1 bước tìm lối đi mới!`,
+          type: 'warning',
+          timestamp: Date.now(),
+        };
+        break;
+
+      case 'BOSS_BATTLE':
+        this.state.secondaryAnimState = 'advance';
+        this.state.actionFeedback = {
+          text: `Quái vật làm mặt hề hắt xì! Ronie lùi lại phòng thủ!`,
           type: 'warning',
           timestamp: Date.now(),
         };

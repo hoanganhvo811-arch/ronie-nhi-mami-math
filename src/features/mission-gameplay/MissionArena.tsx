@@ -18,13 +18,17 @@ import { VoiceSystem } from '../../services/audio/VoiceSystem';
 import { QueenNhiMamiAvatar } from '../character/QueenNhiMamiAvatar';
 import { RonieAvatar } from '../character/RonieAvatar';
 
-// 6 Visual Controllers
+// 8 Gameplay Visual Controllers (Phase 3)
 import { RescueRopeController } from './RescueRopeController';
 import { PushMonsterController } from './PushMonsterController';
 import { BridgeCrossingController } from './BridgeCrossingController';
 import { TreasureChestController } from './TreasureChestController';
 import { ShutdownMachineController } from './ShutdownMachineController';
 import { MathRacingController } from './MathRacingController';
+import { RocketLaunchController } from './RocketLaunchController';
+import { MagicKeyController } from './MagicKeyController';
+import { NumberMazeController } from './NumberMazeController';
+import { BossBattleController } from './BossBattleController';
 
 // Modals
 import { MissionPauseModal } from './MissionPauseModal';
@@ -81,17 +85,27 @@ export const MissionArena: React.FC<MissionArenaProps> = ({
     engine.submitAnswer(opt);
   };
 
-  // Chọn Visual Controller phù hợp
+  // Chọn Visual Controller phù hợp cho 8 Gameplay Modules
   const renderGameplayController = () => {
     switch (config.gameplayType) {
       case 'RESCUE_ROPE':
         return <RescueRopeController runState={runState} />;
+      case 'MONSTER_PUSH':
       case 'PUSH_BACK_MONSTER':
         return <PushMonsterController runState={runState} />;
-      case 'BRIDGE_CROSSING':
-        return <BridgeCrossingController runState={runState} />;
       case 'TREASURE_CHEST':
         return <TreasureChestController runState={runState} />;
+      case 'BRIDGE_BUILDER':
+      case 'BRIDGE_CROSSING':
+        return <BridgeCrossingController runState={runState} />;
+      case 'ROCKET_LAUNCH':
+        return <RocketLaunchController runState={runState} />;
+      case 'MAGIC_KEY':
+        return <MagicKeyController runState={runState} />;
+      case 'NUMBER_MAZE':
+        return <NumberMazeController runState={runState} />;
+      case 'BOSS_BATTLE':
+        return <BossBattleController runState={runState} />;
       case 'SHUTDOWN_MACHINE':
         return <ShutdownMachineController runState={runState} />;
       case 'MATH_RACING':

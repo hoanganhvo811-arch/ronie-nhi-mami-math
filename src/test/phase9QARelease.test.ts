@@ -71,8 +71,8 @@ describe('PHASE 9 QA TEST 1: KIỂM TRA TOÀN DIỆN 6 NHIỆM VỤ GAMEPLAY', (
     'mission_06_math_racing',
   ];
 
-  it('danh mục có đầy đủ 6 cấu hình nhiệm vụ hợp lệ', () => {
-    expect(ALL_MISSIONS_LIST).toHaveLength(6);
+  it('danh mục có đầy đủ các cấu hình nhiệm vụ hợp lệ (ít nhất 6 cốt lõi)', () => {
+    expect(ALL_MISSIONS_LIST.length).toBeGreaterThanOrEqual(6);
     missionIds.forEach((id) => {
       expect(MISSION_CATALOG[id]).toBeDefined();
     });

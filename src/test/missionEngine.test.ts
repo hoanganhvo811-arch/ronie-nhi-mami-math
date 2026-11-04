@@ -54,12 +54,12 @@ const mockQuestions: IGrade1Question[] = [
 ];
 
 describe('1. Danh Mục Nhiệm Vụ Cốt Lõi (Mission Catalog Integrity)', () => {
-  it('danh mục có đầy đủ 6 nhiệm vụ gameplay theo đặc tả Phase 4', () => {
-    expect(ALL_MISSIONS_LIST.length).toBe(6);
-    expect(Object.keys(MISSION_CATALOG).length).toBe(6);
+  it('danh mục có đầy đủ các nhiệm vụ gameplay (ít nhất 6 cốt lõi)', () => {
+    expect(ALL_MISSIONS_LIST.length).toBeGreaterThanOrEqual(6);
+    expect(Object.keys(MISSION_CATALOG).length).toBeGreaterThanOrEqual(6);
   });
 
-  it('hỗ trợ đầy đủ 6 loại cơ chế gameplay khác nhau', () => {
+  it('hỗ trợ đầy đủ các loại cơ chế gameplay cốt lõi', () => {
     const types = new Set(ALL_MISSIONS_LIST.map((m) => m.gameplayType));
     expect(types.has('RESCUE_ROPE')).toBe(true);
     expect(types.has('PUSH_BACK_MONSTER')).toBe(true);
@@ -67,7 +67,7 @@ describe('1. Danh Mục Nhiệm Vụ Cốt Lõi (Mission Catalog Integrity)', ()
     expect(types.has('TREASURE_CHEST')).toBe(true);
     expect(types.has('SHUTDOWN_MACHINE')).toBe(true);
     expect(types.has('MATH_RACING')).toBe(true);
-    expect(types.size).toBe(6);
+    expect(types.size).toBeGreaterThanOrEqual(6);
   });
 
   it('mọi nhiệm vụ đều có tham số tiến trình và điều kiện thắng/thua rõ ràng', () => {

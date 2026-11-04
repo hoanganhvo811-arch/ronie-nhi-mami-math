@@ -207,6 +207,142 @@ export const MISSION_CATALOG: Record<string, IMissionConfig> = {
     },
     bgTheme: 'from-amber-950 via-rose-950 to-slate-950',
   },
+
+  // NHIỆM VỤ 7: PHÓNG TÊN LỬA VŨ TRỤ (ROCKET_LAUNCH) - MODULE 5
+  mission_07_rocket_launch: {
+    id: 'mission_07_rocket_launch',
+    title: 'Phóng Tên Lửa Vũ Trụ',
+    description: 'Tên lửa Ronie 1 đang đếm ngược trên bệ phóng! Giải đúng các câu đố đo lường và thời gian để nạp đủ nhiên liệu sao phóng tên lửa bay lên dải ngân hà!',
+    gameplayType: 'ROCKET_LAUNCH',
+    region: 'Thành Phố Thời Gian',
+    characters: {
+      primary: 'ronie',
+      secondary: 'queen',
+      secondaryName: 'Nữ Hoàng Nhi Mami',
+    },
+    mathTopic: 'measurement_time',
+    difficulty: 3,
+    questionCount: 4,
+    targetProgress: 100,
+    stepPerCorrect: 25,
+    stepPerWrong: 15,
+    maxMistakes: 3,
+    reward: {
+      stars: 3,
+      exp: 280,
+      badgeId: 'badge_cosmic_astronaut',
+      itemReward: 'Mũ Phi Hành Gia Nhí',
+    },
+    dialogue: {
+      intro: 'Ronie ơi! Bệ phóng đã sẵn sàng, con hãy giải đúng các câu đố thời gian để nạp nhiên liệu sao phóng tên lửa bay lên vũ trụ nhé!',
+      victory: 'Vùuuuu! Tên lửa đã bay vút vào bầu trời đêm ngập tràn ánh sao! Chúc mừng Phi Hành Gia Ronie!',
+      defeat: 'Nhiên liệu bị hụt nhẹ một chút rồi! Đừng lo bé ơi, cùng Nữ hoàng bơm tiếp năng lượng nhé!',
+      hintPrompt: 'Quan sát đồng hồ kim và vạch thước thật kỹ để nạp nhiên liệu đúng chuẩn!',
+    },
+    bgTheme: 'from-indigo-950 via-purple-950 to-slate-950',
+  },
+
+  // NHIỆM VỤ 8: TÌM CHÌA KHÓA MA THUẬT (MAGIC_KEY) - MODULE 6
+  mission_08_magic_key: {
+    id: 'mission_08_magic_key',
+    title: 'Tìm Chìa Khóa Ma Thuật',
+    description: 'Cánh cổng vàng của Cung Điện Mùa Xuân bị khóa kín bởi 3 ổ khóa ma thuật. Giải đúng các câu đố cấu tạo số để đúc chìa khóa vàng mở cổng!',
+    gameplayType: 'MAGIC_KEY',
+    region: 'Lâu Đài Nhi Mami',
+    characters: {
+      primary: 'ronie',
+      secondary: 'queen',
+      secondaryName: 'Nữ Hoàng Nhi Mami',
+    },
+    mathTopic: 'number_composition',
+    difficulty: 3,
+    questionCount: 3,
+    targetProgress: 100,
+    stepPerCorrect: 34,
+    stepPerWrong: 20,
+    maxMistakes: 3,
+    reward: {
+      stars: 3,
+      exp: 260,
+      badgeId: 'badge_key_master',
+      itemReward: 'Chìa Khóa Vàng Hoàng Gia',
+    },
+    dialogue: {
+      intro: 'Cánh cổng vàng chỉ mở ra cho ai nắm giữ chìa khóa ma thuật! Ronie hãy tách gộp số thật chuẩn để thu thập chìa khóa nhé!',
+      victory: 'Keng keng keng! Cả 3 ổ khóa vàng đã mở ra, kho báu hoàng gia tỏa sáng lung linh!',
+      defeat: 'Chìa khóa chưa khớp với ổ khóa rồi! Bé hãy suy nghĩ lại để tìm ra số đơn vị đúng nhé!',
+      hintPrompt: 'Nhớ lại quy tắc tách gộp số: số gồm mấy chục và mấy đơn vị để đúc chìa khóa chuẩn!',
+    },
+    bgTheme: 'from-amber-900 via-rose-950 to-slate-950',
+  },
+
+  // NHIỆM VỤ 9: VƯỢT MÊ CUNG SỐ (NUMBER_MAZE) - MODULE 7
+  mission_09_number_maze: {
+    id: 'mission_09_number_maze',
+    title: 'Vượt Mê Cung Số Kỳ Diệu',
+    description: 'Ronie lạc vào mê cung bí ẩn với những viên đá bước nhảy rải đầy hoa cỏ. Giải đúng quy luật dãy số để mở đường thoát khỏi mê cung!',
+    gameplayType: 'NUMBER_MAZE',
+    region: 'Rừng Số Kỳ Diệu',
+    characters: {
+      primary: 'ronie',
+      secondary: 'rabbit',
+      secondaryName: 'Thỏ Trắng Tinh Nghịch',
+    },
+    mathTopic: 'number_patterns',
+    difficulty: 3,
+    questionCount: 4,
+    targetProgress: 100,
+    stepPerCorrect: 25,
+    stepPerWrong: 15,
+    maxMistakes: 3,
+    reward: {
+      stars: 3,
+      exp: 270,
+      badgeId: 'badge_maze_navigator',
+      itemReward: 'La Bàn Hoa Cỏ Thần Kỳ',
+    },
+    dialogue: {
+      intro: 'Mê cung này có quy luật ẩn giấu đấy! Ronie cùng bạn Thỏ hãy tìm số tiếp theo để bước từng bước an toàn nhé!',
+      victory: 'Tuyệt đỉnh! Ronie đã dẫn lối xuất sắc đưa mọi người vượt qua toàn bộ mê cung số!',
+      defeat: 'Ôi chạm vào ngõ cụt mềm mại rồi! Bé hãy lùi lại 1 bước và xem lại bước nhảy của dãy số nhé!',
+      hintPrompt: 'Xem dãy số tăng thêm mấy đơn vị hay giảm đi mấy đơn vị để bước đúng viên đá!',
+    },
+    bgTheme: 'from-teal-900 via-emerald-950 to-slate-950',
+  },
+
+  // NHIỆM VỤ 10: ĐẠI CHIẾN TRÙM CUỐI (BOSS_BATTLE) - MODULE 8
+  mission_10_boss_battle: {
+    id: 'mission_10_boss_battle',
+    title: 'Đại Chiến Trùm Cuối',
+    description: 'Quái Vật Bánh Quy Khổng Lồ đang chặn đường vào Ngai Vàng! Giải đúng các câu đố tư duy logic nhiều bước để Ronie tung chiêu thức Sao Băng đánh bại Boss!',
+    gameplayType: 'BOSS_BATTLE',
+    region: 'Lâu Đài Nhi Mami',
+    characters: {
+      primary: 'ronie',
+      secondary: 'cookie_monster',
+      secondaryName: 'Quái Vật Khổng Lồ',
+    },
+    mathTopic: 'logical_thinking',
+    difficulty: 4,
+    questionCount: 5,
+    targetProgress: 100,
+    stepPerCorrect: 20,
+    stepPerWrong: 15,
+    maxMistakes: 3,
+    reward: {
+      stars: 3,
+      exp: 400,
+      badgeId: 'badge_grand_champion',
+      itemReward: 'Cúp Chiến Thắng Hoàng Gia',
+    },
+    dialogue: {
+      intro: 'Grừ rừ rừ! Ta là Quái Vật Bánh Quy Khổng Lồ! Ai giải được các câu đố tư duy logic siêu cấp mới được bước qua đây!',
+      victory: 'Quái vật giơ cờ trắng chịu thua và xin làm bạn tốt của Ronie! Vương Quốc Toán Học đã hoàn toàn hòa bình!',
+      defeat: 'Ronie bị trúng đòn hắt xì nhẹ của Quái vật rồi! Hãy uống một ngụm sữa và quay lại đấu tiếp nào!',
+      hintPrompt: 'Bình tĩnh đọc từng câu đố logic, tính toán từng bước để tung đòn sao băng chuẩn xác!',
+    },
+    bgTheme: 'from-indigo-950 via-rose-950 to-slate-950',
+  },
 };
 
 export const ALL_MISSIONS_LIST: IMissionConfig[] = Object.values(MISSION_CATALOG);
