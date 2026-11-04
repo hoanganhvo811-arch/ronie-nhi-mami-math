@@ -9,6 +9,8 @@ import { RewardEngine } from './RewardEngine';
 import { QueenNhiMamiAvatar } from '../character/QueenNhiMamiAvatar';
 import { RonieAvatar } from '../character/RonieAvatar';
 import { soundManager } from '../../services/audio/AudioManager';
+import { TreasureChestCelebration } from '../../design-system/TreasureChestCelebration';
+import { CartoonButton } from '../../design-system/CartoonButton';
 
 interface RoyalRewardModalProps {
   rewardItem: IRewardItem;
@@ -123,20 +125,23 @@ export const RoyalRewardModal: React.FC<RoyalRewardModalProps> = ({
         {!isOpened ? (
           <div
             onClick={handleOpenChest}
-            className="my-5 cursor-pointer flex flex-col items-center transform transition-transform hover:scale-105 active:scale-95 group z-10"
+            className="my-4 cursor-pointer flex flex-col items-center transform transition-transform hover:scale-105 active:scale-95 group z-10"
           >
-            <div className="w-32 h-32 rounded-3xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-200 border-4 border-amber-300 shadow-2xl flex items-center justify-center text-6xl animate-bounce shadow-amber-500/50">
-              🎁
+            <div className="relative">
+              <div className="w-36 h-36 rounded-3xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-200 border-4 border-amber-300 shadow-[0_12px_24px_rgba(245,158,11,0.5)] flex items-center justify-center text-6xl animate-bounce">
+                🎁
+              </div>
+              <div className="absolute -top-2 -right-2 text-3xl animate-spin">✨</div>
             </div>
-            <span className="mt-3 px-4 py-1.5 bg-gradient-to-r from-rose-500 to-amber-500 text-white font-comic font-black text-xs rounded-full shadow-lg border border-white/40 animate-pulse">
-              👉 Chạm vào hộp quà để mở!
+            <span className="mt-3 px-5 py-2 bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-comic font-black text-xs sm:text-sm rounded-full shadow-[0_4px_0_#9f1239] border border-white animate-pulse">
+              👉 Chạm Vào Rương Để Mở Ngay!
             </span>
           </div>
         ) : (
           /* GIAI ĐOẠN 2: HỘP QUÀ ĐÃ MỞ - HIỂN THỊ CHI TIẾT VẬT PHẨM */
-          <div className="w-full my-3 flex flex-col items-center z-10 animate-scaleUp">
+          <div className="w-full my-2 flex flex-col items-center z-10 animate-scaleUp">
             {/* THẺ VẬT PHẨM 3D PASTEL */}
-            <div className="w-full bg-white/95 rounded-2xl p-4 border-3 border-amber-300 shadow-xl flex items-center gap-4">
+            <div className="w-full bg-white/95 rounded-3xl p-4 border-3 border-amber-300 shadow-xl flex items-center gap-4">
               <div
                 className="w-20 h-20 rounded-2xl flex items-center justify-center text-5xl shadow-inner border-2 border-white shrink-0 animate-bounce"
                 style={{ backgroundColor: rewardItem.colorAccent || '#FEF3C7' }}
@@ -169,11 +174,11 @@ export const RoyalRewardModal: React.FC<RoyalRewardModalProps> = ({
 
             {/* THÔNG BÁO EXP & LÊN CẤP */}
             <div className="flex items-center gap-3 my-2.5">
-              <span className="px-3 py-1 bg-indigo-500/40 text-amber-300 font-comic font-black text-xs rounded-full border border-amber-400/40">
+              <span className="px-3.5 py-1 bg-indigo-500/40 text-amber-300 font-comic font-black text-xs rounded-full border border-amber-400/40">
                 ⭐ +{xpGained} EXP
               </span>
               {didLevelUp && (
-                <span className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-comic font-black text-xs rounded-full shadow-lg border border-white animate-bounce">
+                <span className="px-3.5 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-comic font-black text-xs rounded-full shadow-lg border border-white animate-bounce">
                   🎉 LÊN CẤP {newLevel}!
                 </span>
               )}
@@ -181,32 +186,36 @@ export const RoyalRewardModal: React.FC<RoyalRewardModalProps> = ({
           </div>
         )}
 
-        {/* NÚT BẤM ĐIỀU HƯỚNG */}
+        {/* NÚT BẤM ĐIỀU HƯỚNG 3D */}
         {isOpened && (
           <div className="w-full flex flex-col gap-2.5 mt-2 z-10 animate-fade-in">
             {/* CẤT VÀO PHÒNG ĐỒ CHƠI */}
-            <button
+            <CartoonButton
+              color="pink"
+              size="md"
+              icon={<ArrowRight className="w-4 h-4" />}
               onClick={() => {
                 soundManager.playTap();
                 onGoToToyRoom();
               }}
-              className="w-full py-3 px-4 bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 hover:opacity-95 active:scale-95 text-white font-comic font-black text-sm rounded-2xl shadow-xl border-2 border-white flex items-center justify-center gap-2 cursor-pointer transition-all"
+              className="w-full"
             >
-              <span>🧸 Cất Vào Phòng Đồ Chơi Ngay!</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              🧸 Cất Vào Phòng Đồ Chơi Ngay!
+            </CartoonButton>
 
             {/* VỀ LÂU ĐÀI HOÀNG GIA */}
-            <button
+            <CartoonButton
+              color="purple"
+              size="sm"
+              icon={<Castle className="w-4 h-4" />}
               onClick={() => {
                 soundManager.playTap();
                 onGoToCastle();
               }}
-              className="w-full py-2.5 px-4 bg-slate-800/80 hover:bg-slate-700 active:scale-95 text-amber-200 font-comic font-bold text-xs rounded-xl border border-slate-600 flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+              className="w-full"
             >
-              <Castle className="w-4 h-4" />
-              <span>Yết Kiến Nữ Hoàng Tại Lâu Đài</span>
-            </button>
+              Yết Kiến Nữ Hoàng Tại Lâu Đài 👑
+            </CartoonButton>
           </div>
         )}
       </div>

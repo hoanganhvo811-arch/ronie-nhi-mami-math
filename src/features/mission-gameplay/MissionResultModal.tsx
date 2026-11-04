@@ -7,6 +7,8 @@ import { Star, Award, RotateCcw, Castle, Compass, Sparkles } from 'lucide-react'
 import { RonieAvatar } from '../character/RonieAvatar';
 import { QueenNhiMamiAvatar } from '../character/QueenNhiMamiAvatar';
 import type { IMissionConfig, IMissionRunState } from '../../mission-engine/types';
+import { TreasureChestCelebration } from '../../design-system/TreasureChestCelebration';
+import { CartoonButton } from '../../design-system/CartoonButton';
 
 interface MissionResultModalProps {
   config: IMissionConfig;
@@ -56,83 +58,59 @@ export const MissionResultModal: React.FC<MissionResultModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 animate-fade-in">
       <div
-        className={`relative w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl text-center flex flex-col items-center border-4 ${
+        className={`relative w-full max-w-lg rounded-3xl p-5 sm:p-7 shadow-2xl text-center flex flex-col items-center border-4 ${
           isVictory
-            ? 'bg-gradient-to-b from-amber-50 via-pink-50 to-indigo-50 border-amber-400'
+            ? 'bg-gradient-to-b from-amber-50 via-pink-50 to-purple-50 border-amber-400'
             : 'bg-gradient-to-b from-slate-100 to-sky-50 border-sky-400'
         }`}
       >
-        {/* AVATAR NHÂN VẬT & HUY HIỆU */}
-        <div className="-mt-16 mb-2 flex items-end justify-center gap-2">
-          {isVictory ? (
-            <>
-              <QueenNhiMamiAvatar size="sm" state="clapping" variant="photo" />
-              <div className="scale-110">
-                <RonieAvatar size="lg" state="victory" variant="photo" />
-              </div>
-            </>
-          ) : (
-            <RonieAvatar size="lg" state="sad" variant="photo" />
-          )}
-        </div>
-
-        {/* TIÊU ĐỀ CHIẾN THẮNG HOẶC THỬ LẠI */}
         {isVictory ? (
           <>
-            <div className="flex items-center gap-1.5 text-amber-500 font-comic font-black text-xs uppercase tracking-wider mb-1">
-              <Sparkles className="w-4 h-4" />
-              <span>Nhiệm Vụ Hoàn Thành Xuất Sắc</span>
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-comic font-black text-rose-600 mb-2 drop-shadow-sm">
-              🎉 CHIẾN THẮNG! 🎉
+            {/* RƯƠNG BÁU PHÁT SÁNG & HÀO QUANG MẶT TRỜI (Image 3 Reference) */}
+            <TreasureChestCelebration stars={starsEarned} score={config.reward.exp}>
+              <div className="flex items-center justify-center gap-3 my-1">
+                <QueenNhiMamiAvatar size="sm" state="clapping" variant="photo" />
+                <RonieAvatar size="lg" state="victory" variant="photo" />
+              </div>
+            </TreasureChestCelebration>
+
+            <h2 className="text-2xl sm:text-3xl font-comic font-black text-rose-600 mb-1 drop-shadow-sm animate-bounce">
+              🎉 CHIẾN THẮNG HOÀNG GIA! 🎉
             </h2>
 
-            {/* SỐ SAO THƯỞNG */}
-            <div className="flex items-center justify-center gap-2 my-2">
-              {[1, 2, 3].map((starIdx) => (
-                <Star
-                  key={starIdx}
-                  className={`w-9 h-9 transition-transform duration-500 ${
-                    starIdx <= starsEarned
-                      ? 'fill-amber-400 text-amber-500 scale-110 animate-bounce'
-                      : 'text-slate-300'
-                  }`}
-                  style={{ animationDelay: `${starIdx * 150}ms` }}
-                />
-              ))}
-            </div>
-
             {/* PHẦN THƯỞNG NHIỆM VỤ */}
-            <div className="w-full bg-white/80 border-2 border-amber-300 rounded-2xl p-3 my-3 shadow-inner flex items-center justify-around">
+            <div className="w-full bg-white/90 border-3 border-amber-300 rounded-2xl p-3 my-2 shadow-inner flex items-center justify-around">
               <div className="flex flex-col items-center">
                 <span className="text-[10px] font-comic font-bold text-slate-500">ĐIỂM KINH NGHIỆM</span>
                 <span className="text-base font-comic font-black text-indigo-600">+{config.reward.exp} EXP</span>
               </div>
               <div className="h-8 w-px bg-slate-200" />
               <div className="flex flex-col items-center">
-                <span className="text-[10px] font-comic font-bold text-slate-500">VẬT PHẨM</span>
+                <span className="text-[10px] font-comic font-bold text-slate-500">VẬT PHẨM KHO BÁU</span>
                 <span className="text-xs font-comic font-black text-pink-600 flex items-center gap-1">
-                  <Award className="w-4 h-4" />
+                  <Award className="w-4 h-4 text-amber-500" />
                   {config.reward.itemReward}
                 </span>
               </div>
             </div>
 
-            {/* LỜI KHEN TỪ NỮ HOÀNG HOẶC NHÂN VẬT */}
-            <p className="text-xs font-comic font-bold text-slate-700 italic bg-amber-100/60 p-2.5 rounded-xl border border-amber-200/80 mb-5">
+            {/* LỜI KHEN TỪ NỮ HOÀNG */}
+            <p className="text-xs font-comic font-bold text-slate-700 italic bg-amber-100/70 p-2.5 rounded-xl border border-amber-300 mb-4">
               "{config.dialogue.victory}"
             </p>
           </>
         ) : (
           <>
+            <div className="-mt-14 mb-2 flex items-end justify-center">
+              <RonieAvatar size="lg" state="sad" variant="photo" />
+            </div>
             <h2 className="text-2xl font-comic font-black text-sky-800 mb-2">
-              💪 CỐ GẮNG LÊN BÉ NHÉ!
+              💪 CỐ GẮNG LÊN BÉ YÊU!
             </h2>
             <p className="text-xs font-comic font-bold text-slate-600 mb-3">
               "{config.dialogue.defeat}"
             </p>
-            <div className="w-full bg-sky-100/80 border border-sky-300 rounded-xl p-3 mb-5 text-left">
+            <div className="w-full bg-sky-100/80 border border-sky-300 rounded-xl p-3 mb-4 text-left">
               <span className="text-[11px] font-comic font-black text-sky-900 block mb-1">
                 💡 Lời khuyên của Nữ hoàng:
               </span>
@@ -143,30 +121,34 @@ export const MissionResultModal: React.FC<MissionResultModalProps> = ({
           </>
         )}
 
-        {/* NÚT BẤM ĐIỀU HƯỚNG */}
+        {/* NÚT BẤM ĐIỀU HƯỚNG 3D */}
         <div className="w-full flex flex-col gap-2.5">
-          {/* NÚT VỀ LÂU ĐÀI (CRITERION 10: KHI NHIỆM VỤ KẾT THÚC PHẢI CHUYỂN ĐƯỢC VỀ LÂU ĐÀI) */}
-          <button
+          {/* NÚT VỀ LÂU ĐÀI */}
+          <CartoonButton
+            color="pink"
+            size="md"
+            icon={<Castle className="w-5 h-5" />}
             onClick={onReturnToCastle}
-            className="w-full py-3.5 px-4 bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 hover:opacity-95 active:scale-95 text-white font-comic font-black text-sm rounded-2xl shadow-xl border-2 border-white flex items-center justify-center gap-2 cursor-pointer transition-all"
+            className="w-full"
           >
-            <Castle className="w-5 h-5" />
-            <span>Về Lâu Đài Hoàng Gia 🏰</span>
-          </button>
+            Về Lâu Đài Hoàng Gia 🏰
+          </CartoonButton>
 
-          {/* NÚT CHƠI LẠI HOẶC THỬ LẠI */}
-          <button
+          {/* NÚT CHƠI LẠI */}
+          <CartoonButton
+            color="orange"
+            size="sm"
+            icon={<RotateCcw className="w-4 h-4" />}
             onClick={onRetry}
-            className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 active:scale-95 text-amber-950 font-comic font-black text-xs rounded-xl shadow-md border border-amber-300 flex items-center justify-center gap-2 cursor-pointer transition-all"
+            className="w-full"
           >
-            <RotateCcw className="w-4 h-4" />
-            <span>{isVictory ? 'Chơi Lại Màn Này' : 'Thử Lại Ngay Nào'}</span>
-          </button>
+            {isVictory ? 'Chơi Lại Màn Này 🔄' : 'Thử Lại Ngay Nào 🚀'}
+          </CartoonButton>
 
           {/* CHỌN NHIỆM VỤ KHÁC */}
           <button
             onClick={onReturnToMissions}
-            className="w-full py-2 px-4 bg-slate-200/80 hover:bg-slate-300 active:scale-95 text-slate-700 font-comic font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+            className="w-full py-2 px-4 bg-slate-200/90 hover:bg-slate-300 active:scale-95 text-slate-700 font-comic font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-all"
           >
             <Compass className="w-4 h-4" />
             <span>Chọn Nhiệm Vụ Khác</span>

@@ -354,17 +354,38 @@ export const AppShell: React.FC = () => {
         />
       )}
 
-      {/* 8. ĐẤU TRƯỜNG TOÁN HỌC (MATH ARENA) */}
+      {/* 8. ĐẤU TRƯỜNG TOÁN HỌC (MATH ARENA - MAGICAL FOREST CLASSROOM - Image 2 Reference) */}
       {screen === 'MATH_ARENA' && currentQuestion && (
-        <div className="relative w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-sky-900 via-indigo-950 to-slate-950 overflow-y-auto">
-          {/* NÚT QUAY LẠI CHỌN NHIỆM VỤ */}
-          <button
-            type="button"
-            onClick={handleReturnToMissions}
-            className="absolute top-4 left-4 z-30 px-4 py-2 bg-slate-800/80 hover:bg-slate-800 text-slate-200 rounded-2xl border border-slate-600 font-bold text-xs md:text-sm flex items-center gap-2 cursor-pointer shadow-lg active:scale-95 transition-all"
-          >
-            <span>👈 Quay Lại Nhiệm Vụ</span>
-          </button>
+        <div className="relative w-full min-h-screen flex flex-col items-center justify-center p-3 sm:p-5 bg-gradient-to-b from-sky-300 via-emerald-100 to-emerald-200 overflow-y-auto overflow-x-hidden select-none">
+          {/* HẬU CẢNH RỪNG XANH THẦN TIÊN VỚI HOA LÁ & ÁNH NẮNG */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {/* Tán cây xanh râm mát phía trên */}
+            <div className="absolute -top-16 left-0 right-0 h-40 bg-gradient-to-b from-emerald-800/20 to-transparent" />
+            {/* Các vòm hoa & cánh bướm dập dờn */}
+            <div className="absolute top-6 left-8 text-4xl animate-bounce">🌸</div>
+            <div className="absolute top-14 right-12 text-4xl animate-bounce" style={{ animationDelay: '400ms' }}>🌸</div>
+            <div className="absolute top-28 left-20 text-3xl animate-pulse">🦋</div>
+            <div className="absolute top-20 right-28 text-3xl animate-pulse" style={{ animationDelay: '600ms' }}>🦋</div>
+            <div className="absolute bottom-8 left-6 text-4xl animate-pulse">🍄</div>
+            <div className="absolute bottom-10 right-8 text-4xl animate-pulse" style={{ animationDelay: '800ms' }}>🍄</div>
+            <div className="absolute bottom-6 left-1/4 text-3xl">🌼</div>
+            <div className="absolute bottom-8 right-1/4 text-3xl">🌺</div>
+          </div>
+
+          {/* NÚT QUAY LẠI CHỌN NHIỆM VỤ DẠNG NÚT GỖ 3D */}
+          <div className="w-full max-w-4xl flex items-center justify-between mb-2 relative z-30">
+            <button
+              type="button"
+              onClick={handleReturnToMissions}
+              className="px-4 py-2 bg-gradient-to-b from-amber-600 via-amber-700 to-amber-800 text-white rounded-2xl border-2 border-amber-400 font-comic font-black text-xs sm:text-sm flex items-center gap-2 cursor-pointer shadow-[0_4px_0_#451a03] active:translate-y-1 active:shadow-none transition-all"
+            >
+              <span>👈 Quay Lại Nhiệm Vụ</span>
+            </button>
+
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border-2 border-amber-300 shadow-sm font-comic font-black text-xs text-amber-900">
+              <span>⭐ Tổng Sao: {totalStars}</span>
+            </div>
+          </div>
 
           <VisualMathQuiz
             key={currentQuestion.id}

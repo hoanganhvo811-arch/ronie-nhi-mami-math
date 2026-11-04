@@ -47,11 +47,26 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
 
   return (
     <div className="relative w-full h-full min-h-screen flex flex-col items-center justify-between p-6 md:p-10 bg-gradient-to-b from-sky-300 via-pink-200 to-amber-100 overflow-hidden select-none">
-      {/* CÁC ĐÁM MÂY PASTEL TRÔI LƠ LỬNG */}
+      {/* CÁC ĐÁM MÂY PASTEL TRÔI LƠ LỬNG & HOA ANH ĐÀO (Image 1 Courtyard) */}
       <div className="absolute top-8 left-12 text-6xl opacity-70 animate-pulse pointer-events-none">☁️</div>
       <div className="absolute top-24 right-16 text-7xl opacity-60 pointer-events-none">☁️</div>
       <div className="absolute bottom-32 left-10 text-5xl opacity-50 pointer-events-none">✨</div>
       <div className="absolute bottom-40 right-12 text-6xl opacity-50 pointer-events-none">🌸</div>
+      <div className="absolute top-16 left-1/4 text-3xl animate-bounce pointer-events-none">🌸</div>
+      <div className="absolute top-28 right-1/4 text-3xl animate-bounce pointer-events-none" style={{ animationDelay: '300ms' }}>🌸</div>
+      <div className="absolute top-36 left-10 text-3xl animate-pulse pointer-events-none">🦋</div>
+      <div className="absolute top-44 right-14 text-3xl animate-pulse pointer-events-none" style={{ animationDelay: '500ms' }}>🦋</div>
+
+      {/* DẢI BĂNG TÍM HOÀNG GIA CHÀO ĐÓN (Image 1 Welcome Ribbon Banner) */}
+      <div className="z-20 w-full max-w-lg mx-auto flex items-center justify-center -mt-2 mb-2 relative">
+        <div className="px-8 sm:px-14 py-2 sm:py-3 bg-gradient-to-r from-purple-700 via-pink-600 to-purple-700 text-white font-comic font-black text-xl sm:text-2xl rounded-full border-3 border-amber-300 shadow-[0_8px_20px_rgba(147,51,234,0.4)] tracking-wider uppercase text-center flex items-center gap-2">
+          <span>✨</span>
+          <span>WELCOME • CHÀO MỪNG BÉ</span>
+          <span>✨</span>
+        </div>
+        <div className="hidden sm:block absolute -left-4 top-1/2 -translate-y-1/2 text-2xl">🎀</div>
+        <div className="hidden sm:block absolute -right-4 top-1/2 -translate-y-1/2 text-2xl">🎀</div>
+      </div>
 
       {/* DÂY TƠ NHỆN TỪ ĐỈNH MÀN HÌNH */}
       <div
@@ -61,7 +76,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
       />
 
       {/* TOP: HUY HIỆU GIÁO DỤC */}
-      <div className="z-10 flex items-center gap-2 px-5 py-2 rounded-full bg-white/80 backdrop-blur-md shadow-md border-2 border-amber-300">
+      <div className="z-10 flex items-center gap-2 px-5 py-2 rounded-full bg-white/85 backdrop-blur-md shadow-md border-2 border-amber-300">
         <Sparkles className="w-5 h-5 text-amber-500 animate-spin" />
         <span className="font-comic font-black text-xs md:text-sm text-slate-800 tracking-wide">
           BỘ GIÁO DỤC & ĐÀO TẠO • TOÁN LỚP 1 (GDPT 2018)
@@ -102,16 +117,35 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
             </span>
           </div>
 
-          {/* NỮ HOÀNG NHI MAMI CHÀO ĐÓN */}
+          {/* NỮ HOÀNG NHI MAMI CHÀO ĐÓN & CÁC BẠN THÚ RỪNG (Image 1 Bunny & Chipmunk) */}
           <div
-            className={`flex flex-col items-center transition-all duration-700 ease-out transform ${
+            className={`flex items-end gap-2 sm:gap-4 transition-all duration-700 ease-out transform ${
               showQueenGreeting ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-8'
             }`}
           >
-            <QueenNhiMamiAvatar size="xl" speaking={showQueenGreeting} variant="photo" />
-            <span className="mt-2 px-3 py-1 bg-purple-600 text-white font-black text-xs rounded-full shadow-md">
-              Nữ Hoàng Nhi Mami
-            </span>
+            {/* Bạn thỏ trắng tai dài (Image 1 Bunny) */}
+            <div className="hidden sm:flex flex-col items-center animate-bounce cursor-pointer" title="Bạn Thỏ Trắng">
+              <span className="text-4xl sm:text-5xl drop-shadow">🐰</span>
+              <span className="text-[10px] font-comic font-black text-pink-700 bg-white/90 px-2 py-0.5 rounded-full shadow-sm mt-1">
+                Thỏ Con
+              </span>
+            </div>
+
+            {/* Nữ Hoàng Nhi Mami */}
+            <div className="flex flex-col items-center">
+              <QueenNhiMamiAvatar size="xl" speaking={showQueenGreeting} variant="photo" />
+              <span className="mt-2 px-3.5 py-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-comic font-black text-xs rounded-full shadow-md border border-white">
+                Nữ Hoàng Nhi Mami
+              </span>
+            </div>
+
+            {/* Bạn sóc nhỏ đáng yêu (Image 1 Squirrel/Chipmunk) */}
+            <div className="hidden sm:flex flex-col items-center animate-pulse cursor-pointer" title="Bạn Sóc Nhỏ">
+              <span className="text-4xl sm:text-5xl drop-shadow">🐿️</span>
+              <span className="text-[10px] font-comic font-black text-amber-800 bg-white/90 px-2 py-0.5 rounded-full shadow-sm mt-1">
+                Sóc Nhí
+              </span>
+            </div>
           </div>
         </div>
 
@@ -133,19 +167,19 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onStart }) => {
         )}
       </div>
 
-      {/* FOOTER: NÚT BẮT ĐẦU TO LỚN, 3D CUTE JELLY BUTTON */}
+      {/* FOOTER: NÚT BẮT ĐẦU TO LỚN, 3D JELLY BUTTON */}
       <footer className="w-full max-w-md flex flex-col items-center gap-3 z-10 mb-2">
         <button
           type="button"
           onClick={handleStartGame}
-          className="w-full py-5 px-10 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 hover:brightness-110 text-white font-comic font-black text-2xl md:text-3xl rounded-3xl border-4 border-white shadow-[0_12px_24px_rgba(16,185,129,0.4)] flex items-center justify-center gap-4 cursor-pointer transform active:scale-95 transition-all animate-bounce"
+          className="w-full py-4 sm:py-5 px-8 sm:px-10 bg-gradient-to-b from-emerald-400 via-teal-500 to-emerald-600 hover:brightness-105 active:translate-y-2 active:shadow-none text-white font-comic font-black text-xl sm:text-2xl md:text-3xl rounded-3xl border-4 border-emerald-200 shadow-[0_10px_0_#065f46,0_16px_28px_rgba(4,120,87,0.4)] flex items-center justify-center gap-4 cursor-pointer transition-all animate-bounce"
         >
-          <Play className="w-9 h-9 fill-white drop-shadow-md" />
+          <Play className="w-8 h-8 sm:w-10 sm:h-10 fill-white drop-shadow-md" />
           <span>BẮT ĐẦU PHIÊU LƯU!</span>
         </button>
 
-        <span className="text-xs font-bold text-slate-600">
-          Chạm vào màn hình để cùng Ronie mở cánh cổng lâu đài ✨
+        <span className="text-xs font-bold text-slate-700 bg-white/60 px-3 py-1 rounded-full">
+          Chạm vào nút để cùng Ronie mở cánh cổng lâu đài ✨
         </span>
       </footer>
     </div>

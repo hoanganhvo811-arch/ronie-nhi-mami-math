@@ -222,94 +222,163 @@ export const ToyRoom: React.FC<ToyRoomProps> = ({ onBack, onHome, totalStars = 1
         totalStars={totalStars}
       />
 
-      {/* SÂN KHẤU TRUNG TÂM PHÒNG ĐỒ CHƠI */}
-      <main className="w-full max-w-5xl mx-auto p-4 md:p-6 flex flex-col my-auto z-10">
-        {/* KHUNG CẢNH 3D PASTEL: KỆ ĐỒ CHƠI, RONIE & THẢM TRẢI SÀN */}
-        <div className="relative w-full rounded-3xl p-5 sm:p-6 border-4 border-amber-300 shadow-2xl bg-white/70 backdrop-blur-md mb-4 flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* CỘT TRÁI: KỆ ĐỒ CHƠI GỖ 6 Ô */}
-          <div className="flex-1 w-full flex flex-col items-center md:items-start">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-comic font-black text-amber-950 bg-amber-200 px-3 py-1 rounded-full border border-amber-300">
-                🪵 Kệ Đồ Chơi Gỗ Hoàng Gia (6 Ngăn)
+      {/* SÂN KHẤU TRUNG TÂM PHÒNG ĐỒ CHƠI (Image 5 Reference: 3D Dressing Room & Toy Room) */}
+      <main className="w-full max-w-5xl mx-auto p-3 sm:p-5 flex flex-col my-auto z-10">
+        {/* KHUNG CẢNH 3D PHÒNG THAY ĐỒ & ĐỒ CHƠI: GƯƠNG ĐÈN TRÒN, THẢM NHUNG TÍM & GIÁ TREO ĐỒ */}
+        <div className="relative w-full rounded-3xl p-4 sm:p-6 border-4 border-amber-300 shadow-2xl bg-white/75 backdrop-blur-md mb-4 flex flex-col md:flex-row items-center justify-around gap-4 sm:gap-6 overflow-hidden">
+          {/* 1. GƯƠNG TRANG ĐIỂM VÒM CÓ DÃY ĐÈN TRÒN PHÁT SÁNG (Image 5 Vanity Mirror with Round Lights) */}
+          <div className="relative w-40 sm:w-48 h-56 sm:h-64 rounded-t-full bg-gradient-to-b from-purple-800 via-indigo-900 to-purple-950 p-2.5 border-4 border-purple-950 shadow-[0_10px_20px_rgba(0,0,0,0.3)] flex flex-col items-center shrink-0">
+            {/* CÁC BÓNG ĐÈN TRÒN VÀNG SÁNG XUNG QUANH VIỀN GƯƠNG */}
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-yellow-200 border-2 border-yellow-400 shadow-[0_0_12px_#fde047] animate-pulse" />
+            <div className="absolute top-6 left-0.5 w-3.5 h-3.5 rounded-full bg-yellow-200 border-2 border-yellow-400 shadow-[0_0_10px_#fde047]" />
+            <div className="absolute top-6 right-0.5 w-3.5 h-3.5 rounded-full bg-yellow-200 border-2 border-yellow-400 shadow-[0_0_10px_#fde047]" />
+            <div className="absolute top-20 left-0.5 w-3.5 h-3.5 rounded-full bg-yellow-200 border-2 border-yellow-400 shadow-[0_0_10px_#fde047]" />
+            <div className="absolute top-20 right-0.5 w-3.5 h-3.5 rounded-full bg-yellow-200 border-2 border-yellow-400 shadow-[0_0_10px_#fde047]" />
+            <div className="absolute top-36 left-0.5 w-3.5 h-3.5 rounded-full bg-yellow-200 border-2 border-yellow-400 shadow-[0_0_10px_#fde047]" />
+            <div className="absolute top-36 right-0.5 w-3.5 h-3.5 rounded-full bg-yellow-200 border-2 border-yellow-400 shadow-[0_0_10px_#fde047]" />
+
+            {/* MẶT GƯƠNG THẦN KỲ PHẢN CHIẾU ÁNH SÁNG */}
+            <div className="relative w-full h-full rounded-t-full bg-gradient-to-tr from-sky-200 via-sky-100 to-white border-2 border-purple-400 overflow-hidden flex flex-col items-center justify-end p-2 shadow-inner">
+              <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_40%,rgba(255,255,255,0.7)_50%,transparent_60%)] pointer-events-none" />
+              <span className="text-[10px] font-comic font-black text-purple-900 bg-white/90 px-2 py-0.5 rounded-full z-10 shadow-sm">
+                🪞 Gương Thần Kỳ
               </span>
             </div>
 
-            {/* LƯỚI 6 Ô KỆ GỖ */}
-            <div className="grid grid-cols-3 gap-2.5 sm:gap-3 w-full max-w-md bg-amber-950/20 p-3 rounded-2xl border-2 border-amber-700/40 shadow-inner">
-              {shelfSlots.map((toyId, slotIdx) => {
-                const toyDef = toyId ? getRewardItemById(toyId) : null;
-                return (
-                  <div
-                    key={slotIdx}
-                    className="relative w-full h-20 sm:h-24 rounded-2xl border-3 border-amber-400 bg-gradient-to-b from-amber-100 to-amber-200 flex flex-col items-center justify-center shadow-md cursor-pointer group hover:scale-105 active:scale-95 transition-all"
-                  >
-                    {toyDef ? (
-                      <>
-                        <div
-                          onClick={() => handleTapPlacedToy(toyDef.id)}
-                          className="flex flex-col items-center"
-                          title={toyDef.name}
-                        >
-                          <span className="text-3xl sm:text-4xl animate-bounce drop-shadow">
-                            {toyDef.icon}
-                          </span>
-                          <span className="text-[9px] font-comic font-black text-amber-950 truncate max-w-[75px] mt-0.5">
-                            {toyDef.name}
-                          </span>
-                        </div>
-                        {/* Nút gỡ đồ chơi */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveToyFromSlot(slotIdx);
-                          }}
-                          className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px] shadow cursor-pointer"
-                          title="Cất vào kho"
-                        >
-                          ✕
-                        </button>
-                      </>
-                    ) : (
-                      <div
-                        onClick={() => setSelectedSlotIndex(slotIdx)}
-                        className="flex flex-col items-center text-amber-700/60 hover:text-amber-900"
-                      >
-                        <Plus className="w-6 h-6 stroke-[3]" />
-                        <span className="text-[8px] font-comic font-bold">Đặt đồ chơi</span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            {/* BÀN DƯỚI GƯƠNG */}
+            <div className="w-full h-4 bg-blue-700 rounded-b-xl border-t-2 border-amber-300 shadow-md -mb-1" />
           </div>
 
-          {/* CỘT PHẢI: BÉ RONIE ĐỨNG TRÊN THẢM PHÒNG THAY ĐỒ */}
-          <div className="flex flex-col items-center text-center">
-            {/* THẢM TRẢI SÀN BẦU DỤC */}
+          {/* 2. TRUNG TÂM: RONIE & THÚ CƯNG ĐỨNG TRÊN THẢM NHUNG TÍM (Image 5 Ronie & Pets) */}
+          <div className="relative flex flex-col items-center my-2">
+            {/* THẢM TRÒN NHUNG TÍM */}
             <div
-              className="relative p-6 sm:p-8 rounded-full border-4 border-amber-300 shadow-xl flex items-center justify-center transition-colors duration-500"
-              style={{ backgroundColor: carpetColor }}
+              className="relative w-52 h-28 sm:w-64 sm:h-32 rounded-[50%] border-4 border-amber-300 shadow-[0_12px_24px_rgba(0,0,0,0.25)] flex items-center justify-center transition-colors duration-500"
+              style={{ backgroundColor: carpetColor || '#7E22CE' }}
             >
-              <div className="scale-110 sm:scale-125">
+              <div className="scale-115 sm:scale-130 -mt-8 sm:-mt-12 z-10">
                 <RonieAvatar
                   size="xl"
-                  state="celebrate"
+                  state="celebrating"
                   variant="photo"
                   costumes={equippedCostumes}
                 />
               </div>
+
+              {/* BẠN CÚN XANH THÔNG MINH (Image 5 Blue Puppy) */}
+              <div className="absolute -bottom-1 -left-4 z-20 animate-bounce cursor-pointer" title="Cún con trung thành">
+                <span className="text-3xl sm:text-4xl drop-shadow">🐶</span>
+              </div>
+
+              {/* BẠN NHỆN CON VUI VẺ (Image 5 Little Spider Pet) */}
+              <div className="absolute -bottom-2 -right-4 z-20 animate-pulse cursor-pointer" title="Bé nhện đáng yêu">
+                <span className="text-3xl sm:text-4xl drop-shadow">🕷️</span>
+              </div>
             </div>
 
-            <div className="mt-2 flex flex-col items-center">
-              <span className="px-3 py-0.5 bg-rose-600 text-white font-comic font-black text-xs rounded-full shadow-md">
+            <div className="mt-3 flex flex-col items-center">
+              <span className="px-3.5 py-0.5 bg-gradient-to-r from-rose-500 to-amber-500 text-white font-comic font-black text-xs rounded-full shadow-[0_3px_0_#9f1239] border border-white">
                 Hiệp Sĩ Ronie
               </span>
-              <span className="text-[10px] font-comic font-bold text-slate-700 mt-0.5">
+              <span className="text-[10px] font-comic font-bold text-slate-800 mt-1 bg-white/80 px-2.5 py-0.5 rounded-full border border-amber-200">
                 {equippedCostumes.cloak ? 'Áo Choàng Hoàng Gia • ' : ''}
                 {equippedCostumes.hat ? 'Vương Miện Nhí' : 'Trang Phục Nhện Tinh Nghịch'}
               </span>
             </div>
+          </div>
+
+          {/* 3. TỦ TREO TRANG PHỤC GỖ CÓ BÁNH XE (Image 5 Rolling Garment Rack) */}
+          <div className="relative w-44 sm:w-52 flex flex-col items-center shrink-0">
+            <span className="text-[11px] font-comic font-black text-amber-950 mb-1">
+              👗 Giá Treo Trang Phục
+            </span>
+            <div className="w-full bg-gradient-to-b from-amber-800 to-amber-950 p-2.5 rounded-2xl border-3 border-amber-950 shadow-[0_8px_16px_rgba(0,0,0,0.3)]">
+              {/* Thanh xà kim loại vàng */}
+              <div className="w-full h-2 bg-gradient-to-r from-amber-300 via-yellow-100 to-amber-400 rounded-full shadow-inner mb-2.5" />
+              {/* Trang phục móc treo */}
+              <div className="flex items-center justify-around gap-1">
+                <span className="text-2xl sm:text-3xl hover:scale-125 transition-transform cursor-pointer" title="Áo Choàng">
+                  🧥
+                </span>
+                <span className="text-2xl sm:text-3xl hover:scale-125 transition-transform cursor-pointer" title="Mặt Nạ">
+                  🎭
+                </span>
+                <span className="text-2xl sm:text-3xl hover:scale-125 transition-transform cursor-pointer" title="Vương Miện">
+                  👑
+                </span>
+                <span className="text-2xl sm:text-3xl hover:scale-125 transition-transform cursor-pointer" title="Giày Hiệp Sĩ">
+                  👢
+                </span>
+              </div>
+            </div>
+            {/* Chân giá đỡ & bánh xe con lăn */}
+            <div className="w-full flex justify-between px-3 -mt-0.5">
+              <div className="w-2 h-5 bg-amber-900 rounded-b" />
+              <div className="w-2 h-5 bg-amber-900 rounded-b" />
+            </div>
+            <div className="w-full flex justify-between px-2 -mt-1">
+              <div className="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-600 shadow" />
+              <div className="w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-600 shadow" />
+            </div>
+          </div>
+        </div>
+
+        {/* KỆ ĐỒ CHƠI GỖ 6 NGĂN HOÀNG GIA (Nằm ngay bên dưới để bé dễ thao tác đặt đồ chơi) */}
+        <div className="w-full bg-gradient-to-r from-amber-900 via-amber-850 to-amber-950 p-3 sm:p-4 rounded-3xl border-3 border-amber-700 shadow-xl mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-comic font-black text-amber-200 flex items-center gap-1.5">
+              <span>🪵 Kệ Đồ Chơi Gỗ Hoàng Gia (6 Ngăn Trưng Bày)</span>
+            </span>
+            <span className="text-[10px] font-comic font-bold text-amber-300">
+              {shelfSlots.filter(Boolean).length}/6 món đã trưng bày
+            </span>
+          </div>
+
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+            {shelfSlots.map((toyId, slotIdx) => {
+              const toyDef = toyId ? getRewardItemById(toyId) : null;
+              return (
+                <div
+                  key={slotIdx}
+                  className="relative w-full h-20 sm:h-22 rounded-2xl border-3 border-amber-400/80 bg-gradient-to-b from-amber-100 to-amber-200 flex flex-col items-center justify-center shadow-md cursor-pointer group hover:scale-105 active:scale-95 transition-all"
+                >
+                  {toyDef ? (
+                    <>
+                      <div
+                        onClick={() => handleTapPlacedToy(toyDef.id)}
+                        className="flex flex-col items-center"
+                        title={toyDef.name}
+                      >
+                        <span className="text-3xl sm:text-4xl animate-bounce drop-shadow">
+                          {toyDef.icon}
+                        </span>
+                        <span className="text-[9px] font-comic font-black text-amber-950 truncate max-w-[65px] mt-0.5">
+                          {toyDef.name}
+                        </span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveToyFromSlot(slotIdx);
+                        }}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px] shadow cursor-pointer"
+                        title="Cất vào kho"
+                      >
+                        ✕
+                      </button>
+                    </>
+                  ) : (
+                    <div
+                      onClick={() => setSelectedSlotIndex(slotIdx)}
+                      className="flex flex-col items-center text-amber-800/60 hover:text-amber-950"
+                    >
+                      <Plus className="w-5 h-5 stroke-[3]" />
+                      <span className="text-[8px] font-comic font-bold">Đặt đồ chơi</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 

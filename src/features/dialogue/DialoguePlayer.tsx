@@ -10,6 +10,7 @@ import { QueenNhiMamiAvatar } from '../character/QueenNhiMamiAvatar';
 import { NPCAvatar } from '../character/NPCAvatar';
 import { npcRegistry } from '../character/npcRegistry';
 import { soundManager } from '../../services/audio/AudioManager';
+import { CartoonButton } from '../../design-system/CartoonButton';
 
 interface DialoguePlayerProps {
   conversation: IDialogueConversation;

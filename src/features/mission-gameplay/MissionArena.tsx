@@ -104,45 +104,53 @@ export const MissionArena: React.FC<MissionArenaProps> = ({
   const currentQ = runState.currentQuestion;
 
   return (
-    <div className="relative w-full min-h-screen bg-slate-900 flex flex-col justify-between p-3 sm:p-5 select-none overflow-x-hidden">
+    <div className="relative w-full min-h-screen bg-gradient-to-b from-sky-400 via-indigo-950 to-slate-950 flex flex-col justify-between p-3 sm:p-5 select-none overflow-x-hidden">
+      {/* CÁC ĐÁM MÂY & ÁNH SAO HUYỀN ẢO */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-4 left-6 text-5xl opacity-40 animate-pulse">☁️</div>
+        <div className="absolute top-8 right-10 text-5xl opacity-40">☁️</div>
+        <div className="absolute top-36 left-12 text-3xl opacity-60 animate-bounce">✨</div>
+        <div className="absolute top-48 right-16 text-3xl opacity-60 animate-spin">🌟</div>
+      </div>
+
       {/* 1. TOP HUD BAR */}
-      <div className="w-full max-w-4xl mx-auto flex items-center justify-between gap-2 bg-slate-800/90 backdrop-blur-md px-3 py-2 sm:px-5 sm:py-2.5 rounded-2xl border-2 border-slate-700 shadow-xl z-30">
+      <div className="w-full max-w-4xl mx-auto flex items-center justify-between gap-2 bg-slate-900/90 backdrop-blur-md px-3 py-2 sm:px-5 sm:py-2.5 rounded-3xl border-3 border-amber-300 shadow-[0_6px_0_#78350f,0_10px_20px_rgba(0,0,0,0.4)] z-30">
         {/* NÚT THOÁT / TẠM DỪNG */}
         <button
           onClick={() => engine.pause()}
-          className="p-2 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white rounded-xl flex items-center gap-1 text-xs font-comic font-black cursor-pointer shadow"
+          className="p-2 sm:px-3 bg-gradient-to-b from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 active:translate-y-1 text-white rounded-2xl flex items-center gap-1.5 text-xs font-comic font-black cursor-pointer shadow-[0_3px_0_#334155] border border-slate-600"
           title="Tạm dừng"
         >
-          <Pause className="w-4 h-4" />
+          <Pause className="w-4 h-4 text-amber-300" />
           <span className="hidden sm:inline">Tạm dừng</span>
         </button>
 
         {/* THÔNG TIN NHIỆM VỤ & TIẾN TRÌNH */}
         <div className="flex-1 flex flex-col items-center mx-2 max-w-xs sm:max-w-md">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-comic font-bold text-amber-300 truncate">
+            <span className="text-xs font-comic font-black text-amber-300 truncate drop-shadow-sm">
               {config.title}
             </span>
-            <span className="px-2 py-0.2 bg-indigo-600/80 text-white text-[9px] font-comic font-bold rounded-full">
+            <span className="px-2 py-0.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-comic font-black rounded-full shadow-sm">
               {config.region}
             </span>
           </div>
 
           {/* THANH TIẾN ĐỘ 100% */}
-          <div className="w-full bg-slate-700 h-3 rounded-full overflow-hidden border border-slate-600 p-0.5">
+          <div className="w-full bg-slate-800 h-3.5 rounded-full overflow-hidden border-2 border-amber-400/60 p-0.5 shadow-inner">
             <div
-              className="h-full bg-gradient-to-r from-pink-500 via-amber-400 to-emerald-400 rounded-full transition-all duration-700"
+              className="h-full bg-gradient-to-r from-pink-500 via-amber-400 to-emerald-400 rounded-full transition-all duration-700 shadow-sm"
               style={{ width: `${runState.progress}%` }}
             />
           </div>
         </div>
 
         {/* SỐ LẦN SAI CÒN LẠI (TRÁI TIM) */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-full border border-rose-500/40">
           {Array.from({ length: config.maxMistakes }).map((_, idx) => {
             const isBroken = idx < runState.mistakesCount;
             return (
-              <span key={idx} className="text-base sm:text-lg">
+              <span key={idx} className="text-base sm:text-lg animate-pulse">
                 {isBroken ? '🖤' : '❤️'}
               </span>
             );
@@ -309,22 +317,31 @@ export const MissionArena: React.FC<MissionArenaProps> = ({
               </div>
             )}
 
-            {/* CÁC NÚT ĐÁP ÁN LỰA CHỌN */}
+            {/* CÁC NÚT ĐÁP ÁN LỰA CHỌN 3D VUI NHỘN */}
             <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mt-2">
               {currentQ.options.map((option, idx) => {
                 const isSelected = selectedOption === option;
+                const colors = [
+                  'from-rose-400 via-rose-500 to-rose-600 border-rose-300 text-white shadow-[0_6px_0_#9f1239]',
+                  'from-amber-400 via-amber-500 to-amber-600 border-amber-200 text-amber-950 shadow-[0_6px_0_#92400e]',
+                  'from-emerald-400 via-emerald-500 to-emerald-600 border-emerald-300 text-white shadow-[0_6px_0_#065f46]',
+                  'from-sky-400 via-sky-500 to-sky-600 border-sky-300 text-white shadow-[0_6px_0_#0369a1]',
+                ];
+                const colorTheme = colors[idx % colors.length];
+
                 return (
                   <button
                     key={idx}
                     disabled={runState.isActionAnimating}
                     onClick={() => handleSelectOption(option)}
-                    className={`py-3.5 sm:py-4 px-3 rounded-2xl font-comic font-black text-lg sm:text-xl border-3 shadow-lg transition-all cursor-pointer ${
+                    className={`relative py-3.5 sm:py-4 px-3 rounded-2xl font-comic font-black text-xl sm:text-2xl border-3 transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-amber-400 border-amber-500 text-amber-950 scale-105 ring-4 ring-amber-300'
-                        : 'bg-gradient-to-b from-sky-50 to-indigo-50 border-indigo-200 text-indigo-900 hover:border-pink-400 hover:bg-pink-50 active:scale-95'
+                        ? 'bg-gradient-to-b from-yellow-300 via-amber-400 to-amber-500 text-amber-950 border-white shadow-[0_6px_0_#b45309] scale-105'
+                        : `bg-gradient-to-b ${colorTheme} active:translate-y-1 active:shadow-none hover:scale-105`
                     } ${runState.isActionAnimating ? 'opacity-75 cursor-not-allowed' : ''}`}
                   >
-                    {option.toString()}
+                    <div className="absolute top-1 inset-x-2 h-2.5 bg-white/30 rounded-full pointer-events-none" />
+                    <span className="relative z-10 drop-shadow-sm">{option.toString()}</span>
                   </button>
                 );
               })}
