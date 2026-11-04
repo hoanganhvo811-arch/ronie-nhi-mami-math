@@ -102,6 +102,14 @@ export class RewardEngine {
         return `Nữ hoàng Nhi Mami tự hào cài huy hiệu: "Với tài năng và lòng dũng cảm, con xứng đáng nhận ${rewardItem.name} cao quý của Vương Quốc!"`;
       case 'costume':
         return `Nữ hoàng Nhi Mami trao chiếc hộp gấm: "Mẹ đã chuẩn bị ${rewardItem.name} tuyệt đẹp này cho con. Hãy vào tủ đồ mặc thử ngay nhé Ronie!"`;
+      case 'crown':
+        return `Nữ hoàng Nhi Mami mỉm cười đội vương miện lên đầu Ronie: "Con là hoàng tử tri thức đáng yêu của mẹ! Hãy đón nhận ${rewardItem.name} lấp lánh này!"`;
+      case 'queen_accessory':
+        return `Nữ hoàng Nhi Mami xúc động nhận món quà từ Ronie: "Cảm ơn hiệp sĩ nhí của mẹ! Chiếc ${rewardItem.name} này là món quà đẹp nhất mà mẹ nhận được!"`;
+      case 'castle_decoration':
+        return `Nữ hoàng Nhi Mami cùng Ronie ngắm nhìn cung điện: "Với sự chăm chỉ của con, ${rewardItem.name} sẽ làm cho lâu đài của chúng ta rực rỡ hơn bao giờ hết!"`;
+      default:
+        return `Nữ hoàng Nhi Mami ôm Ronie: "Chúc mừng con đã xuất sắc nhận được ${rewardItem.name}!"`;
     }
   }
 

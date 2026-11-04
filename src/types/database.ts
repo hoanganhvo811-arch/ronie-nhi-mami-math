@@ -13,7 +13,15 @@ export type MathTopicKey =
   | 'clock_reading'         // Xem đồng hồ kim đúng giờ
   | 'numbers_to_100';       // Số tròn chục và phép tính tới 100 không nhớ
 
-export type ItemType = 'toy' | 'candy' | 'badge' | 'costume' | 'trophy';
+export type ItemType =
+  | 'toy'
+  | 'candy'
+  | 'badge'
+  | 'costume'
+  | 'trophy'
+  | 'crown'
+  | 'queen_accessory'
+  | 'castle_decoration';
 export type QuestStatus = 'active' | 'completed' | 'claimed';
 export type CostumeSlot = 'cloak' | 'mask' | 'boots' | 'hat' | 'suit';
 

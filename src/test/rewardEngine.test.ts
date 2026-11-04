@@ -40,9 +40,9 @@ describe('1. Danh Mục Phần Thưởng Đầy Đủ Theo Đặc Tả Phase 5',
     expect(ALL_REWARDS_LIST.length).toBeGreaterThanOrEqual(20);
   });
 
-  it('nhóm A: có đầy đủ 6 món đồ chơi (gấu bông, robot, ô tô, búp bê, khủng long, nhện)', () => {
+  it('nhóm A: có đầy đủ các món đồ chơi (gấu bông, robot, ô tô, búp bê, khủng long, nhện)', () => {
     const toys = getRewardsByCategory('toy');
-    expect(toys.length).toBe(6);
+    expect(toys.length).toBeGreaterThanOrEqual(6);
 
     const ids = toys.map((t) => t.id);
     expect(ids).toContain('toy_teddy_bear'); // Gấu bông
@@ -53,9 +53,9 @@ describe('1. Danh Mục Phần Thưởng Đầy Đủ Theo Đặc Tả Phase 5',
     expect(ids).toContain('toy_spider'); // Đồ chơi nhện
   });
 
-  it('nhóm B: có đầy đủ 4 loại kẹo (kẹo mút, kẹo dẻo, socola, bánh quy)', () => {
+  it('nhóm B: có đầy đủ các loại kẹo (kẹo mút, kẹo dẻo, socola, bánh quy)', () => {
     const candies = getRewardsByCategory('candy');
-    expect(candies.length).toBe(4);
+    expect(candies.length).toBeGreaterThanOrEqual(4);
 
     const ids = candies.map((c) => c.id);
     expect(ids).toContain('candy_lollipop'); // Kẹo mút
@@ -64,9 +64,9 @@ describe('1. Danh Mục Phần Thưởng Đầy Đủ Theo Đặc Tả Phase 5',
     expect(ids).toContain('candy_cookie'); // Bánh quy
   });
 
-  it('nhóm C: có đầy đủ 5 huy hiệu (dũng cảm, siêu trí tuệ, nhà toán học nhí, người cứu hộ, chiến binh toán học)', () => {
+  it('nhóm C: có đầy đủ các huy hiệu (dũng cảm, siêu trí tuệ, nhà toán học nhí, người cứu hộ, chiến binh toán học)', () => {
     const badges = getRewardsByCategory('badge');
-    expect(badges.length).toBe(5);
+    expect(badges.length).toBeGreaterThanOrEqual(5);
 
     const ids = badges.map((b) => b.id);
     expect(ids).toContain('badge_bravery'); // Dũng cảm
@@ -76,9 +76,9 @@ describe('1. Danh Mục Phần Thưởng Đầy Đủ Theo Đặc Tả Phase 5',
     expect(ids).toContain('badge_math_warrior'); // Chiến binh toán học
   });
 
-  it('nhóm D: có đầy đủ 5 trang phục (áo choàng, mặt nạ, giày, mũ, bộ trang phục đặc biệt)', () => {
+  it('nhóm D: có đầy đủ các trang phục (áo choàng, mặt nạ, giày, mũ, bộ trang phục đặc biệt)', () => {
     const costumes = getRewardsByCategory('costume');
-    expect(costumes.length).toBe(5);
+    expect(costumes.length).toBeGreaterThanOrEqual(5);
 
     const ids = costumes.map((c) => c.id);
     expect(ids).toContain('costume_star_cloak'); // Áo choàng

@@ -1,65 +1,133 @@
 // src/features/rewards/rewardCatalog.ts
-// Danh mục Toàn Diện Phần Thưởng & Kho Đồ Chơi, Kẹo, Huy Hiệu, Trang Phục (Phase 5)
+// Danh mục Toàn Diện Phần Thưởng: Đồ Chơi (Gấu Bông, Robot, Xe Đua), Kẹo, Vương Miện, Huy Hiệu, Trang Phục, Phụ Kiện Nhi Mami, Đồ Trang Trí Lâu Đài - Phase 4
+// Cam kết 100% Free-to-play, Không yêu cầu nạp tiền, Chuẩn an toàn trẻ em (COPPA)
 
 import type { IRewardItem, RewardCategory } from '../../types/rewards';
 
 export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
   // ==========================================
-  // NHÓM A: ĐỒ CHƠI (TOYS - 6 MÓN)
+  // NHÓM 1: GẤU BÔNG (TEDDY BEARS)
   // ==========================================
   toy_teddy_bear: {
     id: 'toy_teddy_bear',
     category: 'toy',
+    toySubcategory: 'teddy_bear',
     name: 'Gấu Bông Học Đếm',
     description: 'Chú gấu bông tròn trĩnh ấm áp, luôn đồng hành cùng Ronie đếm số.',
     icon: '🧸',
     rarity: 'common',
     colorAccent: '#F59E0B',
     soundPhrase: 'Một, hai, ba, bốn, năm! Ronie học toán chăm chỉ quá!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'default',
       description: 'Nhận ngay khi bước chân vào Vương Quốc Toán Học.',
     },
   },
+  toy_teddy_guardian: {
+    id: 'toy_teddy_guardian',
+    category: 'toy',
+    toySubcategory: 'teddy_bear',
+    name: 'Gấu Bông Hiệp Sĩ Áo Choàng',
+    description: 'Chú gấu bông khoác áo choàng đỏ dũng cảm bảo vệ giấc ngủ cho bé.',
+    icon: '🧸',
+    rarity: 'rare',
+    colorAccent: '#EF4444',
+    soundPhrase: 'Hiệp sĩ Gấu Bông sẵn sàng bảo vệ Vương Quốc Toán Học!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'level',
+      target: 3,
+      description: 'Đạt Cấp độ 3 - Thợ Săn Phép Tính.',
+    },
+  },
+
+  // ==========================================
+  // NHÓM 2: ROBOT (ROBOTS)
+  // ==========================================
   toy_mini_robot: {
     id: 'toy_mini_robot',
     category: 'toy',
+    toySubcategory: 'robot',
     name: 'Robot Bíp Bíp Tí Hon',
     description: 'Người bạn người máy thông minh, có màn hình đo chiều dài cm nhấp nháy.',
     icon: '🤖',
     rarity: 'rare',
     colorAccent: '#38BDF8',
     soundPhrase: 'Bíp bíp! Phép tính chính xác một trăm phần trăm!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_06_math_racing',
       description: 'Hoàn thành nhiệm vụ Đua Xe Toán Học Siêu Tốc.',
     },
   },
+  toy_space_rover: {
+    id: 'toy_space_rover',
+    category: 'toy',
+    toySubcategory: 'robot',
+    name: 'Robot Thám Hiểm Vũ Trụ',
+    description: 'Robot thông minh chạy bằng năng lượng mặt trời biết tính giờ thiên văn.',
+    icon: '🚀',
+    rarity: 'epic',
+    colorAccent: '#6366F1',
+    soundPhrase: 'Đếm ngược 3, 2, 1! Tên lửa phóng lên dải ngân hà toán học!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'mission',
+      target: 'mission_07_rocket_launch',
+      description: 'Hoàn thành nhiệm vụ Phóng Tên Lửa Vũ Trụ.',
+    },
+  },
+
+  // ==========================================
+  // NHÓM 3: XE ĐỒ CHƠI (TOY CARS)
+  // ==========================================
   toy_race_car: {
     id: 'toy_race_car',
     category: 'toy',
+    toySubcategory: 'toy_car',
     name: 'Xe Đua Tơ Nhện Siêu Tốc',
     description: 'Chiếc ô tô đồ chơi bánh đỏ mui trần lướt cực nhanh trên sàn gỗ.',
     icon: '🏎️',
     rarity: 'rare',
     colorAccent: '#EF4444',
     soundPhrase: 'Vroom vroom! Chiếc xe nhện tăng tốc về đích đầu tiên!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'level',
       target: 2,
       description: 'Đạt Cấp độ 2 - Bé Đếm Số Cừ Khôi.',
     },
   },
+  toy_lightning_buggy: {
+    id: 'toy_lightning_buggy',
+    category: 'toy',
+    toySubcategory: 'toy_car',
+    name: 'Siêu Xe Tia Chớp Bảy Sắc',
+    description: 'Xe địa hình vượt mê cung chạy êm như nhung trên mọi cung đường sỏi đá.',
+    icon: '🚙',
+    rarity: 'legendary',
+    colorAccent: '#10B981',
+    soundPhrase: 'Vèo! Vượt qua mọi ngõ ngách mê cung trong nháy mắt!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'mission',
+      target: 'mission_09_number_maze',
+      description: 'Hoàn thành nhiệm vụ Vượt Mê Cung Số Kỳ Diệu.',
+    },
+  },
   toy_princess_doll: {
     id: 'toy_princess_doll',
     category: 'toy',
+    toySubcategory: 'doll',
     name: 'Búp Bê Công Chúa Nơ Hồng',
     description: 'Cô búp bê nhỏ mặc váy hồng xòe, quà tặng từ bạn nhỏ được giải cứu.',
     icon: '🎎',
     rarity: 'common',
     colorAccent: '#EC4899',
     soundPhrase: 'Cảm ơn hiệp sĩ Ronie dũng cảm đã cứu tớ nhé!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_01_rescue_girl',
@@ -69,12 +137,14 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
   toy_dino: {
     id: 'toy_dino',
     category: 'toy',
+    toySubcategory: 'dino',
     name: 'Khủng Long Xanh Tí Nị',
     description: 'Chú khủng long bạo chúa bằng cao su mềm biết kêu gầm gừ vui nhộn.',
     icon: '🦖',
     rarity: 'rare',
     colorAccent: '#10B981',
     soundPhrase: 'Roar roar! Tớ thích ăn các viên đá hình vuông!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_04_treasure_chest',
@@ -84,12 +154,14 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
   toy_spider: {
     id: 'toy_spider',
     category: 'toy',
+    toySubcategory: 'spider',
     name: 'Đồ Chơi Nhện Nhí Phát Sáng',
     description: 'Mô hình chú nhện màu đỏ xanh có đèn LED dạ quang lung linh ban đêm.',
     icon: '🕷️',
     rarity: 'epic',
     colorAccent: '#8B5CF6',
     soundPhrase: 'Chíu chíu! Tơ nhện ma thuật bảo vệ vương quốc!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'stars',
       target: 10,
@@ -98,7 +170,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
   },
 
   // ==========================================
-  // NHÓM B: KẸO (CANDY - 4 MÓN)
+  // NHÓM 4: KẸO NGỌT NGÀO (CANDY)
   // ==========================================
   candy_lollipop: {
     id: 'candy_lollipop',
@@ -109,6 +181,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'common',
     colorAccent: '#F43F5E',
     soundPhrase: 'Măm măm! Kẹo mút ngọt ngào tiếp thêm năng lượng học tập!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'default',
       description: 'Nữ hoàng Nhi Mami tặng thưởng bé làm quen vương quốc.',
@@ -123,6 +196,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'common',
     colorAccent: '#A855F7',
     soundPhrase: 'Dẻo dẻo dai dai, cùng đếm xem có mấy chú gấu kẹo nào!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_03_bridge_crossing',
@@ -138,6 +212,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'rare',
     colorAccent: '#78350F',
     soundPhrase: 'Bẻ một ô vuông socola chia cho bạn bè cùng thưởng thức!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_05_candy_machine',
@@ -153,15 +228,83 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'rare',
     colorAccent: '#D97706',
     soundPhrase: 'Rôm rốp rôm rốp! Quái vật bánh quy đã chia bánh cho Ronie rồi!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_02_cookie_monster',
       description: 'Hoàn thành nhiệm vụ Đẩy Lùi Quái Vật Bánh Quy.',
     },
   },
+  candy_cotton_rainbow: {
+    id: 'candy_cotton_rainbow',
+    category: 'candy',
+    name: 'Kẹo Bông Gòn Bảy Sắc',
+    description: 'Đám mây kẹo ngọt bồng bềnh tan ngay đầu lưỡi do Nữ Hoàng thưởng khi bé chăm chỉ.',
+    icon: '🍡',
+    rarity: 'epic',
+    colorAccent: '#F472B6',
+    soundPhrase: 'Mềm như mây, ngọt như nụ cười của Nữ hoàng!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'daily',
+      description: 'Hoàn thành nhiệm vụ phiêu lưu Daily Adventure.',
+    },
+  },
 
   // ==========================================
-  // NHÓM C: HUY HIỆU (BADGES - 5 MÓN)
+  // NHÓM 5: VƯƠNG MIỆN (CROWNS)
+  // ==========================================
+  crown_royal_gold: {
+    id: 'crown_royal_gold',
+    category: 'crown',
+    name: 'Vương Miện Hoàng Gia Vàng Ròng',
+    description: 'Chiếc vương miện rực rỡ đính hồng ngọc tượng trưng cho trí tuệ sáng ngời.',
+    icon: '👑',
+    rarity: 'epic',
+    colorAccent: '#F59E0B',
+    soundPhrase: 'Keng keng! Đội vương miện vàng lên đầu, Ronie là hoàng tử toán học!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'mission',
+      target: 'mission_08_magic_key',
+      description: 'Hoàn thành nhiệm vụ Tìm Chìa Khóa Ma Thuật.',
+    },
+  },
+  crown_starlight_eternal: {
+    id: 'crown_starlight_eternal',
+    category: 'crown',
+    name: 'Vương Miện Tinh Tú Vĩnh Cửu',
+    description: 'Vương miện huyền thoại kết tinh từ ánh sáng ngàn ngôi sao toán học trên đỉnh lâu đài.',
+    icon: '💎',
+    rarity: 'legendary',
+    colorAccent: '#38BDF8',
+    soundPhrase: 'Ánh sao vĩnh cửu soi sáng vương quốc, Ronie là niềm tự hào vĩ đại!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'stars',
+      target: 25,
+      description: 'Tích lũy đủ 25 Ngôi Sao Tri Thức.',
+    },
+  },
+  crown_spring_flowers: {
+    id: 'crown_spring_flowers',
+    category: 'crown',
+    name: 'Vòng Hoa Đội Đầu Mùa Xuân',
+    description: 'Vòng hoa cúc trắng kết hợp lá thường xuân do muôn thú trong rừng dâng tặng.',
+    icon: '🌸',
+    rarity: 'common',
+    colorAccent: '#34D399',
+    soundPhrase: 'Hương hoa mùa xuân thơm ngát quanh hiệp sĩ nhí đáng yêu!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'level',
+      target: 1,
+      description: 'Nhận khi đạt Cấp độ 1 - Bé Tập Sự.',
+    },
+  },
+
+  // ==========================================
+  // NHÓM 6: HUY HIỆU (BADGES)
   // ==========================================
   badge_bravery: {
     id: 'badge_bravery',
@@ -172,6 +315,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'rare',
     colorAccent: '#F59E0B',
     soundPhrase: 'Bé Ronie thật dũng cảm, luôn kiên trì vượt qua thử thách!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'level',
       target: 3,
@@ -187,6 +331,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'epic',
     colorAccent: '#06B6D4',
     soundPhrase: 'Tư duy nhanh nhẹn, suy luận chuẩn xác như một thiên tài nhí!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'stars',
       target: 15,
@@ -202,6 +347,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'legendary',
     colorAccent: '#10B981',
     soundPhrase: 'Chúc mừng Nhà Toán Học Nhí xuất sắc của Vương Quốc!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'level',
       target: 5,
@@ -217,6 +363,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'rare',
     colorAccent: '#EC4899',
     soundPhrase: 'Hiệp sĩ cứu hộ luôn có mặt giúp đỡ những người bạn gặp nạn!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_01_rescue_girl',
@@ -232,15 +379,32 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'epic',
     colorAccent: '#6366F1',
     soundPhrase: 'Đòn đánh tơ sao chuẩn xác bảo vệ hòa bình cho vương quốc!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_02_cookie_monster',
       description: 'Hoàn thành nhiệm vụ Đẩy Lùi Quái Vật Bánh Quy.',
     },
   },
+  badge_grand_master_knight: {
+    id: 'badge_grand_master_knight',
+    category: 'badge',
+    name: 'Huy Hiệu Đại Hiệp Sĩ Hoàng Gia',
+    description: 'Phần thưởng tối cao khi vượt qua trọn vẹn 5 chặng của Chiến Dịch Đại Quân Đoàn.',
+    icon: '🌟',
+    rarity: 'legendary',
+    colorAccent: '#F59E0B',
+    soundPhrase: 'Tuyên thệ Đại Hiệp Sĩ! Danh tiếng của Ronie vang dội khắp bốn phương!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'achievement',
+      target: 'ach_hard_mission_win',
+      description: 'Vượt qua chiến dịch liên hoàn 5 chặng.',
+    },
+  },
 
   // ==========================================
-  // NHÓM D: TRANG PHỤC (COSTUMES - 5 MÓN)
+  // NHÓM 7: TRANG PHỤC RONIE (COSTUMES)
   // ==========================================
   costume_star_cloak: {
     id: 'costume_star_cloak',
@@ -252,6 +416,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'rare',
     colorAccent: '#FBBF24',
     soundPhrase: 'Áo choàng hoàng gia tung bay, Ronie trông thật oai vệ!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'stars',
       target: 6,
@@ -268,6 +433,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'common',
     colorAccent: '#E11D48',
     soundPhrase: 'Biến hình siêu anh hùng nhện! Sẵn sàng phiêu lưu!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'default',
       description: 'Trang phục khởi đầu có sẵn trong tủ đồ.',
@@ -283,6 +449,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'rare',
     colorAccent: '#38BDF8',
     soundPhrase: 'Vèo! Bước chạy nhẹ tênh như tia chớp!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_03_bridge_crossing',
@@ -299,6 +466,7 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'legendary',
     colorAccent: '#F59E0B',
     soundPhrase: 'Hoàng tử nhí của mẹ, con là niềm tự hào lớn nhất của vương quốc!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'mission',
       target: 'mission_04_treasure_chest',
@@ -315,10 +483,177 @@ export const REWARD_ITEMS_CATALOG: Record<string, IRewardItem> = {
     rarity: 'legendary',
     colorAccent: '#F59E0B',
     soundPhrase: 'Sức mạnh tri thức tối thượng! Ronie là hiệp sĩ vĩ đại nhất!',
+    isFreePlay: true,
     unlockCondition: {
       type: 'level',
       target: 6,
       description: 'Đạt Cấp độ 6 - Bậc Thầy Đo Lường.',
+    },
+  },
+  costume_royal_knight_cape: {
+    id: 'costume_royal_knight_cape',
+    category: 'costume',
+    costumeSlot: 'cloak',
+    name: 'Áo Choàng Hiệp Sĩ Hoa Hồng',
+    description: 'Áo choàng nhung đỏ thêu hoa hồng cài huy hiệu Nữ hoàng Nhi Mami.',
+    icon: '🧣',
+    rarity: 'epic',
+    colorAccent: '#E11D48',
+    soundPhrase: 'Màu đỏ kiêu hãnh của lòng dũng cảm và yêu thương!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'mission',
+      target: 'mission_10_boss_battle',
+      description: 'Hoàn thành nhiệm vụ Đại Chiến Trùm Cuối.',
+    },
+  },
+
+  // ==========================================
+  // NHÓM 8: PHỤ KIỆN CHO NỮ HOÀNG NHI MAMI (QUEEN ACCESSORIES)
+  // ==========================================
+  queen_feather_fan: {
+    id: 'queen_feather_fan',
+    category: 'queen_accessory',
+    name: 'Quạt Hoàng Gia Lông Vũ Pastel',
+    description: 'Chiếc quạt lông công mềm mại tỏa hương thơm ngát của Nữ hoàng Nhi Mami.',
+    icon: '🪭',
+    rarity: 'rare',
+    colorAccent: '#EC4899',
+    soundPhrase: 'Nữ hoàng khẽ phẩy quạt mát rượi tiếp thêm sức mạnh cho Ronie!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'stars',
+      target: 8,
+      description: 'Tích lũy đủ 8 Ngôi Sao Tri Thức.',
+    },
+  },
+  queen_crystal_mirror: {
+    id: 'queen_crystal_mirror',
+    category: 'queen_accessory',
+    name: 'Gương Thần Pha Lê Yêu Thương',
+    description: 'Chiếc gương cầm tay nạm ngọc luôn phản chiếu nụ cười hạnh phúc của Mẹ và Con.',
+    icon: '🪞',
+    rarity: 'epic',
+    colorAccent: '#A855F7',
+    soundPhrase: 'Gương thần soi sáng tấm lòng hiếu thảo và chăm học của bé!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'level',
+      target: 4,
+      description: 'Đạt Cấp độ 4 - Dũng Sĩ Rừng Xanh.',
+    },
+  },
+  queen_star_wand: {
+    id: 'queen_star_wand',
+    category: 'queen_accessory',
+    name: 'Đũa Phép Ngôi Sao Yêu Thương',
+    description: 'Đũa phép bằng pha lê hồng ban phát phép lành và năng lượng tích cực cho cả vương quốc.',
+    icon: '🪄',
+    rarity: 'legendary',
+    colorAccent: '#F43F5E',
+    soundPhrase: 'Lấp lánh lấp lánh! Phép thuật tình yêu thương của Mẹ!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'stars',
+      target: 20,
+      description: 'Tích lũy đủ 20 Ngôi Sao Tri Thức.',
+    },
+  },
+  queen_pearl_hairpin: {
+    id: 'queen_pearl_hairpin',
+    category: 'queen_accessory',
+    name: 'Trâm Cài Tóc Ngọc Trai Biển Sâu',
+    description: 'Trâm cài tóc bằng bạc đính ngọc trai lấp lánh cài trên mái tóc búi quý phái của Nữ hoàng.',
+    icon: '✨',
+    rarity: 'common',
+    colorAccent: '#E2E8F0',
+    soundPhrase: 'Nữ hoàng mỉm cười cài trâm và ôm Ronie vào lòng!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'default',
+      description: 'Có sẵn trong bộ sưu tập hoàng gia.',
+    },
+  },
+
+  // ==========================================
+  // NHÓM 9: ĐỒ TRANG TRÍ LÂU ĐÀI (CASTLE DECORATIONS)
+  // ==========================================
+  castle_red_carpet: {
+    id: 'castle_red_carpet',
+    category: 'castle_decoration',
+    name: 'Thảm Nhung Đỏ Hoàng Gia',
+    description: 'Thảm trải sàn dệt nhung đỏ viền vàng rải lối vào đại sảnh lâu đài.',
+    icon: '🧶',
+    rarity: 'common',
+    colorAccent: '#DC2626',
+    soundPhrase: 'Bước trên thảm đỏ tiến vào ngai vàng tri thức!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'default',
+      description: 'Có sẵn khi trang hoàng lâu đài.',
+    },
+  },
+  castle_royal_banner: {
+    id: 'castle_royal_banner',
+    category: 'castle_decoration',
+    name: 'Cờ Vinh Danh Hiệp Sĩ Nhí',
+    description: 'Lá cờ thêu biểu tượng Người Nhện và Nữ Hoàng tung bay kiêu hãnh trên tháp canh.',
+    icon: '🚩',
+    rarity: 'rare',
+    colorAccent: '#F59E0B',
+    soundPhrase: 'Lá cờ vương quốc tung bay theo từng bước tiến của bé!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'level',
+      target: 2,
+      description: 'Đạt Cấp độ 2 - Bé Đếm Số Cừ Khôi.',
+    },
+  },
+  castle_star_throne: {
+    id: 'castle_star_throne',
+    category: 'castle_decoration',
+    name: 'Ngai Vàng Tinh Tú Lấp Lánh',
+    description: 'Ngai vàng nạm pha lê tím đặt giữa sảnh chính nơi Nữ hoàng Nhi Mami vinh danh Ronie.',
+    icon: '🪑',
+    rarity: 'legendary',
+    colorAccent: '#8B5CF6',
+    soundPhrase: 'Ngai vàng tri thức chào đón Hiệp Sĩ Ronie xuất sắc nhất!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'achievement',
+      target: 'ach_star_master',
+      description: 'Đạt thành tích Kho Tàng Tri Thức (12 sao trở lên).',
+    },
+  },
+  castle_magic_flowerpot: {
+    id: 'castle_magic_flowerpot',
+    category: 'castle_decoration',
+    name: 'Chậu Hoa Cầu Vồng Bốn Mùa',
+    description: 'Những đóa hoa nở quanh năm tỏa hương ngọt ngào khắp hành lang cung điện.',
+    icon: '🪴',
+    rarity: 'common',
+    colorAccent: '#10B981',
+    soundPhrase: 'Hoa tươi khoe sắc chào mừng một ngày học toán vui tươi!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'default',
+      description: 'Có sẵn khi bắt đầu trang trí cung điện.',
+    },
+  },
+  castle_crystal_lantern: {
+    id: 'castle_crystal_lantern',
+    category: 'castle_decoration',
+    name: 'Đèn Lồng Pha Lê Hoàng Gia',
+    description: 'Đèn chùm pha lê lung linh rực sáng cả cung điện khi đêm về.',
+    icon: '🏮',
+    rarity: 'rare',
+    colorAccent: '#FCD34D',
+    soundPhrase: 'Ánh đèn pha lê ấm áp soi tỏ mọi nẻo đường phiêu lưu!',
+    isFreePlay: true,
+    unlockCondition: {
+      type: 'level',
+      target: 4,
+      description: 'Đạt Cấp độ 4 - Dũng Sĩ Rừng Xanh.',
     },
   },
 };
@@ -334,7 +669,7 @@ export function getRewardsByCategory(category: RewardCategory): IRewardItem[] {
 }
 
 /**
- * Bản đồ ánh xạ phần thưởng đặc trưng cho 6 nhiệm vụ Phase 4
+ * Bản đồ ánh xạ phần thưởng đặc trưng cho các nhiệm vụ
  */
 export const MISSION_REWARD_MAP: Record<string, string> = {
   mission_01_rescue_girl: 'toy_princess_doll',
@@ -343,4 +678,8 @@ export const MISSION_REWARD_MAP: Record<string, string> = {
   mission_04_treasure_chest: 'costume_crown_hat',
   mission_05_candy_machine: 'candy_chocolate',
   mission_06_math_racing: 'toy_mini_robot',
+  mission_07_rocket_launch: 'toy_space_rover',
+  mission_08_magic_key: 'crown_royal_gold',
+  mission_09_number_maze: 'toy_lightning_buggy',
+  mission_10_boss_battle: 'costume_super_spider',
 };
