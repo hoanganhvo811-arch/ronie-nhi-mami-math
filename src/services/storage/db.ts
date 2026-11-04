@@ -932,3 +932,89 @@ export async function resetProfileData(
   // Tạo lại hồ sơ khởi đầu sạch
   await initializeDefaultProfile();
 }
+
+// ==========================================
+// LỊCH SỬ KẾT QUẢ PHÒNG LUYỆN TOÁN & ĐẤU TRƯỜNG (PHASE 5)
+// ==========================================
+const inMemoryTrainingHistory: Record<string, any[]> = {};
+const inMemoryArenaHistory: Record<string, any[]> = {};
+
+export async function recordTrainingHistory(record: {
+  profileId: string;
+  topicId: string;
+  level: string;
+  totalQuestions: number;
+  correctCount: number;
+  score: number;
+}): Promise<void> {
+  const item = {
+    ...record,
+    id: `train_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    timestamp: Date.now(),
+  };
+  if (!inMemoryTrainingHistory[record.profileId]) {
+    inMemoryTrainingHistory[record.profileId] = [];
+  }
+  inMemoryTrainingHistory[record.profileId].unshift(item);
+
+  try {
+    const key = `training_history_${record.profileId}`;
+    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+    existing.unshift(item);
+    localStorage.setItem(key, JSON.stringify(existing.slice(0, 50)));
+  } catch {
+    // LocalStorage fallback
+  }
+}
+
+export async function getTrainingHistory(profileId: string = DEFAULT_PROFILE_ID): Promise<any[]> {
+  try {
+    const key = `training_history_${profileId}`;
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+  } catch {
+    // LocalStorage fallback
+  }
+  return inMemoryTrainingHistory[profileId] || [];
+}
+
+export async function recordArenaHistory(record: {
+  profileId: string;
+  mode: string;
+  totalQuestions: number;
+  correctCount: number;
+  score: number;
+  starsEarned: number;
+  timeSpentSeconds: number;
+  bossDefeated?: boolean;
+}): Promise<void> {
+  const item = {
+    ...record,
+    id: `arena_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    timestamp: Date.now(),
+  };
+  if (!inMemoryArenaHistory[record.profileId]) {
+    inMemoryArenaHistory[record.profileId] = [];
+  }
+  inMemoryArenaHistory[record.profileId].unshift(item);
+
+  try {
+    const key = `arena_history_${record.profileId}`;
+    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+    existing.unshift(item);
+    localStorage.setItem(key, JSON.stringify(existing.slice(0, 50)));
+  } catch {
+    // LocalStorage fallback
+  }
+}
+
+export async function getArenaHistory(profileId: string = DEFAULT_PROFILE_ID): Promise<any[]> {
+  try {
+    const key = `arena_history_${profileId}`;
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+  } catch {
+    // LocalStorage fallback
+  }
+  return inMemoryArenaHistory[profileId] || [];
+}

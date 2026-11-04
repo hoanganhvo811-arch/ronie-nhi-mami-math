@@ -17,7 +17,9 @@ export type GameScreen =
   | 'PROFILE'
   | 'MATH_ARENA'
   | 'MISSION_ARENA'
-  | 'PARENT_DASHBOARD';
+  | 'PARENT_DASHBOARD'
+  | 'MATH_TRAINING_ROOM'
+  | 'CHALLENGE_ARENA';
 
 export type RonieAnimationState =
   | 'idle'

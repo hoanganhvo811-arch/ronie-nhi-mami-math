@@ -18,6 +18,8 @@ interface RoyalCastleProps {
   onSelectMission: (zoneId: number, stageId: number) => void;
   onSelectMissionConfig?: (config: IMissionConfig) => void;
   onOpenToyRoom: () => void;
+  onOpenTrainingRoom?: () => void;
+  onOpenChallengeArena?: () => void;
   totalStars?: number;
   pendingRewardMission?: IMissionConfig | null;
   onRewardClaimed?: () => void;
@@ -29,6 +31,8 @@ export const RoyalCastle: React.FC<RoyalCastleProps> = ({
   onSelectMission,
   onSelectMissionConfig,
   onOpenToyRoom,
+  onOpenTrainingRoom,
+  onOpenChallengeArena,
   totalStars = 12,
   pendingRewardMission,
   onRewardClaimed,
@@ -148,6 +152,36 @@ export const RoyalCastle: React.FC<RoyalCastleProps> = ({
 
           {/* CỘT PHẢI (7 CỘT): KHU VỰC GIAO NHIỆM VỤ & KHU VỰC TRAO THƯỞNG */}
           <div className="lg:col-span-7 flex flex-col">
+            {/* 2 KHU VỰC MỚI PHASE 5: PHÒNG LUYỆN TOÁN & ĐẤU TRƯỜNG */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              {onOpenTrainingRoom && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playTap();
+                    onOpenTrainingRoom();
+                  }}
+                  className="py-2.5 px-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-105 active:scale-95 text-slate-950 font-comic font-black text-xs md:text-sm rounded-2xl shadow-[0_3px_0_#065f46] flex items-center justify-center gap-1.5 cursor-pointer transition-all border border-emerald-300"
+                >
+                  <span className="text-base">🎨</span>
+                  <span>Phòng Luyện Toán</span>
+                </button>
+              )}
+              {onOpenChallengeArena && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playTap();
+                    onOpenChallengeArena();
+                  }}
+                  className="py-2.5 px-3 bg-gradient-to-r from-purple-600 to-rose-600 hover:brightness-105 active:scale-95 text-white font-comic font-black text-xs md:text-sm rounded-2xl shadow-[0_3px_0_#581c87] flex items-center justify-center gap-1.5 cursor-pointer transition-all border border-purple-300"
+                >
+                  <span className="text-base">⚔️</span>
+                  <span>Đấu Trường Toán Học</span>
+                </button>
+              )}
+            </div>
+
             {/* TABS CHUYỂN ĐỔI: NHIỆM VỤ HOÀNG GIA vs PHẦN THƯỞNG */}
             <div className="flex gap-2 mb-4 bg-white/60 p-1.5 rounded-2xl border border-white/80 shadow-sm">
               <button

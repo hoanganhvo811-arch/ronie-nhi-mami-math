@@ -13,6 +13,8 @@ import { PhaserGameContainer } from '../game/PhaserGameContainer';
 import { VisualMathQuiz } from '../features/math-engine/VisualMathQuiz';
 import { MissionArena } from '../features/mission-gameplay/MissionArena';
 import { AdventureWorldMap } from '../features/adventure/AdventureWorldMap';
+import { MathTrainingRoom } from '../features/math-training/MathTrainingRoom';
+import { ChallengeArena } from '../features/challenge-arena/ChallengeArena';
 import type { IMissionConfig } from '../mission-engine';
 import { RewardModal } from '../features/rewards/RewardModal';
 import { DefeatEncouragementModal } from '../features/rewards/DefeatEncouragementModal';
@@ -250,8 +252,7 @@ export const AppShell: React.FC = () => {
           onOpenToyRoom={() => navigateTo('TOY_ROOM')}
           onOpenProfile={() => navigateTo('PROFILE')}
           onOpenMathCorner={() => {
-            setActiveZoneId(1);
-            navigateTo('MISSION_SELECTION');
+            navigateTo('MATH_TRAINING_ROOM');
           }}
           onOpenSettings={() => setShowParentDashboard(true)}
           onOpenShowcase={() => setShowCharacterShowcase(true)}
@@ -267,6 +268,8 @@ export const AppShell: React.FC = () => {
           onSelectMission={handleSelectMissionDirect}
           onSelectMissionConfig={handleStartMissionConfig}
           onOpenToyRoom={() => navigateTo('TOY_ROOM')}
+          onOpenTrainingRoom={() => navigateTo('MATH_TRAINING_ROOM')}
+          onOpenChallengeArena={() => navigateTo('CHALLENGE_ARENA')}
           totalStars={totalStars}
           pendingRewardMission={pendingRewardMission}
           onRewardClaimed={() => setPendingRewardMission(null)}
@@ -405,6 +408,28 @@ export const AppShell: React.FC = () => {
             navigateTo('ROYAL_CASTLE');
           }}
           onReturnToMissions={() => navigateTo('MISSION_SELECTION')}
+        />
+      )}
+
+      {/* 10. PHÒNG LUYỆN TOÁN HOÀNG GIA (MATH TRAINING ROOM - PHASE 5) */}
+      {screen === 'MATH_TRAINING_ROOM' && (
+        <MathTrainingRoom
+          onBack={() => navigateTo('ROYAL_CASTLE')}
+          onSessionComplete={({ expGained, stars }) => {
+            setTotalStars((prev) => prev + stars);
+            setCurrentScore((prev) => prev + expGained);
+          }}
+        />
+      )}
+
+      {/* 11. ĐẤU TRƯỜNG TOÁN HỌC (CHALLENGE ARENA - PHASE 5) */}
+      {screen === 'CHALLENGE_ARENA' && (
+        <ChallengeArena
+          onBack={() => navigateTo('ROYAL_CASTLE')}
+          onChallengeComplete={({ expGained, stars }) => {
+            setTotalStars((prev) => prev + stars);
+            setCurrentScore((prev) => prev + expGained);
+          }}
         />
       )}
 
